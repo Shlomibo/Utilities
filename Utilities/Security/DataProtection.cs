@@ -115,7 +115,7 @@ namespace Utilities.Security
 						hwndApp = prompt.AppHandle,
 						prompt = szPrompt,
 						promptFlags = (uint)prompt.Flags,
-						size = (uint)Marshal.SizeOf(typeof(PromptStruct)),
+						size = (uint)sizeof(PromptStruct),
 					};
 
 					pPromptStruct = &promptStruct;
@@ -260,7 +260,7 @@ namespace Utilities.Security
 						hwndApp = prompt.AppHandle,
 						prompt = szPromptString,
 						promptFlags = (uint)prompt.Flags,
-						size = (uint)Marshal.SizeOf(typeof(PromptStruct)),
+						size = (uint)sizeof(PromptStruct),
 					};
 
 					pPromptStruct = &promptStruct;

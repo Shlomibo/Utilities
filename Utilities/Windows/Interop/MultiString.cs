@@ -175,8 +175,10 @@ namespace Utilities.Windows.Interop
 
 		public bool Remove(string str)
 		{
-			return this.strings.Remove(str);
+			bool didRemoved = this.strings.Remove(str);
 			OnChanged();
+
+			return didRemoved;
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

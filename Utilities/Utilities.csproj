@@ -169,7 +169,7 @@
     <Compile Include="Windows\Services\ServiceFailureActions.cs" />
     <Compile Include="Windows\Services\ServiceControlCode.cs" />
     <Compile Include="Windows\Services\Enums.cs" />
-    <Compile Include="Windows\Services\Interop\API.cs" />
+    <Compile Include="Windows\Services\Interop\Win32API.cs" />
     <Compile Include="Windows\Services\Interop\InteropStructures.cs" />
     <Compile Include="Windows\Services\Service.cs" />
     <Compile Include="Windows\Services\ServiceInfo.cs" />

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
@@ -31,6 +33,51 @@ namespace Utilities.Windows.Services
 				throw new ArgumentException("Invalid data type for data", "data");
 			}
 		}
+
+		internal unsafe static TriggerData Create(ref TriggerSpecificDataItem dataItem)
+		{
+			TriggerData data = null;
+
+			switch (dataItem.type)
+			{
+				case DataItemType.Binary:
+
+					var binaryData = new byte[dataItem.bytesCount];
+					Marshal.Copy(
+						(IntPtr)dataItem.data,
+						binaryData,
+						0,
+						binaryData.Length);
+					data = new TriggerBinaryData(binaryData);
+					
+					break;
+
+				case DataItemType.String:
+
+					var str = new string(
+						(char*)dataItem.data,
+						0,
+						(int)dataItem.bytesCount / sizeof(char));
+					data = new TriggerStringData(str);
+
+					break;
+
+				default:
+
+					throw new NotImplementedException("The given trigger data item type " +
+						"is not implemented");
+			}
+
+			return data;
+		}
+
+		internal abstract unsafe void ToUnmanaged(ref TriggerSpecificDataItem unmanaged);
+
+		internal static unsafe void FreeUnmanaged(ref TriggerSpecificDataItem unmanaged)
+		{
+			Marshal.FreeHGlobal((IntPtr)unmanaged.data);
+			unmanaged.data = null;
+		}
 		#endregion
 	}
 
@@ -54,6 +101,16 @@ namespace Utilities.Windows.Services
 			this.StringData = data;
 		} 
 		#endregion
+
+		#region Methods
+
+		internal override unsafe void ToUnmanaged(ref TriggerSpecificDataItem unmanaged)
+		{
+			unmanaged.bytesCount = (uint)(sizeof(char) * (this.StringData.Length + 1));
+			unmanaged.data = (byte*)Marshal.StringToHGlobalUni(this.StringData);
+			unmanaged.type = DataItemType.String;
+		}
+		#endregion
 	}
 
 	public class TriggerBinaryData : TriggerData
@@ -73,6 +130,17 @@ namespace Utilities.Windows.Services
 		{
 			this.DataType = DataItemType.Binary;
 			this.BinaryData = data;
+		}
+		#endregion
+
+		#region Methods
+
+		internal override unsafe void ToUnmanaged(ref TriggerSpecificDataItem unmanaged)
+		{
+			unmanaged.bytesCount = (uint)this.BinaryData.Length;
+			unmanaged.data = (byte*)Marshal.AllocHGlobal(this.BinaryData.Length);
+			Marshal.Copy(this.BinaryData, 0, (IntPtr)unmanaged.data, this.BinaryData.Length);
+			unmanaged.type = DataItemType.Binary;
 		}
 		#endregion
 	}

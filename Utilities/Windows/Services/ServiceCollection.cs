@@ -17,8 +17,8 @@ namespace Utilities.Windows.Services
 
 			private const int NO_ERROR = 0;
 
-			public const string ALL_GROUPS = API.ALL_GROUPS;
-			public const string NOT_IN_GROUP = API.NOT_GROUPED;
+			public const string ALL_GROUPS = Win32API.ALL_GROUPS;
+			public const string NOT_IN_GROUP = Win32API.NOT_GROUPED;
 			#endregion
 
 			#region Fields
@@ -114,11 +114,11 @@ namespace Utilities.Windows.Services
 
 				private static readonly Dictionary<int, string> MSGS_ENUM_ERRORS = new Dictionary<int, string>()
 				{
-					{ API.ERROR_ACCESS_DENIED, "The handle does not have the SC_MANAGER_ENUMERATE_SERVICE access right." },
-					{ API.ERROR_INVALID_PARAMETER, "An illegal parameter value was used." },
-					{ API.ERROR_INVALID_HANDLE, "The handle is invalid." },
-					{ API.ERROR_INVALID_LEVEL, "The InfoLevel parameter contains an unsupported value." },
-					{ API.ERROR_SHUTDOWN_IN_PROGRESS, "The system is shutting down; this function cannot be called." },
+					{ Win32API.ERROR_ACCESS_DENIED, "The handle does not have the SC_MANAGER_ENUMERATE_SERVICE access right." },
+					{ Win32API.ERROR_INVALID_PARAMETER, "An illegal parameter value was used." },
+					{ Win32API.ERROR_INVALID_HANDLE, "The handle is invalid." },
+					{ Win32API.ERROR_INVALID_LEVEL, "The InfoLevel parameter contains an unsupported value." },
+					{ Win32API.ERROR_SHUTDOWN_IN_PROGRESS, "The system is shutting down; this function cannot be called." },
 				};
 				#endregion
 
@@ -181,9 +181,9 @@ namespace Utilities.Windows.Services
 							this.allocated = this.needed;
 						}
 
-						if (API.EnumServicesStatus(
+						if (Win32API.EnumServicesStatus(
 							this.collection.scm.Handle,
-							API.SC_ENUM_PROCESS_INFO,
+							Win32API.SC_ENUM_PROCESS_INFO,
 							this.type,
 							this.state,
 							this.pESSP,
@@ -199,7 +199,7 @@ namespace Utilities.Windows.Services
 						{
 							this.lastError = Marshal.GetLastWin32Error();
 						}
-					} while (this.lastError == API.ERROR_MORE_DATA);
+					} while (this.lastError == Win32API.ERROR_MORE_DATA);
 
 					if (lastError != NO_ERROR)
 					{

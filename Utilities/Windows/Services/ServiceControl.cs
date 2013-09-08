@@ -19,22 +19,22 @@ namespace Utilities.Windows.Services
 
 		private static readonly Dictionary<int, string> MSGS_CTOR = new Dictionary<int, string>()
 		{
-			{ API.ERROR_ACCESS_DENIED, "The requested access was denied." },
-			{ API.ERROR_DATABASE_DOES_NOT_EXIST, "The specified database does not exist." },
+			{ Win32API.ERROR_ACCESS_DENIED, "The requested access was denied." },
+			{ Win32API.ERROR_DATABASE_DOES_NOT_EXIST, "The specified database does not exist." },
 		};
 
 		private static readonly Dictionary<int, string> MSGS_NTFY_BOOT_CNFG_STTS = new Dictionary<int, string>()
 		{
-			{ API.ERROR_ACCESS_DENIED, "The user does not have permission to perform this operation. " +
+			{ Win32API.ERROR_ACCESS_DENIED, "The user does not have permission to perform this operation. " +
 				"Only the system and members of the Administrator's group can do so." },
 		};
 
 		private static readonly Dictionary<int, string> MSGS_OPEN_SVC = new Dictionary<int, string>()
 		{
-			{ API.ERROR_ACCESS_DENIED, "The handle does not have access to the service." },
-			{ API.ERROR_INVALID_HANDLE, "The specified handle is invalid." },
-			{ API.ERROR_INVALID_NAME, "The specified service name is invalid." },
-			{ API.ERROR_SERVICE_DOES_NOT_EXIST, "The specified service does not exist." },
+			{ Win32API.ERROR_ACCESS_DENIED, "The handle does not have access to the service." },
+			{ Win32API.ERROR_INVALID_HANDLE, "The specified handle is invalid." },
+			{ Win32API.ERROR_INVALID_NAME, "The specified service name is invalid." },
+			{ Win32API.ERROR_SERVICE_DOES_NOT_EXIST, "The specified service does not exist." },
 		};
 		#endregion
 
@@ -84,7 +84,7 @@ namespace Utilities.Windows.Services
 
 		public ServiceControl(string machineName, AccessRights desiredAccess)
 		{
-			this.Handle = API.OpenSCManager(machineName, API.SERVICES_ACTIVE_DATABASE, desiredAccess);
+			this.Handle = Win32API.OpenSCManager(machineName, Win32API.SERVICES_ACTIVE_DATABASE, desiredAccess);
 
 			if (this.Handle == IntPtr.Zero)
 			{
@@ -118,7 +118,7 @@ namespace Utilities.Windows.Services
 
 		public static void NotifyBootConfigStatus(bool isBootAcceptable)
 		{
-			if (!API.NotifyBootConfigStatus(isBootAcceptable))
+			if (!Win32API.NotifyBootConfigStatus(isBootAcceptable))
 			{
 				throw ExceptionCreator.Create(MSGS_NTFY_BOOT_CNFG_STTS, Marshal.GetLastWin32Error());
 			}
@@ -130,7 +130,7 @@ namespace Utilities.Windows.Services
 			{
 				this.IsDisposed = true;
 
-				if (!API.CloseServiceHandle(this.Handle))
+				if (!Win32API.CloseServiceHandle(this.Handle))
 				{
 					var exception = new ServiceException(Marshal.GetLastWin32Error());
 					Trace.WriteLine(exception.ToString(), "Error");
@@ -174,7 +174,7 @@ namespace Utilities.Windows.Services
 
 		public unsafe string GetServiceDisplayName(string serviceName)
 		{
-			return GetServiceUniqueName(serviceName, API.GetServiceDisplayName);
+			return GetServiceUniqueName(serviceName, Win32API.GetServiceDisplayName);
 		}
 
 		private unsafe string GetServiceUniqueName(string inputName, GetServiceUniqueNameDelegate getServiceUniqueName)
@@ -189,7 +189,7 @@ namespace Utilities.Windows.Services
 				{
 					if (length != 0)
 					{
-						length += (uint)Marshal.SizeOf(typeof(char));
+						length += (uint)sizeof(char);
 
 						if (pOutputName == null)
 						{
@@ -203,15 +203,15 @@ namespace Utilities.Windows.Services
 
 					if (getServiceUniqueName(this.Handle, inputName, pOutputName, ref length))
 					{
-						lastError = API.ERROR_SUCCESS;
+						lastError = Win32API.ERROR_SUCCESS;
 					}
 					else
 					{
 						lastError = Marshal.GetLastWin32Error();
 					}
-				} while (lastError == API.ERROR_INSUFFICIENT_BUFFER);
+				} while (lastError == Win32API.ERROR_INSUFFICIENT_BUFFER);
 
-				if (lastError != API.ERROR_SUCCESS)
+				if (lastError != Win32API.ERROR_SUCCESS)
 				{
 					throw new ServiceException(lastError);
 				}
@@ -226,7 +226,7 @@ namespace Utilities.Windows.Services
 
 		public unsafe string GetServiceName(string displayName)
 		{
-			return GetServiceUniqueName(displayName, API.GetServiceKeyName);
+			return GetServiceUniqueName(displayName, Win32API.GetServiceKeyName);
 		}
 
 		internal IntPtr GetServiceHandle(string serviceName)
@@ -236,7 +236,7 @@ namespace Utilities.Windows.Services
 
 		internal IntPtr GetServiceHandle(string serviceName, AccessRights desiredAccess)
 		{
-			IntPtr hService = API.OpenService(this.Handle, serviceName, desiredAccess);
+			IntPtr hService = Win32API.OpenService(this.Handle, serviceName, desiredAccess);
 
 			if (hService == IntPtr.Zero)
 			{

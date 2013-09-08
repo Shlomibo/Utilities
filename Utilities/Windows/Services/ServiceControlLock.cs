@@ -17,14 +17,14 @@ namespace Utilities.Windows.Services
 
 		private static readonly Dictionary<int, string> MSGS_LOCK_ERRORS = new Dictionary<int, string>()
 		{
-			{ API.ERROR_ACCESS_DENIED, "The handle does not have the SC_MANAGER_LOCK access right." },
-			{ API.ERROR_INVALID_HANDLE, "The specified handle is not valid." },
-			{ API.ERROR_SERVICE_DATABASE_LOCKED, "The database is locked." },
+			{ Win32API.ERROR_ACCESS_DENIED, "The handle does not have the SC_MANAGER_LOCK access right." },
+			{ Win32API.ERROR_INVALID_HANDLE, "The specified handle is not valid." },
+			{ Win32API.ERROR_SERVICE_DATABASE_LOCKED, "The database is locked." },
 		};
 
 		private static readonly Dictionary<int, string> MSGS_UNLOCK_ERRORS = new Dictionary<int, string>()
 		{
-			{ API.ERROR_INVALID_SERVICE_LOCK, "The specified lock is invalid." },
+			{ Win32API.ERROR_INVALID_SERVICE_LOCK, "The specified lock is invalid." },
 		};
 		#endregion
 
@@ -42,7 +42,7 @@ namespace Utilities.Windows.Services
 
 		public ServiceControlLock(ServiceControl scm)
 		{
-			this.scLock = API.LockServiceDatabase(scm.Handle);
+			this.scLock = Win32API.LockServiceDatabase(scm.Handle);
 
 			if (this.scLock == IntPtr.Zero)
 			{
@@ -64,28 +64,28 @@ namespace Utilities.Windows.Services
 
 			try
 			{
-				int allocated = Marshal.SizeOf(typeof(QueryServiceLockStatus));
+				int allocated = sizeof(QueryServiceLockStatus);
 				pQSLS = (QueryServiceLockStatus*)Marshal.AllocHGlobal(allocated);
 				uint needed = 0;
 				int lastError;
 
 				do
 				{
-					if (API.QueryServiceLockStatus(scm.Handle, pQSLS, (uint)allocated, out needed))
+					if (Win32API.QueryServiceLockStatus(scm.Handle, pQSLS, (uint)allocated, out needed))
 					{
-						lastError = API.ERROR_SUCCESS;
+						lastError = Win32API.ERROR_SUCCESS;
 					}
 					else
 					{
 						lastError = Marshal.GetLastWin32Error();
 					}
 
-					if (lastError == API.ERROR_INSUFFICIENT_BUFFER)
+					if (lastError == Win32API.ERROR_INSUFFICIENT_BUFFER)
 					{
 						allocated = (int)needed;
 						pQSLS = (QueryServiceLockStatus*)Marshal.ReAllocHGlobal((IntPtr)pQSLS, (IntPtr)allocated);
 					}
-				} while (lastError == API.ERROR_INSUFFICIENT_BUFFER);
+				} while (lastError == Win32API.ERROR_INSUFFICIENT_BUFFER);
 
 				return new ServiceLockStatus(*pQSLS);
 			}
@@ -112,7 +112,7 @@ namespace Utilities.Windows.Services
 			{
 				this.IsUnlocked = true;
 
-				if (!API.UnlockServiceDatabase(this.scLock) && disposing)
+				if (!Win32API.UnlockServiceDatabase(this.scLock) && disposing)
 				{
 					throw ExceptionCreator.Create(MSGS_UNLOCK_ERRORS, Marshal.GetLastWin32Error());
 				} 

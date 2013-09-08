@@ -379,7 +379,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// If this value is 0, but lpsaActions is not NULL, the reset period and array of failure actions are deleted.
 		/// </summary>
-		public int actionsCount;
+		public uint actionsCount;
 		/// <summary>
 		/// A pointer to an array of SCAction structures.
 		/// 
@@ -406,6 +406,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// This setting is ignored unless the service has configured failure actions.
 		/// </summary>
+		[MarshalAs(UnmanagedType.Bool)]
 		public bool failureActionsOnNonCrashFailures;
 	}
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Utilities.Windows.Services.Interop
 {
-	internal static  unsafe class API
+	internal static  unsafe class Win32API
 	{
 		public const uint SERVICE_CONTROL_STATUS_REASON_INFO = 1;
 		public const uint SC_ENUM_PROCESS_INFO = 0;
@@ -339,10 +339,10 @@ namespace Utilities.Windows.Services.Interop
 		/// If the function fails, the return value is zero. To get extended error information, call GetLastError.
 		/// </returns>
 		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "ChangeServiceConfig2")]
-		public static extern bool ChangeServiceOptionalConfig(
+		public static unsafe extern bool ChangeServiceOptionalConfig(
 			IntPtr hService,
 			Config config,
-			IntPtr info);
+			void* info);
 
 		/// <summary>
 		/// Closes a handle to a service control manager or service object.
@@ -1083,10 +1083,10 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_ACCESS_DENIED, ERROR_INSUFFICIENT_BUFFER, ERROR_INVALID_HANDLE
 		/// </returns>
 		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "QueryServiceConfig2")]
-		public static extern bool QueryServiceOptionalConfig(
+		public static unsafe extern bool QueryServiceOptionalConfig(
 			IntPtr hService,
 			Config configuration,
-			IntPtr buffer,
+			void* buffer,
 			uint bufferSize,
 			out uint bytesNeeded);
 
