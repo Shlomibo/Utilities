@@ -1272,4 +1272,9 @@ namespace Utilities.Windows.Services.Interop
 		[DllImport("Advapi32.dll", SetLastError = true)]
 		public static extern bool UnlockServiceDatabase(IntPtr scLock);
 	}
+
+	#region Delegates
+
+	internal unsafe delegate void CallbackDelegate(ServiceNotify* sn);
+	#endregion
 }

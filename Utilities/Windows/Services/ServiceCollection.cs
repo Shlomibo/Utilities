@@ -9,39 +9,21 @@ using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
-	partial class ServiceControl
+	partial class ServiceControlManager
 	{
-		public class ServiceCollection : ICollection<ServiceInfo>
+		/// <summary>
+		/// A collection of statuses of the services in a service control manager database.
+		/// </summary>
+		public class ServiceCollection : ServiceCollectionBase
 		{
-			#region Consts
-
-			private const int NO_ERROR = 0;
-
-			public const string ALL_GROUPS = Win32API.ALL_GROUPS;
-			public const string NOT_IN_GROUP = Win32API.NOT_GROUPED;
-			#endregion
-
 			#region Fields
 
-			private ServiceControl scm;
-			#endregion
-
-			#region Properties
-
-			public int Count
-			{
-				get { return this.Count(); }
-			}
-
-			bool ICollection<ServiceInfo>.IsReadOnly
-			{
-				get { return true; }
-			}
+			private ServiceControlManager scm;
 			#endregion
 
 			#region Ctor
 
-			internal ServiceCollection(ServiceControl scm)
+			internal ServiceCollection(ServiceControlManager scm)
 			{
 				this.scm = scm;
 			}
@@ -49,39 +31,26 @@ namespace Utilities.Windows.Services
 
 			#region Methods
 
-			void ICollection<ServiceInfo>.Add(ServiceInfo item)
+			/// <summary>
+			/// Throws an exception if the collection is disposed.
+			/// </summary>
+			protected override void ThrowIfDisposed()
 			{
-				throw new NotSupportedException();
+				this.scm.ThrowIfDisposed();
 			}
 
-			void ICollection<ServiceInfo>.Clear()
-			{
-				throw new NotSupportedException();
-			}
-
-			public bool Contains(ServiceInfo service)
-			{
-				return service.Scm.Handle == scm.Handle;
-			}
-
-			public void CopyTo(ServiceInfo[] array, int arrayIndex)
-			{
-				foreach (ServiceInfo service in this)
-				{
-					array[arrayIndex++] = service;
-				}
-			}
-
-			bool ICollection<ServiceInfo>.Remove(ServiceInfo item)
-			{
-				throw new NotSupportedException();
-			}
-
-			public IEnumerator<ServiceInfo> GetEnumerator()
-			{
-				return QueryServicesInumerator(ServiceType.All, StateQuery.All, ALL_GROUPS).GetEnumerator();
-			}
-
+			/// <summary>
+			/// Queries for services of specific types, states, or under specific groups
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupName">
+			/// The load-order group name. 
+			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
+			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
+			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
 			public IEnumerable<ServiceInfo> QueryServices(
 				ServiceType type,
 				StateQuery state,
@@ -90,27 +59,33 @@ namespace Utilities.Windows.Services
 				return QueryServicesInumerator(type, state, groupName);
 			}
 
-			private unsafe IEnumerable<ServiceInfo> QueryServicesInumerator(
+			/// <summary>
+			/// Queries for services of specific types, states, or under specific groups
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupName">
+			/// The load-order group name. 
+			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
+			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
+			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			protected override unsafe IEnumerable<ServiceInfo> QueryServicesInumerator(
 				ServiceType type,
 				StateQuery state,
 				string groupName)
 			{
+				ThrowIfDisposed();
 				return new Enumerator(this, type, state, groupName);
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
 			}
 			#endregion
 
 			#region Enumerator
-
-			private unsafe class Enumerator : IEnumerator<ServiceInfo>, IEnumerable<ServiceInfo>
+			
+			private new unsafe class Enumerator : ServiceCollectionBase.Enumerator
 			{
 				#region Consts
-
-				private const int RESETED = -1;
 
 				private static readonly Dictionary<int, string> MSGS_ENUM_ERRORS = new Dictionary<int, string>()
 				{
@@ -124,29 +99,23 @@ namespace Utilities.Windows.Services
 
 				#region Fields
 
-				private ServiceType type;
-				private StateQuery state;
-				private string groupName;
-				private int lastError = NO_ERROR;
-				private EnumServiceStatusProcess* pESSP = null;
-				private uint allocated = 0;
-				private uint needed = 0;
-				private uint returned = 0;
+
 				private uint resumeHandle = 0;
 				private ServiceCollection collection;
-				private int index;
+				private ServiceType type;
+				private string groupName;
+				private EnumServiceStatusProcess* pESSP = null;
 				#endregion
 
 				#region Properties
 
-				public ServiceInfo Current
+				public override ServiceInfo Current
 				{
-					get { return new ServiceInfo(this.collection.scm, this.pESSP[this.index]); }
-				}
-
-				object IEnumerator.Current
-				{
-					get { return this.Current; }
+					get
+					{
+						ThrowIfDisposed();
+						return new ServiceInfo(this.collection.scm, this.pESSP[this.index]);
+					}
 				}
 				#endregion
 
@@ -157,6 +126,7 @@ namespace Utilities.Windows.Services
 					ServiceType type,
 					StateQuery state,
 					string groupName)
+					: base()
 				{
 					this.collection = collection;
 					this.type = type;
@@ -205,50 +175,20 @@ namespace Utilities.Windows.Services
 					{
 						throw ExceptionCreator.Create(MSGS_ENUM_ERRORS, lastError);
 					}
-
-					Reset();
-				}
-
-				~Enumerator()
-				{
-					Dispose(false);
 				}
 				#endregion
 
 				#region Methods
 
-				public void Dispose()
+				protected override void ThrowIfDisposed()
 				{
-					Dispose(true);
-					GC.SuppressFinalize(this);
+					this.collection.scm.ThrowIfDisposed();
 				}
 
-				protected virtual void Dispose(bool disposing)
+				protected override void Dispose(bool disposing)
 				{
 					Marshal.FreeHGlobal((IntPtr)pESSP);
 					this.pESSP = null;
-				}
-
-				public bool MoveNext()
-				{
-					this.index++;
-
-					return this.index < this.returned;
-				}
-
-				public void Reset()
-				{
-					this.index = RESETED;
-				}
-
-				public IEnumerator<ServiceInfo> GetEnumerator()
-				{
-					return this;
-				}
-
-				IEnumerator IEnumerable.GetEnumerator()
-				{
-					return GetEnumerator();
 				}
 				#endregion
 			}

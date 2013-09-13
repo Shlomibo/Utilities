@@ -14,5 +14,8 @@ namespace Utilities.Windows.Interop
 
 		[DllImport("user32.dll", SetLastError = true)]
 		public static extern IntPtr SendMessage(IntPtr wHnd, uint message, UIntPtr wParam, IntPtr lParam);
+
+		[DllImport("Kernel32.dll")]
+		public static extern uint SleepEx(uint sleepMilliseconds, bool isAlertable);
 	}
 }

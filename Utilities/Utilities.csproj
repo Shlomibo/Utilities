@@ -161,9 +161,12 @@
     <Compile Include="Windows\Interop\MultiString.cs" />
     <Compile Include="Windows\Interop\Security.cs" />
     <Compile Include="Windows\Interop\Windows.cs" />
+    <Compile Include="Windows\Services\ServiceEvents.cs" />
+    <Compile Include="Windows\Services\DependentServicesCollection.cs" />
     <Compile Include="Windows\Services\ExceptionCreator.cs" />
     <Compile Include="Windows\Services\ServiceCollection.cs" />
-    <Compile Include="Windows\Services\ServiceControl.cs" />
+    <Compile Include="Windows\Services\ServiceCollectionBase.cs" />
+    <Compile Include="Windows\Services\ServiceControlManager.cs" />
     <Compile Include="Windows\Services\ServiceControlLock.cs" />
     <Compile Include="Windows\Services\ServiceException.cs" />
     <Compile Include="Windows\Services\ServiceFailureActions.cs" />
@@ -174,7 +177,11 @@
     <Compile Include="Windows\Services\Service.cs" />
     <Compile Include="Windows\Services\ServiceInfo.cs" />
     <Compile Include="Windows\Services\ServiceLockStatus.cs" />
-    <Compile Include="Windows\Services\Structures.cs" />
+    <Compile Include="Windows\Services\ServicePrivileges.cs" />
+    <Compile Include="Windows\Services\ServiceStatus.cs" />
+    <Compile Include="Windows\Services\Service_ErrorMessages.cs" />
+    <Compile Include="Windows\Services\Service_Methods.cs" />
+    <Compile Include="Windows\Services\Service_Properties.cs" />
     <Compile Include="Windows\Services\Trigger.cs" />
     <Compile Include="Windows\Services\TriggerData.cs" />
   </ItemGroup>

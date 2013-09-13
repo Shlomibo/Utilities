@@ -8,6 +8,9 @@ using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
+	/// <summary>
+	/// A lock on SCM database.
+	/// </summary>
 	[Obsolete("This functionality has no effect as of Windows Vista.")]
 	public class ServiceControlLock : IDisposable
 	{
@@ -35,12 +38,19 @@ namespace Utilities.Windows.Services
 
 		#region Properties
 
+		/// <summary>
+		/// Gets value that indicates if the lock have been released.
+		/// </summary>
 		public bool IsUnlocked { get; private set; }
 		#endregion
 
 		#region Ctor
 
-		public ServiceControlLock(ServiceControl scm)
+		/// <summary>
+		/// Aquires a lock on the given SCM database.
+		/// </summary>
+		/// <param name="scm">The SCM database to lock.</param>
+		public ServiceControlLock(ServiceControlManager scm)
 		{
 			this.scLock = Win32API.LockServiceDatabase(scm.Handle);
 
@@ -50,6 +60,9 @@ namespace Utilities.Windows.Services
 			}
 		}
 
+		/// <summary>
+		/// Releases the lock.
+		/// </summary>
 		~ServiceControlLock()
 		{
 			Dispose(false);
@@ -58,7 +71,12 @@ namespace Utilities.Windows.Services
 
 		#region Methods
 
-		public static unsafe ServiceLockStatus QueryLockStatus(ServiceControl scm)
+		/// <summary>
+		/// Checks the lock status on the given SCM database.
+		/// </summary>
+		/// <param name="scm">The SCM database to check.</param>
+		/// <returns>A ServiceLockStatus that contains data about the lock status of the given database.</returns>
+		public static unsafe ServiceLockStatus QueryLockStatus(ServiceControlManager scm)
 		{
 			QueryServiceLockStatus* pQSLS = null;
 
@@ -87,7 +105,7 @@ namespace Utilities.Windows.Services
 					}
 				} while (lastError == Win32API.ERROR_INSUFFICIENT_BUFFER);
 
-				return new ServiceLockStatus(*pQSLS);
+				return new ServiceLockStatus(ref *pQSLS);
 			}
 			finally
 			{
@@ -100,12 +118,19 @@ namespace Utilities.Windows.Services
 			Unlock();
 		}
 
+		/// <summary>
+		/// Release the lock, and free resources aquired by the lock.
+		/// </summary>
 		public void Unlock()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
 
+		/// <summary>
+		/// Release resources
+		/// </summary>
+		/// <param name="disposing">Value indicates if the object was disposed correctly.</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!this.IsUnlocked)

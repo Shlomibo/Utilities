@@ -10,6 +10,12 @@ using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
+	/// <summary>
+	/// Represents the action the service controller should take on each failure of a service. 
+	/// </summary>
+	/// <remarks>
+	/// A service is considered failed when it terminates without reporting a status of Stopped to the service controller.
+	/// </remarks>
 	public class FailureActions
 	{
 		#region Fields
@@ -24,6 +30,10 @@ namespace Utilities.Windows.Services
 
 		#region Properties
 
+		/// <summary>
+		/// Gets or sets the time after which to reset the failure count to zero if there are no failures, in seconds. 
+		/// Specify INFINITE to indicate that this value should never be reset.
+		/// </summary>
 		public int ResetPeriod
 		{
 			get
@@ -40,6 +50,10 @@ namespace Utilities.Windows.Services
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the message to be broadcast to server users before rebooting in response to 
+		/// the Reboot service controller action.
+		/// </summary>
 		public string RebootMessage
 		{
 			get
@@ -51,11 +65,18 @@ namespace Utilities.Windows.Services
 			{
 				this.service.ThrowIfDisposed();
 
+				value = value ?? "";
+
 				SetFailureActions(rebootMessage: value);
 				this.rebootMessage = new Lazy<string>(() => value);
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets tThe command line of the process for the CreateProcess function 
+		/// to execute in response to the RunCommand service controller action. 
+		/// This process runs under the same account as the service.
+		/// </summary>
 		public string Comamnd
 		{
 			get
@@ -67,11 +88,16 @@ namespace Utilities.Windows.Services
 			{
 				this.service.ThrowIfDisposed();
 
+				value = value ?? "";
+
 				SetFailureActions(command: value);
 				this.command = new Lazy<string>(() => value);
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a collection of ServiceControlAction structures.
+		/// </summary>
 		public ReadOnlyCollection<ServiceControlAction> Actions
 		{
 			get
@@ -83,10 +109,21 @@ namespace Utilities.Windows.Services
 			{
 				this.service.ThrowIfDisposed();
 
+				value = value ?? Array.AsReadOnly(new ServiceControlAction[0]);
+
 				SetFailureActions(actions: value);
 				this.actions = new Lazy<ReadOnlyCollection<ServiceControlAction>>(() => value);
 			}
 		}
+
+		/// <summary>
+		/// Gets or set value indicates if failure actions are queued if the service process terminates without 
+		/// reporting a status of Stopped or if it enters the Stopped state but the win32ExitCode member of 
+		/// the ServiceStatus class is not ERROR_SUCCESS (0).
+		/// 
+		/// If this member is false and the service has configured failure actions, 
+		/// the failure actions are queued only if the service terminates without reporting a status of Stopped.
+		/// </summary>
 		public bool IsFailOnNonCrash
 		{
 			get
@@ -115,11 +152,6 @@ namespace Utilities.Windows.Services
 				}
 			}
 		}
-		#endregion
-
-		#region Events
-
-		public event EventHandler Changed = (s, e) => { };
 		#endregion
 
 		#region Ctor
@@ -270,16 +302,31 @@ namespace Utilities.Windows.Services
 		#endregion
 	}
 
+	/// <summary>
+	/// Represents an action that the service control manager can perform.
+	/// </summary>
 	public class ServiceControlAction
 	{
 		#region Propeties
-
+		
+		/// <summary>
+		/// Gets the action to be performed.
+		/// </summary>
 		public ServiceControlActionType Action { get; private set; }
+
+		/// <summary>
+		/// Gets the time to wait before performing the specified action, in milliseconds.
+		/// </summary>
 		public int Delay { get; private set; }
 		#endregion
 
 		#region Ctor
 
+		/// <summary>
+		/// Creates new ServiceControlAction instance
+		/// </summary>
+		/// <param name="action">The action to be performed.</param>
+		/// <param name="delay">The time to wait before performing the specified action, in milliseconds.</param>
 		public ServiceControlAction(ServiceControlActionType action, int delay)
 		{
 			this.Action = action;

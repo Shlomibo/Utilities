@@ -8,16 +8,33 @@ using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
+	/// <summary>
+	/// Contains trigger-specific data for a service trigger event. 
+	/// </summary>
 	public abstract class TriggerData
 	{
 		#region Properties
 
+		/// <summary>
+		/// Gets the data type of the trigger-specific data.
+		/// </summary>
 		public DataItemType DataType { get; protected set; }
+
+		/// <summary>
+		/// Gets the trigger-specific data for the service trigger event.
+		/// The trigger-specific data depends on the trigger event type
+		/// </summary>
 		public abstract object Data { get; } 
 		#endregion
 
 		#region Methods
 
+		/// <summary>
+		/// Creates new TriggerData object
+		/// </summary>
+		/// <param name="data">The data for the TriggerData object</param>
+		/// <returns>A new TriggerData object that contains the specified data</returns>
+		/// <exception cref="ArgumentException">The data was in an incompatible format</exception>
 		public static TriggerData Create(object data)
 		{
 			if (data is string)
@@ -81,12 +98,21 @@ namespace Utilities.Windows.Services
 		#endregion
 	}
 
+	/// <summary>
+	/// Contains trigger-specific string data for a service trigger event.
+	/// </summary>
 	public class TriggerStringData : TriggerData
 	{
 		#region Properties
 
+		/// <summary>
+		/// Gets the string data for a service trigger event.
+		/// </summary>
 		public string StringData { get; private set; }
 
+		/// <summary>
+		/// Gets the trigger-specific data for the service trigger event.
+		/// </summary>
 		public override object Data
 		{
 			get { return this.StringData; }
@@ -95,6 +121,10 @@ namespace Utilities.Windows.Services
 
 		#region Ctor
 
+		/// <summary>
+		/// Creates new TriggerData that contains string data.
+		/// </summary>
+		/// <param name="data">The string data for a service trigger event.</param>
 		public TriggerStringData(string data)
 		{
 			this.DataType = DataItemType.String;
@@ -113,11 +143,21 @@ namespace Utilities.Windows.Services
 		#endregion
 	}
 
+	/// <summary>
+	/// Contains trigger-specific binary data for a service trigger event.
+	/// </summary>
 	public class TriggerBinaryData : TriggerData
 	{
 		#region Properties
 
+		/// <summary>
+		/// Gets the binary data for a service trigger event.
+		/// </summary>
 		public byte[] BinaryData { get; private set; }
+
+		/// <summary>
+		/// Gets the trigger-specific data for the service trigger event.
+		/// </summary>
 		public override object Data
 		{
 			get { return this.BinaryData; }
@@ -126,6 +166,10 @@ namespace Utilities.Windows.Services
 
 		#region Ctor
 
+		/// <summary>
+		/// Creates new TriggerData that contains binary data.
+		/// </summary>
+		/// <param name="data">The binary data for a service trigger event.</param>
 		public TriggerBinaryData(byte[] data)
 		{
 			this.DataType = DataItemType.Binary;
