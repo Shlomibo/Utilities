@@ -145,7 +145,11 @@ namespace Utilities.Windows.Services
 						Config.FailureActionsFlag,
 						&sfaf))
 					{
-						throw new ServiceException(Marshal.GetLastWin32Error());
+						int lastError = Marshal.GetLastWin32Error();
+						throw FeatureNotSupportedException.GetUnsupportedForCodes(
+							new ServiceException(lastError),
+							lastError,
+							Win32API.ERROR_INVALID_LEVEL);
 					}
 
 					this.isFailOnNonCrash = new Lazy<bool>(() => value);
@@ -182,7 +186,11 @@ namespace Utilities.Windows.Services
 				(uint)sizeof(ServiceFailureActionsFlag),
 				out stab))
 			{
-				throw new ServiceException(Marshal.GetLastWin32Error());
+				int lastError = Marshal.GetLastWin32Error();
+				throw FeatureNotSupportedException.GetUnsupportedForCodes(
+					new ServiceException(lastError),
+					lastError,
+					Win32API.ERROR_INVALID_LEVEL);
 			}
 
 			return sfaf.failureActionsOnNonCrashFailures;

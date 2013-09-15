@@ -163,7 +163,7 @@ namespace Utilities.Windows.Services
 
 			if (this.Handle == IntPtr.Zero)
 			{
-				throw ExceptionCreator.Create(MSGS_CTOR, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_CTOR, Marshal.GetLastWin32Error());
 			}
 
 			if (string.IsNullOrEmpty(machineName))
@@ -211,7 +211,8 @@ namespace Utilities.Windows.Services
 			{
 				this.events = new ServiceEvents(
 					this.Handle,
-					Notification.MSCNotification);
+					Notification.MSCNotification,
+					false);
 
 				this.events.ServiceNotification += Events_ServiceNotification;
 			}
@@ -275,7 +276,7 @@ namespace Utilities.Windows.Services
 		{
 			if (!Win32API.NotifyBootConfigStatus(isBootAcceptable))
 			{
-				throw ExceptionCreator.Create(MSGS_NTFY_BOOT_CNFG_STTS, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_NTFY_BOOT_CNFG_STTS, Marshal.GetLastWin32Error());
 			}
 		}
 
@@ -530,7 +531,7 @@ namespace Utilities.Windows.Services
 
 			if (hService == IntPtr.Zero)
 			{
-				throw ExceptionCreator.Create(MSGS_OPEN_SVC, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_OPEN_SVC, Marshal.GetLastWin32Error());
 			}
 
 			return hService;

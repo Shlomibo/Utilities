@@ -35,7 +35,11 @@ namespace Utilities.Windows.Services
 		/// <summary>Query for all drivers services</summary>
 		DriverService = KernelDriver | FileSystemDriver | Driver,
 		/// <summary>Query for win32 interactive services</summary>
-		Interactice = Win32 | InteractiveProcess
+		Interactice = Win32 | InteractiveProcess,
+		/// <summary>Interactive own process service</summary>
+		InteractiveOwnProcess = InteractiveProcess | OwnProcess,
+		/// <summary>Interactive shared process service</summary>
+		InteractiveSharedProcess = InteractiveProcess | ShareProcess,
 	}
 
 	/// <summary>

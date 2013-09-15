@@ -315,7 +315,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// This setting is ignored unless the service is an auto-start service.
 		/// </summary>
-		public bool isAutoStartDelayed;
+		public int isAutoStartDelayed;
 	}
 
 	/// <summary>
@@ -703,12 +703,12 @@ namespace Utilities.Windows.Services.Interop
 	/// <summary>
 	/// Represents the preferred node on which to run a service.
 	/// </summary>
-	[StructLayout(LayoutKind.Sequential)]
 	internal struct ServicePreferedNodeInfo
 	{
 		/// <summary>The node number of the preferred node.</summary>
 		public ushort preferedNode;
 		/// <summary>If this member is TRUE, the preferred node setting is deleted.</summary>
+		[MarshalAs(UnmanagedType.I1)]
 		public bool isDeleted;
 	}
 

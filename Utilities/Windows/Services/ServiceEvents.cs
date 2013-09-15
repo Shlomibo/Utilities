@@ -33,6 +33,9 @@ namespace Utilities.Windows.Services
 		private object syncRoot = new object();
 		private EventHandler<ServiceNotificationEventArgs> eventHandler = (s, e) => { };
 		private bool isDisposed = false;
+		private CallbackDelegate callback;
+		private bool isService;
+		private Notification lastEvent;
 		#endregion
 
 		#region Events
@@ -57,12 +60,15 @@ namespace Utilities.Windows.Services
 
 		#region Ctor
 
-		public ServiceEvents(IntPtr handle, Notification registerFor)
+		public ServiceEvents(IntPtr handle, Notification registerFor, bool isService)
 		{
+			this.callback = new CallbackDelegate(EventCallback);
 			this.serviceHandle = handle;
 			this.registerFor = registerFor;
 			this.eventScheduler = TaskScheduler.FromCurrentSynchronizationContext();
 			this.waitHandle = new ManualResetEvent(false);
+			this.isService = isService;
+			this.lastEvent = Notification.None;
 		}
 
 		~ServiceEvents()
@@ -110,16 +116,23 @@ namespace Utilities.Windows.Services
 					this.pSN = (ServiceNotify*)Marshal.AllocHGlobal(sizeof(ServiceNotify)); 
 				}
 
+				Notification registerFor = this.registerFor;
+
+				if (this.isService)
+				{
+					registerFor &= ~this.lastEvent;
+				}
+
 				(*this.pSN) = new ServiceNotify
 				{
 					version = ServiceNotify.SERVICE_NOTIFY_STATUS_CHANGE,
-					notifyCallback = Marshal.GetFunctionPointerForDelegate(new CallbackDelegate(EventCallback)),
+					notifyCallback = Marshal.GetFunctionPointerForDelegate(this.callback),
 					context = IntPtr.Zero,
 				};
 
 				int result = (int)Win32API.NotifyServiceStatusChange(
 					this.serviceHandle,
-					Notification.Created | Notification.Deleted,
+					registerFor,
 					this.pSN);
 
 				if (result != Win32API.ERROR_SUCCESS)
@@ -128,17 +141,11 @@ namespace Utilities.Windows.Services
 					{
 						Marshal.FreeHGlobal((IntPtr)this.pSN);
 						this.pSN = null;
-						throw ExceptionCreator.Create(MSGS_NTFY_STTS_CHNG, result); 
+						throw ServiceException.Create(MSGS_NTFY_STTS_CHNG, result); 
 					}
 				}
 
 				this.waitHandle.WaitOne();
-
-//#if WIN32WAIT
-//					Windows.Interop.Windows.SleepEx(unchecked((uint)Timeout.Infinite), true);
-//#elif TEST
-//					Thread.CurrentThread.Join(Thread.CurrentThread);
-//#endif
 			});
 		}
 
@@ -146,6 +153,7 @@ namespace Utilities.Windows.Services
 		{
 			try
 			{
+				this.lastEvent = pSN->notificationTriggered;
 				Task.Factory.StartNew(
 					param => FireEvent((EventData)param),
 					new EventData
@@ -158,7 +166,7 @@ namespace Utilities.Windows.Services
 					TaskCreationOptions.None,
 					this.eventScheduler);
 			}
-			finally
+			finally 
 			{
 				lock (this.syncRoot)
 				{

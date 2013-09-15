@@ -56,7 +56,7 @@ namespace Utilities.Windows.Services
 
 			if (this.scLock == IntPtr.Zero)
 			{
-				throw ExceptionCreator.Create(MSGS_LOCK_ERRORS, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_LOCK_ERRORS, Marshal.GetLastWin32Error());
 			}
 		}
 
@@ -139,7 +139,7 @@ namespace Utilities.Windows.Services
 
 				if (!Win32API.UnlockServiceDatabase(this.scLock) && disposing)
 				{
-					throw ExceptionCreator.Create(MSGS_UNLOCK_ERRORS, Marshal.GetLastWin32Error());
+					throw ServiceException.Create(MSGS_UNLOCK_ERRORS, Marshal.GetLastWin32Error());
 				} 
 			}
 		} 

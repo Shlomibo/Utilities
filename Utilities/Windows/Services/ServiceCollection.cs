@@ -173,7 +173,7 @@ namespace Utilities.Windows.Services
 
 					if (lastError != NO_ERROR)
 					{
-						throw ExceptionCreator.Create(MSGS_ENUM_ERRORS, lastError);
+						throw ServiceException.Create(MSGS_ENUM_ERRORS, lastError);
 					}
 				}
 				#endregion

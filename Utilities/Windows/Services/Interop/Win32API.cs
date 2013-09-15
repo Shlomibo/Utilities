@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Utilities.Windows.Services.Interop
 {
-	internal static  unsafe class Win32API
+	internal static unsafe class Win32API
 	{
 		public const uint SERVICE_CONTROL_STATUS_REASON_INFO = 1;
 		public const uint SC_ENUM_PROCESS_INFO = 0;
@@ -86,7 +86,11 @@ namespace Utilities.Windows.Services.Interop
 		/// The service entry was specified incorrectly when the process called 
 		/// the StartServiceCtrlDispatcher function.
 		/// </returns>
-		[DllImport("Advapi32.dll", EntryPoint = "RegisterServiceCtrlHandler", SetLastError = true)]
+		[DllImport(
+			"Advapi32.dll",
+			EntryPoint = "RegisterServiceCtrlHandler",
+			SetLastError = true,
+			CharSet = CharSet.Unicode)]
 		public static extern IntPtr RegisterServiceControlHandler(string serviceName, IntPtr handlerFunction);
 
 		/// <summary>
@@ -118,7 +122,11 @@ namespace Utilities.Windows.Services.Interop
 		/// The service entry was specified incorrectly when the process called 
 		/// the StartServiceCtrlDispatcher function.
 		/// </returns>
-		[DllImport("Advapi32.dll", EntryPoint = "RegisterServiceCtrlHandlerEx", SetLastError = true)]
+		[DllImport(
+			"Advapi32.dll",
+			EntryPoint = "RegisterServiceCtrlHandlerEx",
+			SetLastError = true,
+			CharSet = CharSet.Unicode)]
 		public static extern IntPtr RegisterServiceControlHandler(
 			string serviceName,
 			IntPtr handlerFunction,
@@ -149,7 +157,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// If the function fails, the return value is zero. To get extended error information, call GetLastError.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool SetServiceBits(
 			IntPtr hServiceStatus,
 			uint bits,
@@ -180,7 +188,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_INVALID_HANDLE:
 		/// The specified handle is invalid.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool SetServiceStatus(IntPtr hServiceStatus, ServiceStatus* pStatus);
 
 		/// <summary>
@@ -303,7 +311,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_ACCESS_DENIED, ERROR_CIRCULAR_DEPENDENCY, ERROR_DUPLICATE_SERVICE_NAME,ERROR_INVALID_HANDLE,
 		/// ERROR_INVALID_PARAMETER, ERROR_INVALID_SERVICE_ACCOUNT, ERROR_SERVICE_MARKED_FOR_DELETE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool ChangeServiceConfig(
 			IntPtr hService,
 			ServiceType type,
@@ -338,7 +346,11 @@ namespace Utilities.Windows.Services.Interop
 		/// If the function succeeds, the return value is nonzero.
 		/// If the function fails, the return value is zero. To get extended error information, call GetLastError.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "ChangeServiceConfig2")]
+		[DllImport(
+			"Advapi32.dll",
+			SetLastError = true,
+			EntryPoint = "ChangeServiceConfig2",
+			CharSet = CharSet.Unicode)]
 		public static unsafe extern bool ChangeServiceOptionalConfig(
 			IntPtr hService,
 			Config config,
@@ -361,7 +373,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes can be set by registry functions that are called by the service control manager.
 		/// ERROR_INVALID_HANDLE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool CloseServiceHandle(IntPtr hSCObject);
 
 		/// <summary>
@@ -384,10 +396,10 @@ namespace Utilities.Windows.Services.Interop
 		/// or ERROR_SERVICE_NOT_ACTIVE. Otherwise, the structure is not filled in.
 		/// </param>
 		/// <returns></returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool ControlService(
-			IntPtr hService, 
-			ServiceControlCode control, 
+			IntPtr hService,
+			ServiceControlCode control,
 			out ServiceStatus status);
 
 		/// <summary>
@@ -415,7 +427,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_INVALID_SERVICE_CONTROL, ERROR_INVALID_PARAMETER, ERROR_INVALID_HANDLE, ERROR_SERVICE_NOT_ACTIVE,
 		/// ERROR_SERVICE_REQUEST_TIMEOUT, ERROR_SHUTDOWN_IN_PROGRESS.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "ControlServiceEx")]
+		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "ControlServiceEx", CharSet = CharSet.Unicode)]
 		public static unsafe extern bool ControlService(
 			IntPtr hService,
 			uint control,
@@ -538,7 +550,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_INVALID_NAME, ERROR_INVALID_PARAMETER, ERROR_INVALID_SERVICE_ACCOUNT, ERROR_SERVICE_EXISTS,
 		/// ERROR_SERVICE_MARKED_FOR_DELETE.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern IntPtr CreateService(
 			IntPtr hSCManager,
 			string serviceName,
@@ -570,7 +582,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Others may be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE, ERROR_SERVICE_MARKED_FOR_DELETE.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool DeleteService(IntPtr hService);
 
 		/// <summary>
@@ -618,7 +630,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes may be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE, ERROR_INVALID_PARAMETER, ERROR_MORE_DATA.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool EnumDependentServices(
 			IntPtr hService,
 			StateQuery state,
@@ -674,7 +686,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE, ERROR_INVALID_PARAMETER, ERROR_MORE_DATA
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool EnumServicesStatus(
 			IntPtr hSCManager,
 			ServiceType type,
@@ -745,7 +757,11 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_ACCESS_DENIED, ERROR_MORE_DATA, ERROR_INVALID_PARAMETER, ERROR_INVALID_HANDLE,
 		/// ERROR_INVALID_LEVEL, ERROR_SHUTDOWN_IN_PROGRESS
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "EnumServicesStatusEx")]
+		[DllImport(
+			"Advapi32.dll",
+			SetLastError = true,
+			EntryPoint = "EnumServicesStatusEx",
+			CharSet = CharSet.Unicode)]
 		public static unsafe extern bool EnumServicesStatus(
 			IntPtr hSCManager,
 			uint infoLevel,
@@ -797,7 +813,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// If the function fails, the return value is zero. To get extended error information, call GetLastError.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool GetServiceDisplayName(
 			IntPtr hSCManager,
 			string serviceName,
@@ -837,7 +853,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// If the function fails, the return value is zero. To get extended error information, call GetLastError.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool GetServiceKeyName(
 			IntPtr hSCManager,
 			string displayName,
@@ -863,7 +879,7 @@ namespace Utilities.Windows.Services.Interop
 		/// </returns>
 		[Obsolete("As of Windows Vista, this function is provided for application " +
 			"compatibility and has no effect on the database.")]
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr LockServiceDatabase(IntPtr hSCMananger);
 
 		/// <summary>
@@ -888,7 +904,7 @@ namespace Utilities.Windows.Services.Interop
 		/// the service control manager to set parameters in the configuration registry:
 		/// ERROR_ACCESS_DENIED
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool NotifyBootConfigStatus(bool isBootAcceptable);
 
 		/// <summary>
@@ -926,7 +942,7 @@ namespace Utilities.Windows.Services.Interop
 		/// 
 		/// If the function fails, the return value is one of the system error codes.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern uint NotifyServiceStatusChange(
 			IntPtr hService,
 			Notification notifyMask,
@@ -965,7 +981,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes can be set by the registry functions that are called by the SCM:
 		/// ERROR_ACCESS_DENIED, ERROR_DATABASE_DOES_NOT_EXIST
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr OpenSCManager(
 			string machineName,
 			string databaseName,
@@ -1004,7 +1020,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Others can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE, ERROR_INVALID_NAME, ERROR_SERVICE_DOES_NOT_EXIST.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern IntPtr OpenService(
 			IntPtr hSCManager,
 			string serviceName,
@@ -1043,7 +1059,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Others can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INSUFFICIENT_BUFFER, ERROR_INVALID_HANDLE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool QueryServiceConfig(
 			IntPtr hService,
 			QueryServiceConfig* serviceConfig,
@@ -1082,7 +1098,11 @@ namespace Utilities.Windows.Services.Interop
 		/// Others can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INSUFFICIENT_BUFFER, ERROR_INVALID_HANDLE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "QueryServiceConfig2")]
+		[DllImport(
+			"Advapi32.dll",
+			SetLastError = true,
+			EntryPoint = "QueryServiceConfig2",
+			CharSet = CharSet.Unicode)]
 		public static unsafe extern bool QueryServiceOptionalConfig(
 			IntPtr hService,
 			Config configuration,
@@ -1108,7 +1128,7 @@ namespace Utilities.Windows.Services.Interop
 		/// If the function fails, the return value is FALSE. 
 		/// When this happens the GetLastError function should be called to retrieve the error code.
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool QueryServiceDynamicInformation(
 			IntPtr hServiceStatus,
 			uint infoLevel,
@@ -1139,7 +1159,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INSUFFICIENT_BUFFER, ERROR_INVALID_HANDLE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool QueryServiceLockStatus(
 			IntPtr hSCManager,
 			QueryServiceLockStatus* lockStatus,
@@ -1164,7 +1184,7 @@ namespace Utilities.Windows.Services.Interop
 		/// Other error codes can be set by the registry functions that are called by the service control manager:
 		/// ERROR_ACCESS_DENIED, ERROR_INVALID_HANDLE
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool QueryServiceStatus(
 			IntPtr hService,
 			out ServiceStatus status);
@@ -1207,14 +1227,18 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_INVALID_HANDLE, ERROR_ACCESS_DENIED, ERROR_INSUFFICIENT_BUFFER, ERROR_INVALID_PARAMETER,
 		/// ERROR_INVALID_LEVEL, ERROR_SHUTDOWN_IN_PROGRESS
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true, EntryPoint = "QueryServiceStatusEx")]
+		[DllImport(
+			"Advapi32.dll",
+			SetLastError = true,
+			EntryPoint = "QueryServiceStatusEx",
+			CharSet = CharSet.Unicode)]
 		public static unsafe extern bool QueryServiceStatus(
 			IntPtr hService,
 			uint infoLevel,
 			ServiceStatusProcess* serviceStatus,
 			uint bufferSize,
 			out uint bytesNeeded);
-		
+
 		/// <summary>
 		/// Starts a service.
 		/// </summary>
@@ -1247,7 +1271,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_SERVICE_DISABLED, ERROR_SERVICE_LOGON_FAILED, ERROR_SERVICE_MARKED_FOR_DELETE,
 		/// ERROR_SERVICE_NO_THREAD, ERROR_SERVICE_REQUEST_TIMEOUT
 		/// </returns>
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static unsafe extern bool StartService(
 			IntPtr hService,
 			uint serviceArgsCount,
@@ -1269,7 +1293,7 @@ namespace Utilities.Windows.Services.Interop
 		/// ERROR_INVALID_SERVICE_LOCK
 		/// </returns>
 		[Obsolete("This function has no effect as of Windows Vista.")]
-		[DllImport("Advapi32.dll", SetLastError = true)]
+		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool UnlockServiceDatabase(IntPtr scLock);
 	}
 

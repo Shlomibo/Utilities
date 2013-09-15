@@ -84,6 +84,7 @@ namespace Utilities.Windows.Services
 					: base()
 				{
 					this.collection = collection;
+					this.state = state;
 
 					do
 					{
@@ -121,7 +122,7 @@ namespace Utilities.Windows.Services
 
 					if (lastError != Win32API.ERROR_SUCCESS)
 					{
-						throw ExceptionCreator.Create(MSGS_ENUMERATION, lastError);
+						throw ServiceException.Create(MSGS_ENUMERATION, lastError);
 					}
 				}
 				#endregion

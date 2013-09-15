@@ -163,7 +163,6 @@
     <Compile Include="Windows\Interop\Windows.cs" />
     <Compile Include="Windows\Services\ServiceEvents.cs" />
     <Compile Include="Windows\Services\DependentServicesCollection.cs" />
-    <Compile Include="Windows\Services\ExceptionCreator.cs" />
     <Compile Include="Windows\Services\ServiceCollection.cs" />
     <Compile Include="Windows\Services\ServiceCollectionBase.cs" />
     <Compile Include="Windows\Services\ServiceControlManager.cs" />

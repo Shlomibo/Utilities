@@ -358,12 +358,16 @@ namespace Utilities.Windows.Services
 					{
 						ServiceDelayedAutoStartInfo sdasi = new ServiceDelayedAutoStartInfo
 						{
-							isAutoStartDelayed = value,
+							isAutoStartDelayed = value ? 1 : 0,
 						};
 
 						if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.DelayedAutoStartInfo, &sdasi))
 						{
-							throw new ServiceException(Marshal.GetLastWin32Error());
+							int lastError = Marshal.GetLastWin32Error();
+							throw FeatureNotSupportedException.GetUnsupportedForCodes(
+								new ServiceException(lastError),
+								lastError,
+								Win32API.ERROR_INVALID_LEVEL);
 						}
 					}
 
@@ -443,7 +447,11 @@ namespace Utilities.Windows.Services
 					{
 						if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.PreferredNode, &spni))
 						{
-							throw new ServiceException(Marshal.GetLastWin32Error());
+							int lastError = Marshal.GetLastWin32Error();
+							throw FeatureNotSupportedException.GetUnsupportedForCodes(
+								new ServiceException(lastError),
+								lastError,
+								Win32API.ERROR_INVALID_LEVEL);
 						}
 					}
 				}
@@ -491,7 +499,12 @@ namespace Utilities.Windows.Services
 					{
 						if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.PreshutdownInfo, &spsi))
 						{
-							throw new ServiceException(Marshal.GetLastWin32Error());
+							int lastError = Marshal.GetLastWin32Error();
+
+							throw FeatureNotSupportedException.GetUnsupportedForCodes(
+								new ServiceException(lastError),
+								lastError,
+								Win32API.ERROR_INVALID_LEVEL);
 						}
 					}
 				}
@@ -601,7 +614,12 @@ namespace Utilities.Windows.Services
 
 							if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.TriggerInfo, &sti))
 							{
-								throw new ServiceException(Marshal.GetLastWin32Error());
+								int lastError = Marshal.GetLastWin32Error();
+
+								throw FeatureNotSupportedException.GetUnsupportedForCodes(
+									new ServiceException(lastError),
+									lastError,
+									Win32API.ERROR_INVALID_LEVEL);
 							}
 						}
 						finally
@@ -648,7 +666,12 @@ namespace Utilities.Windows.Services
 					{
 						if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.LaunchProtected, &slpi))
 						{
-							throw new ServiceException(Marshal.GetLastWin32Error());
+							int lastError = Marshal.GetLastWin32Error();
+
+							throw FeatureNotSupportedException.GetUnsupportedForCodes(
+								new ServiceException(lastError),
+								lastError,
+								Win32API.ERROR_INVALID_LEVEL);
 						}
 					}
 				}

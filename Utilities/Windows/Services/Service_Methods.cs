@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using Utilities.Windows.Interop;
 using Utilities.Windows.Services.Interop;
 
@@ -18,7 +19,8 @@ namespace Utilities.Windows.Services
 			{
 				this.events = new ServiceEvents(
 					this.Handle,
-					Notification.ServiceNotification);
+					Notification.ServiceNotification,
+					true);
 				this.events.ServiceNotification += Events_ServiceNotification;
 			}
 		}
@@ -40,7 +42,7 @@ namespace Utilities.Windows.Services
 				(uint)sizeof(ServiceStatusProcess),
 				out stub))
 			{
-				throw ExceptionCreator.Create(MSGS_SERVICE_STATUS, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_SERVICE_STATUS, Marshal.GetLastWin32Error());
 			}
 
 			return new ServiceStatus(ssp);
@@ -58,7 +60,12 @@ namespace Utilities.Windows.Services
 				(uint)sizeof(ServiceLaunchProtectedInfo),
 				out stub))
 			{
-				throw new ServiceException(Marshal.GetLastWin32Error());
+				int lastError = Marshal.GetLastWin32Error();
+
+				throw FeatureNotSupportedException.GetUnsupportedForCodes(
+					new ServiceException(lastError),
+					lastError,
+					Win32API.ERROR_INVALID_LEVEL);
 			}
 
 			return slpi.launchProtected;
@@ -90,7 +97,11 @@ namespace Utilities.Windows.Services
 						allocated = needed;
 					}
 
-					if (Win32API.ChangeServiceOptionalConfig(this.Handle, Config.TriggerInfo, pST))
+					if (Win32API.QueryServiceOptionalConfig(
+						this.Handle, 
+						Config.TriggerInfo,
+						pST, allocated, 
+						out needed))
 					{
 						lastError = Win32API.ERROR_SUCCESS;
 					}
@@ -102,7 +113,10 @@ namespace Utilities.Windows.Services
 
 				if (lastError != Win32API.ERROR_SUCCESS)
 				{
-					throw new ServiceException(lastError);
+					throw FeatureNotSupportedException.GetUnsupportedForCodes(
+						new ServiceException(lastError),
+						lastError,
+						Win32API.ERROR_INVALID_LEVEL);
 				}
 
 				var triggers = new Trigger[pST->triggersCount];
@@ -152,7 +166,12 @@ namespace Utilities.Windows.Services
 				if (!Win32API.ChangeServiceOptionalConfig(this.Handle, Config.RequiredPrivilegesInfo, &srpi))
 				{
 					e.Canceled = true;
-					throw new ServiceException(Marshal.GetLastWin32Error());
+					int lastError = Marshal.GetLastWin32Error();
+
+					throw FeatureNotSupportedException.GetUnsupportedForCodes(
+						new ServiceException(lastError),
+						lastError,
+						Win32API.ERROR_INVALID_LEVEL);
 				}
 			}
 		}
@@ -202,7 +221,10 @@ namespace Utilities.Windows.Services
 
 				if (lastError != Win32API.ERROR_SUCCESS)
 				{
-					throw new ServiceException(lastError);
+					throw FeatureNotSupportedException.GetUnsupportedForCodes(
+						new ServiceException(lastError),
+						lastError,
+						Win32API.ERROR_INVALID_LEVEL);
 				}
 
 				this.requiredPrivileges = new MultiString(pSRP->requiredPrivileges);
@@ -226,7 +248,12 @@ namespace Utilities.Windows.Services
 				(uint)sizeof(ServicePreShutdownInfo),
 				out stub))
 			{
-				throw new ServiceException(Marshal.GetLastWin32Error());
+				int lastError = Marshal.GetLastWin32Error();
+
+				throw FeatureNotSupportedException.GetUnsupportedForCodes(
+					new ServiceException(lastError),
+					lastError,
+					Win32API.ERROR_INVALID_LEVEL);
 			}
 
 			return (int)spsi.timeout;
@@ -236,20 +263,31 @@ namespace Utilities.Windows.Services
 		{
 			ServicePreferedNodeInfo spni = new ServicePreferedNodeInfo();
 			uint stub;
+			ushort? preferedNode;
 
-			if (!Win32API.QueryServiceOptionalConfig(
+			if (Win32API.QueryServiceOptionalConfig(
 				this.Handle,
 				Config.PreferredNode,
 				&spni,
 				(uint)sizeof(ServicePreferedNodeInfo),
 				out stub))
 			{
-				throw new ServiceException(Marshal.GetLastWin32Error());
-			}
-
-			return !spni.isDeleted
+				preferedNode = !spni.isDeleted
 				? (ushort?)spni.preferedNode
 				: null;
+			}
+			else
+			{
+				int lastError = Marshal.GetLastWin32Error();
+
+				throw FeatureNotSupportedException.GetUnsupportedForCodes(
+					new ServiceException(lastError),
+					lastError,
+					Win32API.ERROR_INVALID_LEVEL,
+					Win32API.ERROR_INVALID_PARAMETER);
+			}
+
+			return preferedNode;
 		}
 
 		private unsafe string GetDescription()
@@ -313,10 +351,14 @@ namespace Utilities.Windows.Services
 				(uint)sizeof(ServiceDelayedAutoStartInfo),
 				out stab))
 			{
-				throw new ServiceException(Marshal.GetLastWin32Error());
+				int lastError = Marshal.GetLastWin32Error();
+				throw FeatureNotSupportedException.GetUnsupportedForCodes(
+					new ServiceException(lastError),
+					lastError,
+					Win32API.ERROR_INVALID_LEVEL);
 			}
 
-			return sdasi.isAutoStartDelayed;
+			return sdasi.isAutoStartDelayed != 0;
 		}
 
 		private unsafe void SetConfig(
@@ -350,7 +392,7 @@ namespace Utilities.Windows.Services
 					password,
 					displayName))
 				{
-					throw ExceptionCreator.Create(MSGS_SET_CNFG, Marshal.GetLastWin32Error());
+					throw ServiceException.Create(MSGS_SET_CNFG, Marshal.GetLastWin32Error());
 				}
 			}
 		}
@@ -402,29 +444,41 @@ namespace Utilities.Windows.Services
 
 				if (lastError != Win32API.ERROR_SUCCESS)
 				{
-					throw ExceptionCreator.Create(MSGS_LOAD_CNFG, lastError);
+					throw ServiceException.Create(MSGS_LOAD_CNFG, lastError);
 				}
 
-				this.Type = pQSC->type;
-				this.StartType = pQSC->startType;
-				this.ErrorControl = pQSC->errorControl;
+				ServiceType type = pQSC->type;
+				this.type = new Lazy<ServiceType>(() => type);
 
-				this.BinaryPath = pQSC->lpBinaryPathName != null
+				StartType startType = pQSC->startType;
+				this.startType = new Lazy<StartType>(() => startType);
+
+				ErrorControl errorControl = pQSC->errorControl;
+				this.errorControl = new Lazy<ErrorControl>(() => errorControl);
+
+				string binaryPath = pQSC->lpBinaryPathName != null
 					? new string(pQSC->lpBinaryPathName)
 					: null;
+				this.binaryPath = new Lazy<string>(() => binaryPath);
 
-				this.LoadOrderGroup = pQSC->lpLoadOrderGroup != null
+				string laodOrderGroup = pQSC->lpLoadOrderGroup != null
 					? new string(pQSC->lpLoadOrderGroup)
 					: null;
+				this.loadOrderGroup = new Lazy<string>(() => laodOrderGroup);
 
-				this.Tag = pQSC->tagId;
+				uint tag = pQSC->tagId;
+				this.tag = new Lazy<uint>(() => tag);
 
 				var multiString = new MultiString(pQSC->lpDependencies);
 				multiString.Changing += Dependencies_Changing;
-				this.Dependencies = multiString;
+				this.dependencies = multiString;
 
-				this.AccountName = new string(pQSC->lpServiceStartName);
-				this.DisplayName = new string(pQSC->lpDisplayName);
+				string accountName = new string(pQSC->lpServiceStartName);
+				this.accountName = new Lazy<string>(() => accountName);
+
+				string displayName = new string(pQSC->lpDisplayName);
+				this.displayName = new Lazy<string>(() => displayName);
+
 				this.ServiceName = this.Scm.GetServiceName(this.DisplayName);
 
 				return getFunc();
@@ -455,6 +509,7 @@ namespace Utilities.Windows.Services
 				throw new ArgumentNullException("name");
 			}
 
+			dependencies = dependencies ?? new string[0];
 			var dependenciesMultiStr = new MultiString(dependencies);
 			uint newTag = tagId ?? 0;
 
@@ -470,7 +525,7 @@ namespace Utilities.Windows.Services
 					errorControl,
 					binaryPath,
 					loadOrderGroup,
-					tagId.HasValue 
+					tagId.HasValue
 						? &newTag
 						: null,
 					pDependencies,
@@ -479,7 +534,7 @@ namespace Utilities.Windows.Services
 
 				if (hService == IntPtr.Zero)
 				{
-					throw ExceptionCreator.Create(MSGS_CREATE_SERVICE, Marshal.GetLastWin32Error());
+					throw ServiceException.Create(MSGS_CREATE_SERVICE, Marshal.GetLastWin32Error());
 				}
 
 				return new Service(
@@ -549,18 +604,21 @@ namespace Utilities.Windows.Services
 		/// Sends a control code to a service.
 		/// </summary>
 		/// <param name="control">The control code for the service.</param>
-		/// <param name="stopReason">
-		/// The reason for changing the service status to Stop. 
-		/// If the current control code is not Stop, this member is ignored.
-		/// </param>
-		/// <param name="stopComment">
-		/// An optional string that provides additional information about the service stop. 
-		/// </param>
-		/// <returns>The reported status of the service after the control was processed.</returns>
-		public unsafe ServiceStatus SendControl(
+		public ServiceStatus SendControl(ServiceControlCode control)
+		{
+			if (control == ServiceControlCode.Stop)
+			{
+				throw new ArgumentException("Cannot send the control 'Stop'. " +
+					"To stop the service, call Stop", "control");
+			}
+
+			return SendControl(control, StopReasonFlag.NoReason, null);
+		}
+
+		private unsafe ServiceStatus SendControl(
 			ServiceControlCode control,
-			StopReasonFlag stopReason = StopReasonFlag.NoReason,
-			string stopComment = null)
+			StopReasonFlag stopReason,
+			string stopComment)
 		{
 			ThrowIfDisposed();
 
@@ -579,11 +637,27 @@ namespace Utilities.Windows.Services
 					Win32API.SERVICE_CONTROL_STATUS_REASON_INFO,
 					&scsrp))
 				{
-					throw ExceptionCreator.Create(MSGS_SEND_CTRL, Marshal.GetLastWin32Error());
+					throw ServiceException.Create(MSGS_SEND_CTRL, Marshal.GetLastWin32Error());
 				}
 
 				return new ServiceStatus(scsrp.serviceStatus);
 			}
+		}
+
+		/// <summary>
+		/// Stops the service.
+		/// </summary>
+		/// <param name="stopReason">
+		/// The reason for changing the service status to Stop. 
+		/// If the current control code is not Stop, this member is ignored.
+		/// </param>
+		/// <param name="stopComment">
+		/// An optional string that provides additional information about the service stop. 
+		/// </param>
+		/// <returns>The reported status of the service after the control was processed.</returns>
+		public ServiceStatus Stop(StopReasonFlag stopReason, string stopComment)
+		{
+			return SendControl(ServiceControlCode.Stop, stopReason, stopComment);
 		}
 
 		/// <summary>
@@ -595,7 +669,7 @@ namespace Utilities.Windows.Services
 
 			if (!Win32API.DeleteService(this.Handle))
 			{
-				throw ExceptionCreator.Create(MSGS_DELETE_SERVICE, Marshal.GetLastWin32Error());
+				throw ServiceException.Create(MSGS_DELETE_SERVICE, Marshal.GetLastWin32Error());
 			}
 		}
 
@@ -638,7 +712,7 @@ namespace Utilities.Windows.Services
 
 				if (!Win32API.StartService(this.Handle, (uint)count, lpszArgs))
 				{
-					throw ExceptionCreator.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
+					throw ServiceException.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
 				}
 			}
 			finally

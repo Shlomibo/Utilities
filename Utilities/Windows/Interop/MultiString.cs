@@ -115,7 +115,7 @@ namespace Utilities.Windows.Interop
 		/// <param name="strings">The collection whose strings are copied to the new MultiString.</param>
 		public MultiString(IEnumerable<string> strings)
 		{
-			this.strings = new List<string>(strings);
+			this.strings = new List<string>(strings ?? new string[0]);
 		}
 
 		/// <summary>
@@ -148,21 +148,12 @@ namespace Utilities.Windows.Interop
 				this.strings = multiStringObj.strings;
 			}
 		}
-		#endregion
 
-		#region Methods
-
-		private bool OnChanging()
-		{
-			var eventArgs = new CancelEventArgs();
-
-			this.Changing(this, eventArgs);
-
-			return !eventArgs.Canceled;
-		}
 
 		private unsafe MultiString(char* mszMultiString, int bufferSize, bool hasBufferSize)
 		{
+			this.strings = new List<string>();
+
 			if (mszMultiString != null)
 			{
 				string lastString;
@@ -177,6 +168,18 @@ namespace Utilities.Windows.Interop
 					Add(lastString);
 				}
 			}
+		}
+		#endregion
+
+		#region Methods
+
+		private bool OnChanging()
+		{
+			var eventArgs = new CancelEventArgs();
+
+			this.Changing(this, eventArgs);
+
+			return !eventArgs.Canceled;
 		}
 
 		private void OnChanged()

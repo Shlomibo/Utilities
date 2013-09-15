@@ -249,7 +249,6 @@ namespace Utilities.Windows.Services
 			/// </summary>
 			public void Reset()
 			{
-				ThrowIfDisposed();
 				this.index = RESETED;
 			}
 			#endregion
