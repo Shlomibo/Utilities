@@ -161,6 +161,7 @@
     <Compile Include="Windows\Interop\MultiString.cs" />
     <Compile Include="Windows\Interop\Security.cs" />
     <Compile Include="Windows\Interop\Windows.cs" />
+    <Compile Include="Windows\Services\INotificationWaiter.cs" />
     <Compile Include="Windows\Services\ServiceEvents.cs" />
     <Compile Include="Windows\Services\DependentServicesCollection.cs" />
     <Compile Include="Windows\Services\ServiceCollection.cs" />

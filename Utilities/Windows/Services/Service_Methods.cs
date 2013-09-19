@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using Utilities.Windows.Interop;
 using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
-	partial class Service
+	partial class Service 
 	{
 		#region Methods
 
@@ -23,6 +25,61 @@ namespace Utilities.Windows.Services
 					true);
 				this.events.ServiceNotification += Events_ServiceNotification;
 			}
+		}
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised, or until the timeout elapses.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="millisecondsTimeout">
+		/// The timeout, in milliseconds, until the block ends, even if no notification raised.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		/// <returns>
+		/// true if one of notification was raised before the timeout elapsed;
+		/// otherwise false.
+		/// </returns>
+		public bool WaitForNotification(Notification waitFor, int millisecondsTimeout, out Notification triggered)
+		{
+			HookEvents();
+
+			return this.events.WaitForNotification(waitFor, millisecondsTimeout, out triggered);
+		}
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised, or until the timeout elapses.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="timeout">
+		/// The timeout, until the block ends, even if no notification raised.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		/// <returns>
+		/// true if one of notification was raised before the timeout elapsed;
+		/// otherwise false.
+		/// </returns>
+		public bool WaitForNotification(Notification waitFor, TimeSpan timeout, out Notification triggered)
+		{
+			return WaitForNotification(waitFor, timeout.Milliseconds, out triggered);
+		}
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		public void WaitForNotification(Notification waitFor, out Notification triggered)
+		{
+			WaitForNotification(waitFor, Timeout.Infinite, out triggered);
 		}
 
 		private void Events_ServiceNotification(object sender, ServiceNotificationEventArgs e)
@@ -399,7 +456,7 @@ namespace Utilities.Windows.Services
 
 		internal void ThrowIfDisposed()
 		{
-			if (this.IsDisposed)
+			if (this.IsClosed)
 			{
 				throw new ObjectDisposedException(this.serviceName.Value);
 			}
@@ -493,7 +550,7 @@ namespace Utilities.Windows.Services
 			ServiceControlManager scm,
 			string name,
 			string displayName,
-			AccessRights desiredAccess,
+			ServiceAccessRights desiredAccess,
 			ServiceType type,
 			StartType startType,
 			ErrorControl errorControl,
@@ -578,10 +635,10 @@ namespace Utilities.Windows.Services
 		/// </summary>
 		public void Close()
 		{
-			if (!IsDisposed)
+			if (!IsClosed)
 			{
 				Dispose(true);
-				this.IsDisposed = true;
+				this.IsClosed = true;
 				GC.SuppressFinalize(this);
 			}
 		}
@@ -655,7 +712,9 @@ namespace Utilities.Windows.Services
 		/// An optional string that provides additional information about the service stop. 
 		/// </param>
 		/// <returns>The reported status of the service after the control was processed.</returns>
-		public ServiceStatus Stop(StopReasonFlag stopReason, string stopComment)
+		public ServiceStatus StopService(
+			StopReasonFlag stopReason, 
+			string stopComment) 
 		{
 			return SendControl(ServiceControlCode.Stop, stopReason, stopComment);
 		}

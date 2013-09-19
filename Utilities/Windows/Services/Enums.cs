@@ -664,6 +664,142 @@ namespace Utilities.Windows.Services
 	}
 
 	/// <summary>
+	/// Access Rights for the Service Control Manager
+	/// </summary>
+	[Flags]
+	public enum ScmAccessRights : uint
+	{
+		/// <summary>No access</summary>
+		None,
+
+		/// <summary>Required to connect to the service control manager.</summary>
+		Connect = (uint)AccessRights.ScmConnect,
+		/// <summary>
+		/// Required to call the CreateService function to create a service object and add it to the database.
+		/// </summary>
+		CreateService = (uint)AccessRights.ScmCreateService,
+		/// <summary>
+		/// Required to call the EnumServicesStatus or EnumServicesStatusEx function to 
+		/// list the services that are in the database.
+		/// 
+		/// Required to call the NotifyServiceStatusChange function to receive notification when 
+		/// any service is created or deleted.
+		/// </summary>
+		EnumerateService = (uint)AccessRights.ScmEnumerateService,
+		/// <summary>Required to call the LockServiceDatabase function to acquire a lock on the database.</summary>
+		Lock = (uint)AccessRights.ScmLock,
+		/// <summary>
+		/// Required to call the QueryServiceLockStatus function to retrieve 
+		/// the lock status information for the database.
+		/// </summary>
+		QueryLockStatus = (uint)AccessRights.ScmQueryLockStatus,
+		/// <summary>Required to call the NotifyBootConfigStatus function.</summary>
+		ModifyBootConfig = (uint)AccessRights.ScmModifyBootConfig,
+		/// <summary>Includes STANDARD_RIGHTS_REQUIRED, in addition to all access rights in this table.</summary>
+		AllAccess = (uint)AccessRights.ScmAllAccess,
+
+		/// <summary>Generic read</summary>
+		GenericRead = (uint)AccessRights.ScmGenericRead,
+		/// <summary>Generic write</summary>
+		GeenricWrite = (uint)AccessRights.ScmGeenricWrite,
+		/// <summary>Generic execute</summary>
+		GenericExecute = (uint)AccessRights.ScmGenericExecute,
+		/// <summary>Generic all access</summary>
+		GenericAll = (uint)AccessRights.ScmGenericAll,
+	}
+
+	/// <summary>
+	/// Access Rights for services
+	/// </summary>
+	[Flags]
+	public enum ServiceAccessRights : uint
+	{
+		/// <summary>No access</summary>
+		None,
+
+		/// <summary>
+		/// Required to call the QueryServiceConfig and QueryServiceConfig2 functions to query the service configuration.
+		/// </summary>
+		QueryConfig = (uint)AccessRights.SvcQueryConfig,
+		/// <summary>
+		/// Required to call the ChangeServiceConfig or ChangeServiceConfig2 function to change the service configuration. 
+		/// Because this grants the caller the right to change the executable file that the system runs, 
+		/// it should be granted only to administrators.
+		/// </summary>
+		ChangeConfig = (uint)AccessRights.SvcChangeConfig,
+		/// <summary>
+		/// Required to call the QueryServiceStatus or QueryServiceStatusEx function to
+		/// ask the service control manager about the status of the service.
+		/// 
+		/// Required to call the NotifyServiceStatusChange function to 
+		/// receive notification when a service changes status.
+		/// </summary>
+		QueryStatus = (uint)AccessRights.SvcQueryStatus,
+		/// <summary>
+		/// Required to call the EnumDependentServices function to enumerate all the services dependent on the service.
+		/// </summary>
+		EnumerateDependents = (uint)AccessRights.SvcEnumerateDependents,
+		/// <summary>
+		/// Required to call the StartService function to start the service.
+		/// </summary>
+		Start = (uint)AccessRights.SvcStart,
+		/// <summary>
+		/// Required to call the ControlService function to stop the service.
+		/// </summary>
+		Stop = (uint)AccessRights.SvcStop,
+		/// <summary>
+		/// Required to call the ControlService function to pause or continue the service.
+		/// </summary>
+		PauseContinue = (uint)AccessRights.SvcPauseContinue,
+		/// <summary>
+		/// Required to call the ControlService function to ask the service to report its status immediately.
+		/// </summary>
+		Interrogate = (uint)AccessRights.SvcInterrogate,
+		/// <summary>
+		/// Required to call the ControlService function to specify a user-defined control code.
+		/// </summary>
+		UserDefinedControl =(uint)AccessRights.SvcUserDefinedControl,
+		/// <summary>
+		/// Includes STANDARD_RIGHTS_REQUIRED in addition to all access rights in this table.
+		/// </summary>
+		AllAccess = (uint)AccessRights.SvcAllAccess,
+		 
+		/// <summary>
+		/// Required to call the QueryServiceObjectSecurity or SetServiceObjectSecurity function to access the SACL. 
+		/// The proper way to obtain this access is to enable the SE_SECURITY_NAMEprivilege in 
+		/// the caller's current access token, open the handle for ACCESS_SYSTEM_SECURITY access, 
+		/// and then disable the privilege.
+		/// </summary>
+		AccessSystemSecurity = (uint)AccessRights.AccessSystemSecurity,
+		/// <summary>
+		/// Required to call the DeleteService function to delete the service.
+		/// </summary>
+		Delete = (uint)AccessRights.Delete,
+		/// <summary>
+		/// Required to call the QueryServiceObjectSecurity function to 
+		/// query the security descriptor of the service object.
+		/// </summary>
+		ReadControl = (uint)AccessRights.ReadControl,
+		/// <summary>
+		/// Required to call the SetServiceObjectSecurity function to modify the Dacl 
+		/// member of the service object's security descriptor.
+		/// </summary>
+		WriteDAC = (uint)AccessRights.WriteDAC,
+		/// <summary>
+		/// Required to call the SetServiceObjectSecurity function to modify 
+		/// the Owner and Group members of the service object's security descriptor.
+		/// </summary>
+		WriteOwner = (uint)AccessRights.WriteOwner,
+
+		/// <summary>Generic read</summary>
+		GenericRead = (uint)AccessRights.SvcGenericRead,
+		/// <summary>Generic write</summary>
+		GenericWrite = (uint)AccessRights.SvcGenericWrite,
+		/// <summary>Generic execute</summary>
+		GenericExecute = (uint)AccessRights.SvcGenericExecute,
+	}
+
+	/// <summary>
 	/// Access Rights for the Service Control Manager and services
 	/// </summary>
 	[Flags]

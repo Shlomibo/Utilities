@@ -59,6 +59,16 @@ namespace Utilities.Windows.Services
 		}
 
 		/// <summary>
+		/// Returns the service associated with current information.
+		/// </summary>
+		/// <param name="desiredAccess">The desired access to the service.</param>
+		/// <returns>The service associated with current information.</returns>
+		public Service GetService(ServiceAccessRights desiredAccess)
+		{
+			return Scm.OpenService(this.ServiceName, desiredAccess);
+		}
+
+		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>

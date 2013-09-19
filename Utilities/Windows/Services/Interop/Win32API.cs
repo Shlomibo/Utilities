@@ -555,7 +555,7 @@ namespace Utilities.Windows.Services.Interop
 			IntPtr hSCManager,
 			string serviceName,
 			string displayName,
-			AccessRights desiredAccess,
+			ServiceAccessRights desiredAccess,
 			ServiceType type,
 			StartType startType,
 			ErrorControl errorControl,
@@ -985,7 +985,7 @@ namespace Utilities.Windows.Services.Interop
 		public static extern IntPtr OpenSCManager(
 			string machineName,
 			string databaseName,
-			AccessRights desiredAccess);
+			ScmAccessRights desiredAccess);
 
 		/// <summary>
 		/// Opens an existing service.
@@ -1024,7 +1024,7 @@ namespace Utilities.Windows.Services.Interop
 		public static extern IntPtr OpenService(
 			IntPtr hSCManager,
 			string serviceName,
-			AccessRights desiredAccess);
+			ServiceAccessRights desiredAccess);
 
 		/// <summary>
 		/// Retrieves the configuration parameters of the specified service.

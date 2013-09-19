@@ -20,10 +20,10 @@ namespace EventsTesting
 			Events = new ObservableCollection<EventItem>();
 
 			scm = new ServiceControlManager();
-			//scm.ServiceCreated += (s, e) => Events.Add(new ScmEventItem("Service created", e));
-			//scm.ServiceDeleted += (s, e) => Events.Add(new ScmEventItem("Service deleted", e));
+			scm.ServiceCreated += (s, e) => Events.Add(new ScmEventItem("Service created", e));
+			scm.ServiceDeleted += (s, e) => Events.Add(new ScmEventItem("Service deleted", e));
 
-			svc = scm.OpenService("Testsvc", AccessRights.SvcAllAccess);
+			svc = scm.OpenService("netlogon", ServiceAccessRights.AllAccess);
 			svc.DeletePeinding += (s, e) =>
 				{
 					Events.Add(new ServiceEventItem(e.Service.ServiceName + " delete pending", e));

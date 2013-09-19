@@ -14,7 +14,7 @@ namespace Utilities.Windows.Services
 	/// <summary>
 	/// Represents a windows service.
 	/// </summary>
-	public partial class Service : IDisposable
+	public partial class Service : IDisposable, INotificationWaiter
 	{
 		#region Consts
 

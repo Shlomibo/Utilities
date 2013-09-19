@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Utilities.Windows.Services
 				"Close the handle to the service control manager, and open a new handle." },
 		};
 		#endregion
-		
+
 		#region Fields
 
 		private ManualResetEvent waitHandle;
@@ -36,6 +37,7 @@ namespace Utilities.Windows.Services
 		private CallbackDelegate callback;
 		private bool isService;
 		private Notification lastEvent;
+		private Dictionary<AutoResetEvent, Notification> waiters;
 		#endregion
 
 		#region Events
@@ -69,6 +71,7 @@ namespace Utilities.Windows.Services
 			this.waitHandle = new ManualResetEvent(false);
 			this.isService = isService;
 			this.lastEvent = Notification.None;
+			waiters = new Dictionary<AutoResetEvent, Notification>();
 		}
 
 		~ServiceEvents()
@@ -78,6 +81,40 @@ namespace Utilities.Windows.Services
 		#endregion
 
 		#region Methods
+
+		public bool WaitForNotification(
+			Notification waitFor,
+			int millisecondsTimeout,
+			out Notification triggered)
+		{
+			triggered = Notification.None;
+			var waitHandle = new AutoResetEvent(false);
+
+			lock (this.syncRoot)
+			{
+				this.waiters.Add(waitHandle, waitFor);
+			}
+
+			if (!this.isEventRegistered)
+			{
+				RegisterEventsAsync();
+			}
+
+			bool didElapsed = waitHandle.WaitOne(millisecondsTimeout);
+
+			lock (this.syncRoot)
+			{
+				this.waiters.Remove(waitHandle);
+				waitHandle.Dispose();
+			}
+
+			if (didElapsed)
+			{
+				triggered = this.lastEvent;
+			}
+
+			return didElapsed;
+		}
 
 		public void Dispose()
 		{
@@ -89,19 +126,28 @@ namespace Utilities.Windows.Services
 		{
 			if (!this.isDisposed)
 			{
-				this.waitHandle.Set();
-
-				if (disposing)
-				{
-					this.waitHandle.Dispose();
-				}
-
 				lock (this.syncRoot)
 				{
-					Marshal.FreeHGlobal((IntPtr)this.pSN);
-				}
+					this.waitHandle.Set();
 
-				this.isDisposed = true;
+					if (disposing)
+					{
+						this.waitHandle.Dispose();
+
+						foreach (AutoResetEvent waiter in this.waiters.Keys)
+						{
+							waiter.Set();
+							waiter.Dispose();
+						}
+					}
+
+					lock (this.syncRoot)
+					{
+						Marshal.FreeHGlobal((IntPtr)this.pSN);
+					}
+
+					this.isDisposed = true;
+				}
 			}
 		}
 
@@ -113,7 +159,7 @@ namespace Utilities.Windows.Services
 			{
 				lock (this.syncRoot)
 				{
-					this.pSN = (ServiceNotify*)Marshal.AllocHGlobal(sizeof(ServiceNotify)); 
+					this.pSN = (ServiceNotify*)Marshal.AllocHGlobal(sizeof(ServiceNotify));
 				}
 
 				Notification registerFor = this.registerFor;
@@ -141,7 +187,7 @@ namespace Utilities.Windows.Services
 					{
 						Marshal.FreeHGlobal((IntPtr)this.pSN);
 						this.pSN = null;
-						throw ServiceException.Create(MSGS_NTFY_STTS_CHNG, result); 
+						throw ServiceException.Create(MSGS_NTFY_STTS_CHNG, result);
 					}
 				}
 
@@ -154,6 +200,20 @@ namespace Utilities.Windows.Services
 			try
 			{
 				this.lastEvent = pSN->notificationTriggered;
+
+				lock (this.syncRoot)
+				{
+					IEnumerable<KeyValuePair<AutoResetEvent, Notification>> toSet =
+						from keyValue in this.waiters
+						where (keyValue.Value & pSN->notificationTriggered) != Notification.None
+						select keyValue;
+
+					foreach (KeyValuePair<AutoResetEvent, Notification> waiter in toSet)
+					{
+						waiter.Key.Set();
+					}
+				}
+
 				Task.Factory.StartNew(
 					param => FireEvent((EventData)param),
 					new EventData
@@ -166,13 +226,13 @@ namespace Utilities.Windows.Services
 					TaskCreationOptions.None,
 					this.eventScheduler);
 			}
-			finally 
+			finally
 			{
 				lock (this.syncRoot)
 				{
 					Marshal.FreeHGlobal((IntPtr)this.pSN->serviceName);
 					Marshal.FreeHGlobal((IntPtr)this.pSN);
-					this.pSN = null; 
+					this.pSN = null;
 				}
 			}
 
@@ -207,7 +267,7 @@ namespace Utilities.Windows.Services
 
 		public MultiString ServiceNames { get; private set; }
 		public ServiceStatus Status { get; private set; }
-		public Notification Event { get; private set; } 
+		public Notification Event { get; private set; }
 		#endregion
 
 		#region Ctor

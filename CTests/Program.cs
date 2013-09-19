@@ -14,9 +14,9 @@ namespace CTests
 	{
 		static void Main(string[] args)
 		{
-			using (var scm = new ServiceControlManager(AccessRights.ScmAllAccess))
+			using (var scm = new ServiceControlManager(ScmAccessRights.AllAccess))
 			{
-				using (Service svc = scm.OpenService("TestSvc", AccessRights.SvcAllAccess))
+				using (Service svc = scm.OpenService("TestSvc", ServiceAccessRights.AllAccess))
 				{
 					svc.Delete();
 				}

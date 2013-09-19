@@ -16,11 +16,11 @@ namespace Utilities.Windows.Services
 	/// <summary>
 	/// Represents a service control manager database.
 	/// </summary>
-	public partial class ServiceControlManager : IDisposable
+	public partial class ServiceControlManager : IDisposable, INotificationWaiter
 	{
 		#region Consts
 
-		private const AccessRights DEFAULT_ACCESS = AccessRights.ScmGenericRead;
+		private const ScmAccessRights DEFAULT_ACCESS = ScmAccessRights.GenericRead;
 		private const string DESFAULT_MACHINE_NAME = "localhost";
 		private const string CREATE_PREFIX = "/";
 
@@ -53,7 +53,10 @@ namespace Utilities.Windows.Services
 
 		#region Properties
 
-		internal IntPtr Handle { get; private set; }
+		/// <summary>
+		/// Gets the handle to the service control manager database.
+		/// </summary>
+		public IntPtr Handle { get; private set; }
 
 		/// <summary>
 		/// Gets the access rights used to open the SCM.
@@ -63,7 +66,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Gets value indicates if this object has disposed.
 		/// </summary>
-		public bool IsDisposed { get; private set; }
+		public bool IsClosed { get; private set; }
 
 		/// <summary>
 		/// Gets the SCM on the current machine, with read-only access
@@ -75,7 +78,7 @@ namespace Utilities.Windows.Services
 				ServiceControlManager current;
 
 				if (!ServiceControlManager.current.TryGetTarget(out current) ||
-					current.IsDisposed)
+					current.IsClosed)
 				{
 					current = new ServiceControlManager();
 					ServiceControlManager.current.SetTarget(current);
@@ -157,7 +160,7 @@ namespace Utilities.Windows.Services
 		/// </summary>
 		/// <param name="machineName">The machine to connect to its SCM database.</param>
 		/// <param name="desiredAccess">The desired access right for the connection</param>
-		public ServiceControlManager(string machineName, AccessRights desiredAccess)
+		public ServiceControlManager(string machineName, ScmAccessRights desiredAccess)
 		{
 			this.Handle = Win32API.OpenSCManager(machineName, Win32API.SERVICES_ACTIVE_DATABASE, desiredAccess);
 
@@ -186,7 +189,7 @@ namespace Utilities.Windows.Services
 		/// Opens connection to the SCM on the local machine, with the provided access rights.
 		/// </summary>
 		/// <param name="desiredAccess">The desired access right for the connection</param>
-		public ServiceControlManager(AccessRights desiredAccess)
+		public ServiceControlManager(ScmAccessRights desiredAccess)
 			: this(null, desiredAccess) { }
 
 		/// <summary>
@@ -204,6 +207,61 @@ namespace Utilities.Windows.Services
 		#endregion
 
 		#region Methods
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised, or until the timeout elapses.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="millisecondsTimeout">
+		/// The timeout, in milliseconds, until the block ends, even if no notification raised.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		/// <returns>
+		/// true if one of notification was raised before the timeout elapsed;
+		/// otherwise false.
+		/// </returns>
+		public bool WaitForNotification(Notification waitFor, int millisecondsTimeout, out Notification triggered)
+		{
+			HookEvents();
+
+			return this.events.WaitForNotification(waitFor, millisecondsTimeout, out triggered);
+		}
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised, or until the timeout elapses.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="timeout">
+		/// The timeout, until the block ends, even if no notification raised.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		/// <returns>
+		/// true if one of notification was raised before the timeout elapsed;
+		/// otherwise false.
+		/// </returns>
+		public bool WaitForNotification(Notification waitFor, TimeSpan timeout, out Notification triggered)
+		{
+			return WaitForNotification(waitFor, timeout.Milliseconds, out triggered);
+		}
+
+		/// <summary>
+		/// Blocks the thread until wanted notification is raised.
+		/// </summary>
+		/// <param name="waitFor">
+		/// Flags of the notification to wait for. 
+		/// If one of the notifications raised - the block ends.
+		/// </param>
+		/// <param name="triggered">Return the notification that was actually raised.</param>
+		public void WaitForNotification(Notification waitFor, out Notification triggered)
+		{
+			WaitForNotification(waitFor, Timeout.Infinite, out triggered);
+		}
 
 		private void HookEvents()
 		{
@@ -286,9 +344,9 @@ namespace Utilities.Windows.Services
 		/// <param name="disposing">Value indicates if the object is disposed correctly</param>
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!this.IsDisposed && (this.Handle != IntPtr.Zero))
+			if (!this.IsClosed && (this.Handle != IntPtr.Zero))
 			{
-				this.IsDisposed = true;
+				this.IsClosed = true;
 
 				if (!Win32API.CloseServiceHandle(this.Handle))
 				{
@@ -316,10 +374,10 @@ namespace Utilities.Windows.Services
 		/// </summary>
 		public void Close()
 		{
-			if (!this.IsDisposed)
+			if (!this.IsClosed)
 			{
 				Dispose(true);
-				this.IsDisposed = true;
+				this.IsClosed = true;
 				GC.SuppressFinalize(this);
 			}
 		}
@@ -412,7 +470,7 @@ namespace Utilities.Windows.Services
 		public Service CreateService(
 			string name,
 			string displayName,
-			AccessRights desiredAccess,
+			ServiceAccessRights desiredAccess,
 			ServiceType type,
 			StartType startType,
 			ErrorControl errorControl,
@@ -443,7 +501,7 @@ namespace Utilities.Windows.Services
 
 		private void ThrowIfDisposed()
 		{
-			if (this.IsDisposed)
+			if (this.IsClosed)
 			{
 				throw new ObjectDisposedException(this.MachineName);
 			}
@@ -520,10 +578,10 @@ namespace Utilities.Windows.Services
 
 		internal IntPtr GetServiceHandle(string serviceName)
 		{
-			return GetServiceHandle(serviceName, GetDefaultAccessRights());
+			return GetServiceHandle(serviceName, (ServiceAccessRights)GetDefaultAccessRights());
 		}
 
-		internal IntPtr GetServiceHandle(string serviceName, AccessRights desiredAccess)
+		internal IntPtr GetServiceHandle(string serviceName, ServiceAccessRights desiredAccess)
 		{
 			ThrowIfDisposed();
 
@@ -544,7 +602,7 @@ namespace Utilities.Windows.Services
 		/// <returns></returns>
 		public Service OpenService(string serviceName)
 		{
-			return OpenService(serviceName, GetDefaultAccessRights());
+			return OpenService(serviceName, (ServiceAccessRights)GetDefaultAccessRights());
 		}
 
 		/// <summary>
@@ -553,12 +611,12 @@ namespace Utilities.Windows.Services
 		/// <param name="serviceName">The name of the service to be opened. </param>
 		/// <param name="desiredAccess">The access rights to the service.</param>
 		/// <returns>Service instance for therequested service.</returns>
-		public Service OpenService(string serviceName, AccessRights desiredAccess)
+		public Service OpenService(string serviceName, ServiceAccessRights desiredAccess)
 		{
 			return new Service(this, GetServiceHandle(serviceName, desiredAccess), serviceName);
 		}
 
-		private AccessRights GetDefaultAccessRights()
+		private uint GetDefaultAccessRights()
 		{
 			var desiredAccess = AccessRights.SvcGenericRead;
 
@@ -577,7 +635,7 @@ namespace Utilities.Windows.Services
 				desiredAccess |= AccessRights.SvcAllAccess;
 			}
 
-			return desiredAccess;
+			return (uint)desiredAccess;
 		}
 		#endregion
 	}

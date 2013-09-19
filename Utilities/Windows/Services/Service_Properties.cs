@@ -14,7 +14,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Gets value indicates if the current instance has been disposed.
 		/// </summary>
-		public bool IsDisposed { get; private set; }
+		public bool IsClosed { get; private set; }
 
 		/// <summary>
 		/// Gets the name of the service
@@ -680,7 +680,10 @@ namespace Utilities.Windows.Services
 			}
 		}
 
-		internal IntPtr Handle { get; private set; }
+		/// <summary>
+		/// Gets the handle of the service.
+		/// </summary>
+		public IntPtr Handle { get; private set; }
 
 		/// <summary>
 		/// Gets the service control database that the service belongs to.
