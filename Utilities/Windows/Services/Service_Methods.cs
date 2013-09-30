@@ -17,8 +17,11 @@ namespace Utilities.Windows.Services
 
 		private const string LOCAL_SYSTEM = "LocalSystem";
 
+		/// <summary>The LocalService account name.</summary>
 		public const string ACCOUNT_LOCAL_SERVICE = @"NT AUTHORITY\LocalService";
+		/// <summary>The NetworkService account name.</summary>
 		public const string ACCOUNT_NETWORK_SERVICE = @"NT AUTHORITY\NetworkService";
+		/// <summary>The LocalSystem account name.</summary>
 		public const string ACCOUNT_LOCAL_SYSTEM = @".\" + LOCAL_SYSTEM;
 
 		private static readonly string[] INTERNAL_ACCOUNTS = new string[]
@@ -711,13 +714,15 @@ namespace Utilities.Windows.Services
 		/// <param name="control">The control code for the service.</param>
 		public ServiceStatus SendControl(ServiceControlCode control)
 		{
-			if (control == ServiceControlCode.Stop)
+			ThrowIfDisposed();
+			Interop.ServiceStatus status;
+
+			if (!Win32API.ControlService(this.Handle, control, out status))
 			{
-				throw new ArgumentException("Cannot send the control 'Stop'. " +
-					"To stop the service, call Stop", "control");
+				ServiceException.Create(MSGS_SEND_CTRL, Marshal.GetLastWin32Error());
 			}
 
-			return SendControl(control, StopReasonFlag.NoReason, null);
+			return new ServiceStatus(status);
 		}
 
 		private unsafe ServiceStatus SendControl(
@@ -765,6 +770,15 @@ namespace Utilities.Windows.Services
 			string stopComment) 
 		{
 			return SendControl(ServiceControlCode.Stop, stopReason, stopComment);
+		}
+
+		/// <summary>
+		/// Stops the service.
+		/// </summary>
+		/// <returns>The reported status of the service after the control was processed.</returns>
+		public ServiceStatus StopService()
+		{
+			return SendControl(ServiceControlCode.Stop);
 		}
 
 		/// <summary>
