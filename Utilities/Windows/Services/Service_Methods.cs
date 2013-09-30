@@ -11,8 +11,27 @@ using Utilities.Windows.Services.Interop;
 
 namespace Utilities.Windows.Services
 {
-	partial class Service 
+	partial class Service
 	{
+		#region Consts
+
+		private const string LOCAL_SYSTEM = "LocalSystem";
+
+		public const string ACCOUNT_LOCAL_SERVICE = @"NT AUTHORITY\LocalService";
+		public const string ACCOUNT_NETWORK_SERVICE = @"NT AUTHORITY\NetworkService";
+		public const string ACCOUNT_LOCAL_SYSTEM = @".\" + LOCAL_SYSTEM;
+
+		private static readonly string[] INTERNAL_ACCOUNTS = new string[]
+		{
+			ACCOUNT_LOCAL_SERVICE,
+			ACCOUNT_NETWORK_SERVICE,
+			ACCOUNT_LOCAL_SYSTEM,
+			LOCAL_SYSTEM,
+			Environment.MachineName + @"\" + LOCAL_SYSTEM,
+
+		};
+		#endregion
+
 		#region Methods
 
 		private void HookEvents()
@@ -25,6 +44,35 @@ namespace Utilities.Windows.Services
 					true);
 				this.events.ServiceNotification += Events_ServiceNotification;
 			}
+		}
+
+		/// <summary>
+		/// Sets the service's user account
+		/// </summary>
+		/// <param name="accountName">
+		/// The name of the account under which the service should run. 
+		/// If the service type is OwnProcess, use an account name in the form DomainName\UserName. 
+		/// The service process will be logged on as this user. 
+		/// If the account belongs to the built-in domain, you can specify .\UserName 
+		/// (note that the corresponding C/C++ string is ".\\UserName").
+		/// 
+		/// You can user one of the account constants.
+		/// </param>
+		/// <param name="password">
+		/// The password to the account name specified by the accountName parameter.
+		/// Specify an empty string if the account has no password or 
+		/// if the service runs in the LocalService, NetworkService, or LocalSystem account.
+		/// </param>
+		public void SetUserAccount(string accountName, string password)
+		{
+			accountName = accountName ?? "";
+
+			password = INTERNAL_ACCOUNTS.Any(winAccount =>
+					winAccount.Equals(accountName, StringComparison.InvariantCultureIgnoreCase))
+				? ""
+				: password ?? "";
+
+			SetConfig(accountName: accountName, password: password);
 		}
 
 		/// <summary>
