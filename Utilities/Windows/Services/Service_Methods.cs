@@ -127,10 +127,13 @@ namespace Utilities.Windows.Services
 		/// Flags of the notification to wait for. 
 		/// If one of the notifications raised - the block ends.
 		/// </param>
-		/// <param name="triggered">Return the notification that was actually raised.</param>
-		public void WaitForNotification(Notification waitFor, out Notification triggered)
+		/// <returns>The notification that was actually raised.</returns>
+		public Notification WaitForNotification(Notification waitFor)
 		{
+			Notification triggered;
 			WaitForNotification(waitFor, Timeout.Infinite, out triggered);
+
+			return triggered;
 		}
 
 		private void Events_ServiceNotification(object sender, ServiceNotificationEventArgs e)
