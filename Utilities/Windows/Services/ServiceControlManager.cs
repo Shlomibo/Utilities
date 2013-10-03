@@ -534,15 +534,18 @@ namespace Utilities.Windows.Services
 				{
 					if (length != 0)
 					{
-						length += (uint)sizeof(char);
+						// Including the null terminator
+						length++;
 
 						if (pOutputName == null)
 						{
-							pOutputName = (char*)Marshal.AllocHGlobal((int)length);
+							pOutputName = (char*)Marshal.AllocHGlobal((int)(length * sizeof(char)));
 						}
 						else
 						{
-							pOutputName = (char*)Marshal.ReAllocHGlobal((IntPtr)pOutputName, (IntPtr)length);
+							pOutputName = (char*)Marshal.ReAllocHGlobal(
+								(IntPtr)pOutputName, 
+								(IntPtr)(length * sizeof(char)));
 						}
 					}
 

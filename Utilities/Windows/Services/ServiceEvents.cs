@@ -38,6 +38,8 @@ namespace Utilities.Windows.Services
 		private bool isService;
 		private Notification lastEvent;
 		private Dictionary<AutoResetEvent, Notification> waiters;
+
+		private readonly CallbackDelegate noAction = pSN => { };
 		#endregion
 
 		#region Events
@@ -67,11 +69,23 @@ namespace Utilities.Windows.Services
 			this.callback = new CallbackDelegate(EventCallback);
 			this.serviceHandle = handle;
 			this.registerFor = registerFor;
-			this.eventScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+			this.eventScheduler = GetScheduler();
 			this.waitHandle = new ManualResetEvent(false);
 			this.isService = isService;
 			this.lastEvent = Notification.None;
 			waiters = new Dictionary<AutoResetEvent, Notification>();
+		}
+
+		private TaskScheduler GetScheduler()
+		{
+			try
+			{
+				return TaskScheduler.FromCurrentSynchronizationContext();
+			}
+			catch 
+			{
+				return TaskScheduler.Default;
+			}
 		}
 
 		~ServiceEvents()
@@ -150,12 +164,12 @@ namespace Utilities.Windows.Services
 				}
 			}
 		}
-
+		
 		private unsafe Task RegisterEventsAsync()
 		{
 			this.isEventRegistered = true;
 
-			return Task.Run(() =>
+			return Task.Factory.StartNew(() =>
 			{
 				lock (this.syncRoot)
 				{
@@ -181,7 +195,12 @@ namespace Utilities.Windows.Services
 					registerFor,
 					this.pSN);
 
-				if (result != Win32API.ERROR_SUCCESS)
+				if (result == Win32API.ERROR_SUCCESS)
+				{
+					this.waitHandle.WaitOne();
+				}
+				else if ((result != Win32API.ERROR_INVALID_HANDLE) && 
+					(result != Win32API.ERROR_SERVICE_MARKED_FOR_DELETE))
 				{
 					lock (this.syncRoot)
 					{
@@ -191,8 +210,7 @@ namespace Utilities.Windows.Services
 					}
 				}
 
-				this.waitHandle.WaitOne();
-			});
+			}, TaskCreationOptions.LongRunning);
 		}
 
 		private unsafe void EventCallback(ServiceNotify* pSN)
