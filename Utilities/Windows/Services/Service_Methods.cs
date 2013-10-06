@@ -141,24 +141,6 @@ namespace System.Windows.Services
 			OnEvent(e.Event, e.Status);
 		}
 
-		private unsafe ServiceStatus GetServiceStatus()
-		{
-			ServiceStatusProcess ssp = new ServiceStatusProcess();
-			uint stub;
-
-			if (!Win32API.QueryServiceStatus(
-				this.Handle,
-				Win32API.SC_STATUS_PROCESS_INFO,
-				&ssp,
-				(uint)sizeof(ServiceStatusProcess),
-				out stub))
-			{
-				throw ServiceException.Create(MSGS_SERVICE_STATUS, Marshal.GetLastWin32Error());
-			}
-
-			return new ServiceStatus(ssp);
-		}
-
 		private unsafe LaunchProtected GetLaunchProtection()
 		{
 			ServiceLaunchProtectedInfo slpi = new ServiceLaunchProtectedInfo();

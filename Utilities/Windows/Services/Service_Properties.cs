@@ -698,12 +698,28 @@ namespace System.Windows.Services
 		/// <summary>
 		/// Gets the service status.
 		/// </summary>
-		public ServiceStatus ServiceStatus
+		public ServiceStatus Status
 		{
 			get
 			{
-				ThrowIfDisposed();
-				return GetServiceStatus();
+				unsafe
+				{
+					ThrowIfDisposed();
+					ServiceStatusProcess ssp = new ServiceStatusProcess();
+					uint stub;
+
+					if (!Win32API.QueryServiceStatus(
+								this.Handle,
+								Win32API.SC_STATUS_PROCESS_INFO,
+								&ssp,
+								(uint)sizeof(ServiceStatusProcess),
+								out stub))
+					{
+						throw ServiceException.Create(MSGS_SERVICE_STATUS, Marshal.GetLastWin32Error());
+					}
+
+					return new ServiceStatus(ssp); 
+				}
 			}
 		}
 		#endregion
