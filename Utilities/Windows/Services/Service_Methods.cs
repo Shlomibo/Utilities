@@ -819,30 +819,31 @@ namespace System.Windows.Services
 		{
 			char** lpszArgs = null;
 			int count = 0;
+			string argsString = null;
 
 			try
 			{
 				if ((args != null) && (args.Length > 0))
 				{
 					var multiStringArgs = new MultiString(args);
-					string argsString = multiStringArgs.ToString();
+					argsString = multiStringArgs.ToString();
 					count = args.Length;
 
 					lpszArgs = (char**)Marshal.AllocHGlobal(sizeof(char*) * args.Length);
+				}
 
-					fixed (char* lpArgsString = argsString)
+				fixed (char* lpArgsString = argsString)
+				{
+					for (int i = 0, charIndex = 0;
+						i < count;
+						i++, charIndex += args[i].Length + 1)
 					{
-						for (int i = 0, charIndex = 0;
-							i < args.Length;
-							i++, charIndex += args[i].Length + 1)
-						{
-							lpszArgs[i] = lpArgsString + charIndex;
-						}
+						lpszArgs[i] = lpArgsString + charIndex;
+					}
 
-						if (!Win32API.StartService(this.Handle, (uint)count, lpszArgs))
-						{
-							throw ServiceException.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
-						}
+					if (!Win32API.StartService(this.Handle, (uint)count, lpszArgs))
+					{
+						throw ServiceException.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
 					}
 				}
 			}

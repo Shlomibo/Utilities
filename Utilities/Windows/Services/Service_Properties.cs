@@ -703,7 +703,7 @@ namespace System.Windows.Services
 			get
 			{
 				ThrowIfDisposed();
-				return this.serviceStatus.Value;
+				return GetServiceStatus();
 			}
 		}
 		#endregion

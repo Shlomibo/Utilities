@@ -217,7 +217,14 @@ namespace System.Windows.Services
 					throw new FeatureNotSupportedException(ex);
 				}
 
-			}, TaskCreationOptions.LongRunning);
+			}, TaskCreationOptions.LongRunning).ContinueWith(
+				task =>
+					{
+						throw new FeatureNotSupportedException(task.Exception);
+					},
+				CancellationToken.None,
+				TaskContinuationOptions.OnlyOnFaulted,
+				this.eventScheduler);
 		}
 
 		private unsafe void EventCallback(ServiceNotify* pSN)

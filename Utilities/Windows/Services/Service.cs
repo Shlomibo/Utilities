@@ -45,7 +45,6 @@ namespace System.Windows.Services
 		private Lazy<SidType> sidType;
 		private Lazy<ReadOnlyCollection<Trigger>> triggers;
 		private Lazy<LaunchProtected> launchProtection;
-		private Lazy<ServiceStatus> serviceStatus;
 		private ServiceEvents events;
 		#endregion
 
@@ -231,7 +230,6 @@ namespace System.Windows.Services
 			this.triggers = new Lazy<ReadOnlyCollection<Trigger>>(GetTriggers);
 			this.launchProtection = new Lazy<LaunchProtected>(GetLaunchProtection);
 			this.DependentServices = new DependentServicesCollection(this);
-			this.serviceStatus = new Lazy<ServiceStatus>(GetServiceStatus);
 		}
 
 		internal Service(
