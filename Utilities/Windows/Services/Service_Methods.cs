@@ -733,27 +733,34 @@ namespace System.Windows.Services
 			StopReasonFlag stopReason,
 			string stopComment)
 		{
-			ThrowIfDisposed();
-
-			fixed (char* lpStopComment = stopComment)
+			try
 			{
-				ServiceControlStatusReasonParams scsrp = new ServiceControlStatusReasonParams
-				{
-					comment = lpStopComment,
-					reason = stopReason,
-					serviceStatus = new ServiceStatusProcess(),
-				};
+				ThrowIfDisposed();
 
-				if (!Win32API.ControlService(
-					this.Handle,
-					control.Code,
-					Win32API.SERVICE_CONTROL_STATUS_REASON_INFO,
-					&scsrp))
+				fixed (char* lpStopComment = stopComment)
 				{
-					throw ServiceException.Create(MSGS_SEND_CTRL, Marshal.GetLastWin32Error());
+					ServiceControlStatusReasonParams scsrp = new ServiceControlStatusReasonParams
+					{
+						comment = lpStopComment,
+						reason = stopReason,
+						serviceStatus = new ServiceStatusProcess(),
+					};
+
+					if (!Win32API.ControlService(
+						this.Handle,
+						control.Code,
+						Win32API.SERVICE_CONTROL_STATUS_REASON_INFO,
+						&scsrp))
+					{
+						throw ServiceException.Create(MSGS_SEND_CTRL, Marshal.GetLastWin32Error());
+					}
+
+					return new ServiceStatus(scsrp.serviceStatus);
 				}
-
-				return new ServiceStatus(scsrp.serviceStatus);
+			}
+			catch (EntryPointNotFoundException ex)
+			{
+				throw new FeatureNotSupportedException(ex);
 			}
 		}
 

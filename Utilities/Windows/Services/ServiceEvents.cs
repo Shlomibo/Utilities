@@ -171,43 +171,50 @@ namespace System.Windows.Services
 
 			return Task.Factory.StartNew(() =>
 			{
-				lock (this.syncRoot)
-				{
-					this.pSN = (ServiceNotify*)Marshal.AllocHGlobal(sizeof(ServiceNotify));
-				}
-
-				Notification registerFor = this.registerFor;
-
-				if (this.isService)
-				{
-					registerFor &= ~this.lastEvent;
-				}
-
-				(*this.pSN) = new ServiceNotify
-				{
-					version = ServiceNotify.SERVICE_NOTIFY_STATUS_CHANGE,
-					notifyCallback = Marshal.GetFunctionPointerForDelegate(this.callback),
-					context = IntPtr.Zero,
-				};
-
-				int result = (int)Win32API.NotifyServiceStatusChange(
-					this.serviceHandle,
-					registerFor,
-					this.pSN);
-
-				if (result == Win32API.ERROR_SUCCESS)
-				{
-					this.waitHandle.WaitOne();
-				}
-				else if ((result != Win32API.ERROR_INVALID_HANDLE) && 
-					(result != Win32API.ERROR_SERVICE_MARKED_FOR_DELETE))
+				try
 				{
 					lock (this.syncRoot)
 					{
-						Marshal.FreeHGlobal((IntPtr)this.pSN);
-						this.pSN = null;
-						throw ServiceException.Create(MSGS_NTFY_STTS_CHNG, result);
+						this.pSN = (ServiceNotify*)Marshal.AllocHGlobal(sizeof(ServiceNotify));
 					}
+
+					Notification registerFor = this.registerFor;
+
+					if (this.isService)
+					{
+						registerFor &= ~this.lastEvent;
+					}
+
+					(*this.pSN) = new ServiceNotify
+					{
+						version = ServiceNotify.SERVICE_NOTIFY_STATUS_CHANGE,
+						notifyCallback = Marshal.GetFunctionPointerForDelegate(this.callback),
+						context = IntPtr.Zero,
+					};
+
+					int result = (int)Win32API.NotifyServiceStatusChange(
+						this.serviceHandle,
+						registerFor,
+						this.pSN);
+
+					if (result == Win32API.ERROR_SUCCESS)
+					{
+						this.waitHandle.WaitOne();
+					}
+					else if ((result != Win32API.ERROR_INVALID_HANDLE) &&
+						(result != Win32API.ERROR_SERVICE_MARKED_FOR_DELETE))
+					{
+						lock (this.syncRoot)
+						{
+							Marshal.FreeHGlobal((IntPtr)this.pSN);
+							this.pSN = null;
+							throw ServiceException.Create(MSGS_NTFY_STTS_CHNG, result);
+						}
+					}
+				}
+				catch (EntryPointNotFoundException ex)
+				{
+					throw new FeatureNotSupportedException(ex);
 				}
 
 			}, TaskCreationOptions.LongRunning);
