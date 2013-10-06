@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// Represents the available privileges for a service

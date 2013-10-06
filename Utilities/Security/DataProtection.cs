@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Utilities.Security
+namespace System.Security
 {
 	/// <summary>
 	/// Provides managed access to DPAPI

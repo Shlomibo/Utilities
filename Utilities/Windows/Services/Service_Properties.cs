@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Runtime.InteropServices;
-using Utilities.Windows.Interop;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	partial class Service
 	{

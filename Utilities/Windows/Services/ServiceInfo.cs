@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// Contains the name of a service in a service control manager database and information about the service.

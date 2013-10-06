@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Interop
+namespace System.Windows.Interop
 {
 	/// <summary>
 	/// Represents a multi-string

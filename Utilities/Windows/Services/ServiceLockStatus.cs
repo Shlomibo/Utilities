@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// The lock status for SCM

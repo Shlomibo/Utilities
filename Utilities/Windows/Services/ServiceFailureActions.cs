@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// Represents the action the service controller should take on each failure of a service. 

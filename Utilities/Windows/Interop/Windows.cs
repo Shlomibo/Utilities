@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Interop
+namespace System.Windows.Interop
 {
 	internal static class Windows
 	{

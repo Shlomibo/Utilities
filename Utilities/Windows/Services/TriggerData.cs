@@ -4,9 +4,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// Contains trigger-specific data for a service trigger event. 

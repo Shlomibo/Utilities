@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	/// <summary>
 	/// A service control code
 	/// </summary>
-	public struct ServiceControlCode : IEquatable<ServiceControlCode>
+	public struct ControlCode : IEquatable<ControlCode>
 	{
 		#region Consts
 
@@ -111,7 +111,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service that it should stop.
 		/// </summary>
-		public static readonly ServiceControlCode Stop = new ServiceControlCode
+		public static readonly ControlCode Stop = new ControlCode
 		{
 			Code = (uint)ApplicationControl.Stop,
 		};
@@ -119,7 +119,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service that it should pause.
 		/// </summary>
-		public static readonly ServiceControlCode Pause = new ServiceControlCode
+		public static readonly ControlCode Pause = new ControlCode
 		{
 			Code = (uint)ApplicationControl.Pause
 		};
@@ -127,7 +127,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a paused service that it should resume.
 		/// </summary>
-		public static readonly ServiceControlCode Continue = new ServiceControlCode
+		public static readonly ControlCode Continue = new ControlCode
 		{
 			Code = (uint)ApplicationControl.Continue
 		};
@@ -137,7 +137,7 @@ namespace Utilities.Windows.Services
 		/// 
 		/// The handler should simply return NO_ERROR; the SCM is aware of the current state of the service.
 		/// </summary>
-		public static readonly ServiceControlCode Interrogate = new ServiceControlCode
+		public static readonly ControlCode Interrogate = new ControlCode
 		{
 			Code = (uint)ApplicationControl.Interrogate
 		};
@@ -150,7 +150,7 @@ namespace Utilities.Windows.Services
 		/// The service should reread its startup parameters.
 		/// </summary>
 		[Obsolete]
-		public static readonly ServiceControlCode ParamChange = new ServiceControlCode
+		public static readonly ControlCode ParamChange = new ControlCode
 		{
 			Code = (uint)ApplicationControl.ParamChange
 		};
@@ -162,7 +162,7 @@ namespace Utilities.Windows.Services
 		/// Applications should use Plug and Play functionality instead.
 		/// </summary>
 		[Obsolete]
-		public static readonly ServiceControlCode NetBindAdd = new ServiceControlCode
+		public static readonly ControlCode NetBindAdd = new ControlCode
 		{
 			Code = (uint)ApplicationControl.NetBindAdd
 		};
@@ -174,7 +174,7 @@ namespace Utilities.Windows.Services
 		/// Applications should use Plug and Play functionality instead.
 		/// </summary>
 		[Obsolete]
-		public static readonly ServiceControlCode NetBindRemove = new ServiceControlCode
+		public static readonly ControlCode NetBindRemove = new ControlCode
 		{
 			Code = (uint)ApplicationControl.NetBindRemove
 		};
@@ -186,7 +186,7 @@ namespace Utilities.Windows.Services
 		/// Applications should use Plug and Play functionality instead.
 		/// </summary>
 		[Obsolete]
-		public static readonly ServiceControlCode NetBindEnable = new ServiceControlCode
+		public static readonly ControlCode NetBindEnable = new ControlCode
 		{
 			Code = (uint)ApplicationControl.NetBindEnable
 		};
@@ -198,7 +198,7 @@ namespace Utilities.Windows.Services
 		/// Applications should use Plug and Play functionality instead.
 		/// </summary>
 		[Obsolete]
-		public static readonly ServiceControlCode NetBindDisable = new ServiceControlCode
+		public static readonly ControlCode NetBindDisable = new ControlCode
 		{
 			Code = (uint)ApplicationControl.NetBindDisable
 		};
@@ -210,7 +210,7 @@ namespace Utilities.Windows.Services
 		/// (The service must have registered to receive these notifications using the RegisterDeviceNotification function.) 
 		/// The dwEventType and lpEventData parameters contain additional information.
 		/// </summary>
-		public static readonly ServiceControlCode DeviceEvent = new ServiceControlCode
+		public static readonly ControlCode DeviceEvent = new ControlCode
 		{
 			Code = DEVICE_EVENT
 		};
@@ -219,7 +219,7 @@ namespace Utilities.Windows.Services
 		/// Notifies a service that the computer's hardware profile has changed. 
 		/// The dwEventType parameter contains additional information.
 		/// </summary>
-		public static readonly ServiceControlCode HardwareProfileChanged = new ServiceControlCode
+		public static readonly ControlCode HardwareProfileChanged = new ControlCode
 		{
 			Code = HARDWARE_PROFILE_CHANGE
 		};
@@ -227,7 +227,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service of system power events.
 		/// </summary>
-		public static readonly ServiceControlCode PowerEvent = new ServiceControlCode
+		public static readonly ControlCode PowerEvent = new ControlCode
 		{
 			Code = POWER_EVENT
 		};
@@ -235,7 +235,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service of session change events.
 		/// </summary>
-		public static readonly ServiceControlCode SessionChange = new ServiceControlCode
+		public static readonly ControlCode SessionChange = new ControlCode
 		{
 			Code = SESSION_CHANGE
 		};
@@ -243,7 +243,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service that the system time has changed.
 		/// </summary>
-		public static readonly ServiceControlCode TimeChange = new ServiceControlCode
+		public static readonly ControlCode TimeChange = new ControlCode
 		{
 			Code = TIME_CHANGE
 		};
@@ -251,7 +251,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service registered for a service trigger event that the event has occurred.
 		/// </summary>
-		public static readonly ServiceControlCode TriggerEvent = new ServiceControlCode
+		public static readonly ControlCode TriggerEvent = new ControlCode
 		{
 			Code = TRIGGER_EVENT
 		};
@@ -259,7 +259,7 @@ namespace Utilities.Windows.Services
 		/// <summary>
 		/// Notifies a service that the user has initiated a reboot.
 		/// </summary>
-		public static readonly ServiceControlCode UserModeReboot = new ServiceControlCode
+		public static readonly ControlCode UserModeReboot = new ControlCode
 		{
 			Code = USER_MODE_REBOOT
 		};
@@ -278,7 +278,7 @@ namespace Utilities.Windows.Services
 		/// </summary>
 		public string Name
 		{
-			get { return ServiceControlCode.GetName(this.Code); }
+			get { return ControlCode.GetName(this.Code); }
 		}
 		#endregion
 
@@ -289,7 +289,7 @@ namespace Utilities.Windows.Services
 		/// Be aware that only valid control codes are supported.
 		/// </summary>
 		/// <param name="control">The control code.</param>
-		public ServiceControlCode(uint control)
+		public ControlCode(uint control)
 			: this()
 		{
 			if (!IsLegal(control))
@@ -305,7 +305,7 @@ namespace Utilities.Windows.Services
 		/// Be aware that only valid control codes are supported.
 		/// </summary>
 		/// <param name="control">The control code.</param>
-		public ServiceControlCode(ApplicationControl control) : this((uint)control) { }
+		public ControlCode(ApplicationControl control) : this((uint)control) { }
 		#endregion
 
 		#region Methods
@@ -370,7 +370,7 @@ namespace Utilities.Windows.Services
 		private bool IsLegal(uint control)
 		{
 			return ((control >= MIN_USER_EVENT) && (control <= MAX_USER_EVENT)) ||
-				ServiceControlCode.ValidNotUserEvents.Contains(control) ||
+				ControlCode.ValidNotUserEvents.Contains(control) ||
 				(Enum.IsDefined(typeof(ApplicationControl), control) && (control != 0));
 		}
 
@@ -379,7 +379,7 @@ namespace Utilities.Windows.Services
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>
 		/// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
-		public bool Equals(ServiceControlCode other)
+		public bool Equals(ControlCode other)
 		{
 			return this.Code == other.Code;
 		}
@@ -404,7 +404,7 @@ namespace Utilities.Windows.Services
 			}
 
 			// TODO: write your implementation of Equals() here
-			return Equals((ServiceControlCode)obj);
+			return Equals((ControlCode)obj);
 		}
 
 		/// <summary>
@@ -430,37 +430,37 @@ namespace Utilities.Windows.Services
 		#region Operators
 
 		/// <summary></summary><param name="left"></param><param name="right"></param><returns></returns>
-		public static bool operator ==(ServiceControlCode left, ServiceControlCode right)
+		public static bool operator ==(ControlCode left, ControlCode right)
 		{
 			return left.Equals(right);
 		}
 
 		/// <summary></summary><param name="left"></param><param name="right"></param><returns></returns>
-		public static bool operator !=(ServiceControlCode left, ServiceControlCode right)
+		public static bool operator !=(ControlCode left, ControlCode right)
 		{
 			return !(left == right);
 		}
 
 		/// <summary></summary><param name="value"></param><returns></returns>
-		public static explicit operator ServiceControlCode(uint value)
+		public static explicit operator ControlCode(uint value)
 		{
-			return new ServiceControlCode(value);
+			return new ControlCode(value);
 		}
 
 		/// <summary></summary><param name="value"></param><returns></returns>
-		public static implicit operator uint(ServiceControlCode value)
+		public static implicit operator uint(ControlCode value)
 		{
 			return value.Code;
 		}
 
 		/// <summary></summary><param name="value"></param><returns></returns>
-		public static implicit operator ServiceControlCode(ApplicationControl value)
+		public static implicit operator ControlCode(ApplicationControl value)
 		{
-			return new ServiceControlCode(value);
+			return new ControlCode(value);
 		}
 
 		/// <summary></summary><param name="value"></param><returns></returns>
-		public static explicit operator ApplicationControl(ServiceControlCode value)
+		public static explicit operator ApplicationControl(ControlCode value)
 		{
 			if (!Enum.IsDefined(typeof(ApplicationControl), value.Code))
 			{

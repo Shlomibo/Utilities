@@ -7,7 +7,7 @@
     <ProjectGuid>{02D61B0E-3147-44E2-B624-86F644C86A74}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Utilities</RootNamespace>
+    <RootNamespace>System</RootNamespace>
     <AssemblyName>Utilities</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -170,7 +170,7 @@
     <Compile Include="Windows\Services\ServiceControlLock.cs" />
     <Compile Include="Windows\Services\ServiceException.cs" />
     <Compile Include="Windows\Services\ServiceFailureActions.cs" />
-    <Compile Include="Windows\Services\ServiceControlCode.cs" />
+    <Compile Include="Windows\Services\ControlCode.cs" />
     <Compile Include="Windows\Services\Enums.cs" />
     <Compile Include="Windows\Services\Interop\Win32API.cs" />
     <Compile Include="Windows\Services\Interop\InteropStructures.cs" />

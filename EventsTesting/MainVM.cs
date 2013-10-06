@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Windows.Services;
+using System.Windows.Services;
 
 namespace EventsTesting
 {

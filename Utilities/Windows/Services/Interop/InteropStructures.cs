@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Services.Interop
+namespace System.Windows.Services.Interop
 {
 	/// <summary>
 	/// Contains status information for a service.

@@ -6,10 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using Utilities.Windows.Interop;
-using Utilities.Windows.Services.Interop;
+using System.Windows.Interop;
+using System.Windows.Services.Interop;
 
-namespace Utilities.Windows.Services
+namespace System.Windows.Services
 {
 	partial class Service
 	{
@@ -715,7 +715,7 @@ namespace Utilities.Windows.Services
 		/// Sends a control code to a service.
 		/// </summary>
 		/// <param name="control">The control code for the service.</param>
-		public ServiceStatus SendControl(ServiceControlCode control)
+		public ServiceStatus SendControl(ControlCode control)
 		{
 			ThrowIfDisposed();
 			Interop.ServiceStatus status;
@@ -729,7 +729,7 @@ namespace Utilities.Windows.Services
 		}
 
 		private unsafe ServiceStatus SendControl(
-			ServiceControlCode control,
+			ControlCode control,
 			StopReasonFlag stopReason,
 			string stopComment)
 		{
@@ -772,7 +772,7 @@ namespace Utilities.Windows.Services
 			StopReasonFlag stopReason, 
 			string stopComment) 
 		{
-			return SendControl(ServiceControlCode.Stop, stopReason, stopComment);
+			return SendControl(ControlCode.Stop, stopReason, stopComment);
 		}
 
 		/// <summary>
@@ -781,7 +781,7 @@ namespace Utilities.Windows.Services
 		/// <returns>The reported status of the service after the control was processed.</returns>
 		public ServiceStatus StopService()
 		{
-			return SendControl(ServiceControlCode.Stop);
+			return SendControl(ControlCode.Stop);
 		}
 
 		/// <summary>

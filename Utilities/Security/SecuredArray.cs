@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Security
+namespace System.Security
 {
 	/// <summary>
 	/// Represents an array which its memory is zeroed when disposed

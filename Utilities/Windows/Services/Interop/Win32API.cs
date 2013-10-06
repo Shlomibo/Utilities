@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Windows.Services.Interop
+namespace System.Windows.Services.Interop
 {
 	internal static unsafe class Win32API
 	{
@@ -399,7 +399,7 @@ namespace Utilities.Windows.Services.Interop
 		[DllImport("Advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
 		public static extern bool ControlService(
 			IntPtr hService,
-			ServiceControlCode control,
+			ControlCode control,
 			out ServiceStatus status);
 
 		/// <summary>
