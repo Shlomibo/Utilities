@@ -831,12 +831,12 @@ namespace System.Windows.Services
 						{
 							lpszArgs[i] = lpArgsString + charIndex;
 						}
-					}
-				}
 
-				if (!Win32API.StartService(this.Handle, (uint)count, lpszArgs))
-				{
-					throw ServiceException.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
+						if (!Win32API.StartService(this.Handle, (uint)count, lpszArgs))
+						{
+							throw ServiceException.Create(MSGS_START_SVC, Marshal.GetLastWin32Error());
+						}
+					}
 				}
 			}
 			finally
