@@ -722,6 +722,28 @@ namespace System.Windows.Services
 				}
 			}
 		}
+
+		/// <summary>
+		/// Gets true if the service can be stopped; otherwise false.
+		/// </summary>
+		public bool CanStop
+		{
+			get
+			{
+				return (this.Status.AcceptedControls & AcceptedControls.Stop) == AcceptedControls.Stop;
+			}
+		}
+
+		/// <summary>
+		/// Gets true if the service can be paused or continued; otherwise false.
+		/// </summary>
+		public bool CanPauseContinue
+		{
+			get
+			{
+				return (this.Status.AcceptedControls & AcceptedControls.PauseContinue) == AcceptedControls.PauseContinue;
+			}
+		}
 		#endregion
 	}
 }
