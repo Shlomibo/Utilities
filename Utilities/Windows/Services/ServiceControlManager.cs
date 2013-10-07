@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Services.Interop;
+using Utilities;
 
 namespace System.Windows.Services
 {
@@ -642,6 +643,53 @@ namespace System.Windows.Services
 			}
 
 			return (uint)desiredAccess;
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="millisecondsTimeout">The timeout in milliseconds.</param>
+		/// <returns>Task for the wait operation.</returns>
+		public Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor, 
+			int millisecondsTimeout)
+		{
+			return Task.Factory.StartNew(
+				() =>
+				{
+					Notification triggered;
+					bool didTimedOut = !WaitForNotification(waitFor, millisecondsTimeout, out triggered);
+
+					return didTimedOut
+						? new TimedResult<Notification>()
+						: new TimedResult<Notification>(triggered);
+				}
+			,
+			TaskCreationOptions.LongRunning);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="timeout">The timeout before wait is cancelled.</param>
+		/// <returns>Task for the wait operation.</returns>
+		public Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor,
+			TimeSpan timeout)
+		{
+			return WaitForNotificationAsync(waitFor, timeout.Milliseconds);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <returns>Task for the wait operation.</returns>
+		public async Task<Notification> WaitForNotificationAsync(Notification waitFor)
+		{
+			return (await WaitForNotificationAsync(waitFor, Timeout.Infinite)).Result;
 		}
 		#endregion
 	}

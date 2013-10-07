@@ -6,8 +6,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Interop;
 using System.Windows.Services.Interop;
+using Utilities;
 
 namespace System.Windows.Services
 {
@@ -16,6 +18,7 @@ namespace System.Windows.Services
 		#region Consts
 
 		private const string LOCAL_SYSTEM = "LocalSystem";
+		private const int RECHECK_TIMEOUT = 500;
 
 		/// <summary>The LocalService account name.</summary>
 		public const string ACCOUNT_LOCAL_SERVICE = @"NT AUTHORITY\LocalService";
@@ -93,6 +96,10 @@ namespace System.Windows.Services
 		/// true if one of notification was raised before the timeout elapsed;
 		/// otherwise false.
 		/// </returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForState.
+		/// </remarks>
 		public bool WaitForNotification(Notification waitFor, int millisecondsTimeout, out Notification triggered)
 		{
 			HookEvents();
@@ -115,6 +122,10 @@ namespace System.Windows.Services
 		/// true if one of notification was raised before the timeout elapsed;
 		/// otherwise false.
 		/// </returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForState.
+		/// </remarks>
 		public bool WaitForNotification(Notification waitFor, TimeSpan timeout, out Notification triggered)
 		{
 			return WaitForNotification(waitFor, timeout.Milliseconds, out triggered);
@@ -128,12 +139,218 @@ namespace System.Windows.Services
 		/// If one of the notifications raised - the block ends.
 		/// </param>
 		/// <returns>The notification that was actually raised.</returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForState.
+		/// </remarks>
 		public Notification WaitForNotification(Notification waitFor)
 		{
 			Notification triggered;
 			WaitForNotification(waitFor, Timeout.Infinite, out triggered);
 
 			return triggered;
+		}
+
+		/// <summary>
+		/// Blocks the calling thread until the service state is changed to the given state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
+		/// <returns>
+		/// true if the state of the service has changed, before the timeout was elapsed; otherwise false.
+		/// </returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotification instead.
+		/// </remarks>
+		public bool WaitForState(State state, int millisecondsTimeout = Timeout.Infinite)
+		{
+			Task<bool> waitTask = WaitForStateAsync(state, millisecondsTimeout);
+			waitTask.Wait();
+
+			if (waitTask.IsFaulted)
+			{
+				throw new Exception("Error while wating for state to change", waitTask.Exception);
+			}
+
+			return waitTask.Result;
+		}
+
+		/// <summary>
+		/// Blocks the calling thread until the service state is changed to the given state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="timeput">A timeout before the wait is cancelled.</param>
+		/// <returns>
+		/// true if the state of the service has changed, before the timeout was elapsed; otherwise false.
+		/// </returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotification instead.
+		/// </remarks>
+		public bool WaitForState(State state, TimeSpan timeput)
+		{
+			return WaitForState(state, timeput.Milliseconds);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="millisecondsTimeout">The timeout in milliseconds.</param>
+		/// <returns>Task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForStateAsync.
+		/// </remarks>
+		public Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor, 
+			int millisecondsTimeout)
+		{
+			return Task.Factory.StartNew(
+				() =>
+				{
+					Notification triggered;
+					bool didTimedOut = !WaitForNotification(waitFor, millisecondsTimeout, out triggered);
+
+					return didTimedOut
+						? new TimedResult<Notification>()
+						: new TimedResult<Notification>(triggered);
+				},
+				TaskCreationOptions.LongRunning);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="timeout">The timeout before wait is cancelled.</param>
+		/// <returns>Task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForStateAsync.
+		/// </remarks>
+		public Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor,
+			TimeSpan timeout)
+		{
+			return WaitForNotificationAsync(waitFor, timeout.Milliseconds);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <returns>Task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is suppoeted only on Windows Vista and above.
+		/// For older operating systems, use WaitForStateAsync.
+		/// </remarks>
+		public async Task<Notification> WaitForNotificationAsync(Notification waitFor)
+		{
+			return (await WaitForNotificationAsync(waitFor, Timeout.Infinite)).Result;
+		}
+
+		/// <summary>
+		/// Asynchronically waits for service to change state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="token">Cancellation token for the operation</param>
+		/// <param name="timeout">A timeout before the wait is cancelled.</param>
+		/// <returns>A task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotificationAsync instead.
+		/// </remarks>
+		public Task<bool> WaitForStateAsync(
+			State state,
+			CancellationToken token,
+			TimeSpan timeout)
+		{
+			return WaitForStateAsync(state, token, timeout.Milliseconds);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for service to change state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="token">Cancellation token for the operation</param>
+		/// <returns>A task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotificationAsync instead.
+		/// </remarks>
+		public Task<bool> WaitForStateAsync(
+			State state,
+			CancellationToken token)
+		{
+			return WaitForStateAsync(state, token, Timeout.InfiniteTimeSpan);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for service to change state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="timeout">A timeout before the wait is cancelled.</param>
+		/// <returns>A task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotificationAsync instead.
+		/// </remarks>
+		public Task<bool> WaitForStateAsync(
+			State state,
+			TimeSpan timeout)
+		{
+			return WaitForStateAsync(state, CancellationToken.None, timeout);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for service to change state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
+		/// <returns>A task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotificationAsync instead.
+		/// </remarks>
+		public Task<bool> WaitForStateAsync(
+			State state,
+			int millisecondsTimeout = Timeout.Infinite)
+		{
+			return WaitForStateAsync(state, CancellationToken.None, millisecondsTimeout);
+		}
+
+		/// <summary>
+		/// Asynchronically waits for service to change state.
+		/// </summary>
+		/// <param name="state">The state to wait for.</param>
+		/// <param name="token">Cancellation token for the operation</param>
+		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
+		/// <returns>A task for the wait operation.</returns>
+		/// <remarks>
+		/// This method is deprecated on Windows Vista and above.
+		/// It is recommended to to use WaitForNotificationAsync instead.
+		/// </remarks>
+		public async Task<bool> WaitForStateAsync(
+			State state,
+			CancellationToken token,
+			int millisecondsTimeout = Timeout.Infinite)
+		{
+			var timeoutWatch = Stopwatch.StartNew();
+
+			while ((this.Status.State != state) &&
+				!token.IsCancellationRequested &&
+				((millisecondsTimeout == Timeout.Infinite) || (timeoutWatch.ElapsedMilliseconds < millisecondsTimeout)))
+			{
+				await Task.Delay(RECHECK_TIMEOUT, token);
+			}
+
+			timeoutWatch.Stop();
+
+			return !token.IsCancellationRequested &&
+				((millisecondsTimeout == Timeout.Infinite) ||
+				(timeoutWatch.ElapsedMilliseconds < millisecondsTimeout));
 		}
 
 		private void Events_ServiceNotification(object sender, ServiceNotificationEventArgs e)
@@ -382,6 +599,8 @@ namespace System.Windows.Services
 
 			return preferedNode;
 		}
+
+		//public Task
 
 		private unsafe string GetDescription()
 		{

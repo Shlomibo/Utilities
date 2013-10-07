@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Utilities;
 
 namespace System.Windows.Services
 {
@@ -54,5 +56,33 @@ namespace System.Windows.Services
 		/// </param>
 		/// <returns>The notification that was actually raised.</returns>
 		Notification WaitForNotification(Notification waitFor);
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="millisecondsTimeout">The timeout in milliseconds.</param>
+		/// <returns>Task for the wait operation.</returns>
+		Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor,
+			int millisecondsTimeout);
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <param name="timeout">The timeout before wait is cancelled.</param>
+		/// <returns>Task for the wait operation.</returns>
+		Task<TimedResult<Notification>> WaitForNotificationAsync(
+			Notification waitFor,
+			TimeSpan timeout);
+
+		/// <summary>
+		/// Asynchronically waits for notification to be triggered.
+		/// </summary>
+		/// <param name="waitFor">Flags of the notification to be waited.</param>
+		/// <returns>Task for the wait operation.</returns>
+		Task<Notification> WaitForNotificationAsync(
+			Notification waitFor);
 	}
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security;
 using System.Windows.Services;
+using Utilities;
 
 namespace CTests
 {
@@ -14,23 +15,7 @@ namespace CTests
 	{
 		static void Main(string[] args)
 		{
-			using (var scm = new ServiceControlManager())
-			{
-				using (var service = scm.OpenService("TestSvc"))
-				{
-					service.WaitForNotification(Notification.Running);
-					Console.WriteLine("svc -> running");
-
-					service.WaitForNotification(Notification.Paused);
-					Console.WriteLine("svc -> paused");
-
-					service.WaitForNotification(Notification.Running);
-					Console.WriteLine("svc -> running");
-
-					service.WaitForNotification(Notification.Stopped);
-					Console.WriteLine("svc -> stopped");
-				}
-			}
+			Test();
 
 			Console.ReadLine();
 
@@ -42,6 +27,43 @@ namespace CTests
 			//		svc.Delete();
 			//	}
 			//}
+		}
+
+		private static void Test()
+		{
+			try
+			{
+				using (var scm = new ServiceControlManager())
+				{
+					using (var service = scm.OpenService("TestSvc"))
+					{
+						if (service.WaitForState(State.Running, 500))
+						{
+							Console.WriteLine("svc -> Running");
+						}
+						else
+						{
+							Console.WriteLine("svc -> not running yet");
+						}
+
+						service.WaitForState(State.Running);
+						Console.WriteLine("svc -> Running");
+
+						service.WaitForState(State.Paused);
+						Console.WriteLine("svc -> Paused");
+
+						service.WaitForState(State.Running);
+						Console.WriteLine("svc -> Running");
+
+						service.WaitForState(State.Stopped);
+						Console.WriteLine("svc -> Stopped");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error! \r\n" + ex);
+			}
 		}
 
 		//private static string SafePrint(Func<object> printFunc)
