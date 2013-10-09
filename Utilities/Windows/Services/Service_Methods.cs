@@ -152,48 +152,6 @@ namespace System.Windows.Services
 		}
 
 		/// <summary>
-		/// Blocks the calling thread until the service state is changed to the given state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
-		/// <returns>
-		/// true if the state of the service has changed, before the timeout was elapsed; otherwise false.
-		/// </returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotification instead.
-		/// </remarks>
-		public bool WaitForState(State state, int millisecondsTimeout = Timeout.Infinite)
-		{
-			Task<bool> waitTask = WaitForStateAsync(state, millisecondsTimeout);
-			waitTask.Wait();
-
-			if (waitTask.IsFaulted)
-			{
-				throw new Exception("Error while wating for state to change", waitTask.Exception);
-			}
-
-			return waitTask.Result;
-		}
-
-		/// <summary>
-		/// Blocks the calling thread until the service state is changed to the given state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="timeput">A timeout before the wait is cancelled.</param>
-		/// <returns>
-		/// true if the state of the service has changed, before the timeout was elapsed; otherwise false.
-		/// </returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotification instead.
-		/// </remarks>
-		public bool WaitForState(State state, TimeSpan timeput)
-		{
-			return WaitForState(state, timeput.Milliseconds);
-		}
-
-		/// <summary>
 		/// Asynchronically waits for notification to be triggered.
 		/// </summary>
 		/// <param name="waitFor">Flags of the notification to be waited.</param>
@@ -249,108 +207,6 @@ namespace System.Windows.Services
 		public async Task<Notification> WaitForNotificationAsync(Notification waitFor)
 		{
 			return (await WaitForNotificationAsync(waitFor, Timeout.Infinite)).Result;
-		}
-
-		/// <summary>
-		/// Asynchronically waits for service to change state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="token">Cancellation token for the operation</param>
-		/// <param name="timeout">A timeout before the wait is cancelled.</param>
-		/// <returns>A task for the wait operation.</returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotificationAsync instead.
-		/// </remarks>
-		public Task<bool> WaitForStateAsync(
-			State state,
-			CancellationToken token,
-			TimeSpan timeout)
-		{
-			return WaitForStateAsync(state, token, timeout.Milliseconds);
-		}
-
-		/// <summary>
-		/// Asynchronically waits for service to change state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="token">Cancellation token for the operation</param>
-		/// <returns>A task for the wait operation.</returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotificationAsync instead.
-		/// </remarks>
-		public Task<bool> WaitForStateAsync(
-			State state,
-			CancellationToken token)
-		{
-			return WaitForStateAsync(state, token, Timeout.InfiniteTimeSpan);
-		}
-
-		/// <summary>
-		/// Asynchronically waits for service to change state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="timeout">A timeout before the wait is cancelled.</param>
-		/// <returns>A task for the wait operation.</returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotificationAsync instead.
-		/// </remarks>
-		public Task<bool> WaitForStateAsync(
-			State state,
-			TimeSpan timeout)
-		{
-			return WaitForStateAsync(state, CancellationToken.None, timeout);
-		}
-
-		/// <summary>
-		/// Asynchronically waits for service to change state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
-		/// <returns>A task for the wait operation.</returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotificationAsync instead.
-		/// </remarks>
-		public Task<bool> WaitForStateAsync(
-			State state,
-			int millisecondsTimeout = Timeout.Infinite)
-		{
-			return WaitForStateAsync(state, CancellationToken.None, millisecondsTimeout);
-		}
-
-		/// <summary>
-		/// Asynchronically waits for service to change state.
-		/// </summary>
-		/// <param name="state">The state to wait for.</param>
-		/// <param name="token">Cancellation token for the operation</param>
-		/// <param name="millisecondsTimeout">A timeout in milliseconds before the wait is cancelled.</param>
-		/// <returns>A task for the wait operation.</returns>
-		/// <remarks>
-		/// This method is deprecated on Windows Vista and above.
-		/// It is recommended to to use WaitForNotificationAsync instead.
-		/// </remarks>
-		public async Task<bool> WaitForStateAsync(
-			State state,
-			CancellationToken token,
-			int millisecondsTimeout = Timeout.Infinite)
-		{
-			var timeoutWatch = Stopwatch.StartNew();
-
-			while ((this.Status.State != state) &&
-				!token.IsCancellationRequested &&
-				((millisecondsTimeout == Timeout.Infinite) || (timeoutWatch.ElapsedMilliseconds < millisecondsTimeout)))
-			{
-				await Task.Delay(RECHECK_TIMEOUT, token);
-			}
-
-			timeoutWatch.Stop();
-
-			return !token.IsCancellationRequested &&
-				((millisecondsTimeout == Timeout.Infinite) ||
-				(timeoutWatch.ElapsedMilliseconds < millisecondsTimeout));
 		}
 
 		private void Events_ServiceNotification(object sender, ServiceNotificationEventArgs e)
@@ -801,7 +657,7 @@ namespace System.Windows.Services
 			}
 		}
 
-		internal static unsafe Service CreateService(
+		internal static unsafe Service Create(
 			ServiceControlManager scm,
 			string name,
 			string displayName,
@@ -890,7 +746,7 @@ namespace System.Windows.Services
 		/// </summary>
 		public void Close()
 		{
-			if (!IsClosed)
+			if (!this.IsClosed)
 			{
 				Dispose(true);
 				this.IsClosed = true;
@@ -976,20 +832,11 @@ namespace System.Windows.Services
 		/// An optional string that provides additional information about the service stop. 
 		/// </param>
 		/// <returns>The reported status of the service after the control was processed.</returns>
-		public ServiceStatus StopService(
+		public ServiceStatus Stop(
 			StopReasonFlag stopReason, 
 			string stopComment) 
 		{
 			return SendControl(ControlCode.Stop, stopReason, stopComment);
-		}
-
-		/// <summary>
-		/// Stops the service.
-		/// </summary>
-		/// <returns>The reported status of the service after the control was processed.</returns>
-		public ServiceStatus StopService()
-		{
-			return SendControl(ControlCode.Stop);
 		}
 
 		/// <summary>
@@ -1016,7 +863,7 @@ namespace System.Windows.Services
 		/// followed by any additional arguments 
 		/// (args[1] through args[Length-1]).
 		/// </param>
-		public unsafe void StartService(string[] args = null)
+		public unsafe void Start(string[] args = null)
 		{
 			char** lpszArgs = null;
 			int count = 0;

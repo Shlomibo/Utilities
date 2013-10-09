@@ -168,7 +168,7 @@
     <Compile Include="Windows\Services\ServiceCollection.cs" />
     <Compile Include="Windows\Services\ServiceCollectionBase.cs" />
     <Compile Include="Windows\Services\ServiceControlManager.cs" />
-    <Compile Include="Windows\Services\ServiceControlLock.cs" />
+    <Compile Include="Windows\Services\XPCompatibility\ServiceControlLock.cs" />
     <Compile Include="Windows\Services\ServiceException.cs" />
     <Compile Include="Windows\Services\ServiceFailureActions.cs" />
     <Compile Include="Windows\Services\ControlCode.cs" />
@@ -177,7 +177,8 @@
     <Compile Include="Windows\Services\Interop\InteropStructures.cs" />
     <Compile Include="Windows\Services\Service.cs" />
     <Compile Include="Windows\Services\ServiceInfo.cs" />
-    <Compile Include="Windows\Services\ServiceLockStatus.cs" />
+    <Compile Include="Windows\Services\XPCompatibility\ServiceControlManagerExtensions.cs" />
+    <Compile Include="Windows\Services\XPCompatibility\ServiceLockStatus.cs" />
     <Compile Include="Windows\Services\ServicePrivileges.cs" />
     <Compile Include="Windows\Services\ServiceStatus.cs" />
     <Compile Include="Windows\Services\Service_ErrorMessages.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="Windows\Services\Service_Properties.cs" />
     <Compile Include="Windows\Services\Trigger.cs" />
     <Compile Include="Windows\Services\TriggerData.cs" />
+    <Compile Include="Windows\Services\XPCompatibility\ServiceExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Windows\Forms\" />

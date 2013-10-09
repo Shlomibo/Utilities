@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security;
 using System.Windows.Services;
+using System.Windows.Services.XPCompatibility;
 using Utilities;
 
 namespace CTests
@@ -37,7 +38,7 @@ namespace CTests
 				{
 					using (var service = scm.OpenService("TestSvc"))
 					{
-						if (service.WaitForState(State.Running, 500))
+						if (service.WaitForStates(5000, State.Running))
 						{
 							Console.WriteLine("svc -> Running");
 						}
@@ -46,16 +47,16 @@ namespace CTests
 							Console.WriteLine("svc -> not running yet");
 						}
 
-						service.WaitForState(State.Running);
+						service.WaitForStates(State.Running);
 						Console.WriteLine("svc -> Running");
 
-						service.WaitForState(State.Paused);
+						service.WaitForStates(State.Paused);
 						Console.WriteLine("svc -> Paused");
 
-						service.WaitForState(State.Running);
-						Console.WriteLine("svc -> Running");
+						service.WaitForStates(State.Running);
+						Console.WriteLine("svc -> Running"); 
 
-						service.WaitForState(State.Stopped);
+						service.WaitForStates(State.Stopped);
 						Console.WriteLine("svc -> Stopped");
 					}
 				}

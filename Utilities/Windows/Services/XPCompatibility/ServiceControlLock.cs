@@ -6,12 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Services.Interop;
 
-namespace System.Windows.Services
+namespace System.Windows.Services.XPCompatibility
 {
 	/// <summary>
 	/// A lock on SCM database.
 	/// </summary>
-	[Obsolete("This functionality has no effect as of Windows Vista.")]
 	public class ServiceControlLock : IDisposable
 	{
 #pragma warning disable 612, 618

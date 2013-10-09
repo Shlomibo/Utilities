@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Services.Interop;
 
-namespace System.Windows.Services
+namespace System.Windows.Services.XPCompatibility
 {
 	/// <summary>
 	/// The lock status for SCM

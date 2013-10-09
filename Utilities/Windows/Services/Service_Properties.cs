@@ -733,7 +733,7 @@ namespace System.Windows.Services
 				return (this.Status.AcceptedControls & AcceptedControls.Stop) == AcceptedControls.Stop;
 			}
 		}
-
+		 
 		/// <summary>
 		/// Gets true if the service can be paused or continued; otherwise false.
 		/// </summary>

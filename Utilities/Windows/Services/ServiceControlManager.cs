@@ -487,7 +487,7 @@ namespace System.Windows.Services
 		{
 			ThrowIfDisposed();
 
-			return Service.CreateService(
+			return Service.Create(
 				this,
 				name,
 				displayName,
