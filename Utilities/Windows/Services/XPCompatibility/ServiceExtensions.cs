@@ -52,8 +52,7 @@ namespace System.Windows.Services.XPCompatibility
 			timeoutWatch.Stop();
 
 			return !token.IsCancellationRequested &&
-				((millisecondsTimeout == Timeout.Infinite) ||
-				(timeoutWatch.ElapsedMilliseconds < millisecondsTimeout));
+				states.Any(state => state == status.State); ;
 		}
 
 		/// <summary>
