@@ -247,7 +247,7 @@ namespace System.Windows.Services
 			/// <summary>
 			/// Sets the enumerator to its initial position, which is before the first element in the collection. 
 			/// </summary>
-			public void Reset()
+			public virtual void Reset()
 			{
 				this.index = RESETED;
 			}

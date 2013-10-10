@@ -136,12 +136,17 @@ namespace System.Windows.Services
 					// Allocating and loading services buffer
 					LoadBuffer();
 				}
+				#endregion
+
+				#region Methods
 
 				private void LoadBuffer()
 				{
+					// Checking if memory should be allocated.
 					if ((this.needed == 0) ||
 						(this.needed > this.allocated))
 					{
+						// If memory wasn't allocated before, querying the needed buffer size.
 						if (this.needed == 0)
 						{
 							this.lastError = EnumServiceStatus();
@@ -149,23 +154,21 @@ namespace System.Windows.Services
 							ThrowIfError(this.lastError);
 						}
 
+						// If last run failed due to small buffer - reallocating it.
 						if (this.lastError == Win32API.ERROR_MORE_DATA)
 						{
-							if (this.pESSP == null)
-							{
-								this.pESSP = (EnumServiceStatusProcess*)Marshal.AllocHGlobal((int)this.needed);
-							}
-							else
-							{
-								this.pESSP = (EnumServiceStatusProcess*)Marshal.ReAllocHGlobal(
+							// Allocating/reallocating the buffer
+							this.pESSP = this.pESSP == null
+								? this.pESSP = (EnumServiceStatusProcess*)Marshal.AllocHGlobal((int)this.needed)
+								: this.pESSP = (EnumServiceStatusProcess*)Marshal.ReAllocHGlobal(
 									(IntPtr)this.pESSP,
 									(IntPtr)this.needed);
-							}
 
 							this.allocated = this.needed;
 						}
 					}
 
+					// Loading data to buffer
 					this.lastError = EnumServiceStatus();
 
 					ThrowIfError(this.lastError);
@@ -173,6 +176,7 @@ namespace System.Windows.Services
 
 				private void ThrowIfError(int lastError)
 				{
+					// Throwing exception if invalid last error.
 					if ((lastError != Win32API.ERROR_SUCCESS) &&
 						(lastError != Win32API.ERROR_MORE_DATA))
 					{
@@ -185,12 +189,15 @@ namespace System.Windows.Services
 					this.index++;
 					bool haveItem = true;
 
+					// Checking if index have reached the end of the buffer
 					if (this.index >= this.returned)
 					{
+						// If last call was success, there are no more items
 						if (this.lastError == Win32API.ERROR_SUCCESS)
 						{
 							haveItem = false;
 						}
+						// Otherwise, we should load the next page, and reset the index
 						else
 						{
 							LoadBuffer();
@@ -223,9 +230,6 @@ namespace System.Windows.Services
 						return Marshal.GetLastWin32Error();
 					}
 				}
-				#endregion
-
-				#region Methods
 
 				protected override void ThrowIfDisposed()
 				{
@@ -236,6 +240,12 @@ namespace System.Windows.Services
 				{
 					Marshal.FreeHGlobal((IntPtr)pESSP);
 					this.pESSP = null;
+				}
+
+				public override void Reset()
+				{
+					base.Reset();
+					this.resumeHandle = 0;
 				}
 				#endregion
 			}
