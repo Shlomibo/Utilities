@@ -162,7 +162,7 @@ namespace System.Windows.Services
 		/// For older operating systems, use WaitForStateAsync.
 		/// </remarks>
 		public Task<TimedResult<Notification>> WaitForNotificationAsync(
-			Notification waitFor, 
+			Notification waitFor,
 			int millisecondsTimeout)
 		{
 			return Task.Factory.StartNew(
@@ -264,9 +264,9 @@ namespace System.Windows.Services
 					}
 
 					if (Win32API.QueryServiceOptionalConfig(
-						this.Handle, 
+						this.Handle,
 						Config.TriggerInfo,
-						pST, allocated, 
+						pST, allocated,
 						out needed))
 					{
 						lastError = Win32API.ERROR_SUCCESS;
@@ -833,8 +833,8 @@ namespace System.Windows.Services
 		/// </param>
 		/// <returns>The reported status of the service after the control was processed.</returns>
 		public ServiceStatus Stop(
-			StopReasonFlag stopReason, 
-			string stopComment) 
+			StopReasonFlag stopReason,
+			string stopComment)
 		{
 			return SendControl(ControlCode.Stop, stopReason, stopComment);
 		}
@@ -855,6 +855,14 @@ namespace System.Windows.Services
 		/// <summary>
 		/// Starts a service.
 		/// </summary>
+		public void Start()
+		{
+			InternalStart(null);
+		}
+
+		/// <summary>
+		/// Starts a service.
+		/// </summary>
 		/// <param name="args">
 		/// The null-terminated strings to be passed to the ServiceMain function for the service as arguments.
 		/// 
@@ -863,28 +871,45 @@ namespace System.Windows.Services
 		/// followed by any additional arguments 
 		/// (args[1] through args[Length-1]).
 		/// </param>
-		public unsafe void Start(string[] args = null)
+		public void Start(params string[] args)
+		{
+			InternalStart(args);
+		}
+
+		/// <summary>
+		/// Starts a service.
+		/// </summary>
+		/// <param name="args">
+		/// The null-terminated strings to be passed to the ServiceMain function for the service as arguments.
+		/// 
+		/// If there are no arguments, this parameter can be NULL. 
+		/// Otherwise, the first argument (args[0]) is the name of the service, 
+		/// followed by any additional arguments 
+		/// (args[1] through args[Length-1]).
+		/// </param>
+		private unsafe void InternalStart(string[] args = null)
 		{
 			char** lpszArgs = null;
 			int count = 0;
 			string argsString = null;
+			MultiString multiStringArgs = null;
 
 			try
 			{
 				if ((args != null) && (args.Length > 0))
 				{
-					var multiStringArgs = new MultiString(args);
+					multiStringArgs = new MultiString(new string[] { this.ServiceName }.Concat(args));
 					argsString = multiStringArgs.ToString();
-					count = args.Length;
+					count = args.Length + 1;
 
-					lpszArgs = (char**)Marshal.AllocHGlobal(sizeof(char*) * args.Length);
+					lpszArgs = (char**)Marshal.AllocHGlobal(sizeof(char*) * (args.Length + 1));
 				}
 
 				fixed (char* lpArgsString = argsString)
 				{
 					for (int i = 0, charIndex = 0;
 						i < count;
-						i++, charIndex += args[i].Length + 1)
+						charIndex += multiStringArgs[i++].Length + 1)
 					{
 						lpszArgs[i] = lpArgsString + charIndex;
 					}

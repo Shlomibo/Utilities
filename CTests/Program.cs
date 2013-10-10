@@ -36,35 +36,40 @@ namespace CTests
 			{
 				using (var scm = new ServiceControlManager())
 				{
-					using (var service = scm.OpenService("TestSvc"))
+					using (var svc = scm.OpenService("TestSvc", ServiceAccessRights.AllAccess))
 					{
-						if (service.WaitForStates(5000, State.Running))
-						{
-							Console.WriteLine("svc -> Running");
-						}
-						else
-						{
-							Console.WriteLine("svc -> not running yet");
-						}
-
-						service.WaitForStates(State.Running);
-						Console.WriteLine("svc -> Running");
-
-						service.WaitForStates(State.Paused);
-						Console.WriteLine("svc -> Paused");
-
-						service.WaitForStates(State.Running);
-						Console.WriteLine("svc -> Running"); 
-
-						service.WaitForStates(State.Stopped);
-						Console.WriteLine("svc -> Stopped");
+						svc.Start("I", "testing", "command", "args");
 					}
+					//using (var service = scm.OpenService("TestSvc"))
+					//{
+					//	if (service.WaitForStates(5000, State.Running))
+					//	{
+					//		Console.WriteLine("svc -> Running");
+					//	}
+					//	else
+					//	{
+					//		Console.WriteLine("svc -> not running yet");
+					//	}
+
+					//	service.WaitForStates(State.Running);
+					//	Console.WriteLine("svc -> Running");
+
+					//	service.WaitForStates(State.Paused);
+					//	Console.WriteLine("svc -> Paused");
+
+					//	service.WaitForStates(State.Running);
+					//	Console.WriteLine("svc -> Running"); 
+
+					//	service.WaitForStates(State.Stopped);
+					//	Console.WriteLine("svc -> Stopped");
+					//}
 				}
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine("Error! \r\n" + ex);
 			}
+
 		}
 
 		//private static string SafePrint(Func<object> printFunc)

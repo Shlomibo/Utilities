@@ -133,9 +133,23 @@ namespace System.Windows.Services
 					this.state = state;
 					this.groupName = groupName;
 
-					do
+					// Allocating and loading services buffer
+					LoadBuffer();
+				}
+
+				private void LoadBuffer()
+				{
+					if ((this.needed == 0) ||
+						(this.needed > this.allocated))
 					{
-						if (this.needed != 0)
+						if (this.needed == 0)
+						{
+							this.lastError = EnumServiceStatus();
+
+							ThrowIfError(this.lastError);
+						}
+
+						if (this.lastError == Win32API.ERROR_MORE_DATA)
 						{
 							if (this.pESSP == null)
 							{
@@ -150,8 +164,47 @@ namespace System.Windows.Services
 
 							this.allocated = this.needed;
 						}
+					}
 
-						if (Win32API.EnumServicesStatus(
+					this.lastError = EnumServiceStatus();
+
+					ThrowIfError(this.lastError);
+				}
+
+				private void ThrowIfError(int lastError)
+				{
+					if ((lastError != Win32API.ERROR_SUCCESS) &&
+						(lastError != Win32API.ERROR_MORE_DATA))
+					{
+						throw ServiceException.Create(MSGS_ENUM_ERRORS, lastError);
+					}
+				}
+
+				public override bool MoveNext()
+				{
+					this.index++;
+					bool haveItem = true;
+
+					if (this.index >= this.returned)
+					{
+						if (this.lastError == Win32API.ERROR_SUCCESS)
+						{
+							haveItem = false;
+						}
+						else
+						{
+							LoadBuffer();
+							this.index = 0;
+							haveItem = this.returned > 0;
+						}
+					}
+
+					return haveItem;
+				}
+
+				private unsafe int EnumServiceStatus()
+				{
+					if (Win32API.EnumServicesStatus(
 							this.collection.scm.Handle,
 							Win32API.SC_ENUM_PROCESS_INFO,
 							this.type,
@@ -162,18 +215,12 @@ namespace System.Windows.Services
 							out this.returned,
 							ref this.resumeHandle,
 							this.groupName))
-						{
-							this.lastError = NO_ERROR;
-						}
-						else
-						{
-							this.lastError = Marshal.GetLastWin32Error();
-						}
-					} while (this.lastError == Win32API.ERROR_MORE_DATA);
-
-					if (lastError != NO_ERROR)
 					{
-						throw ServiceException.Create(MSGS_ENUM_ERRORS, lastError);
+						return NO_ERROR;
+					}
+					else
+					{
+						return Marshal.GetLastWin32Error();
 					}
 				}
 				#endregion

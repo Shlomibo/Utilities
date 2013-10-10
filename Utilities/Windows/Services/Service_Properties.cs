@@ -737,7 +737,7 @@ namespace System.Windows.Services
 		/// <summary>
 		/// Gets true if the service can be paused or continued; otherwise false.
 		/// </summary>
-		public bool CanPauseContinue
+		public bool CanPauseContinue 
 		{
 			get
 			{
