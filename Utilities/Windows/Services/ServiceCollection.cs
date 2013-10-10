@@ -159,10 +159,10 @@ namespace System.Windows.Services
 						{
 							// Allocating/reallocating the buffer
 							this.pESSP = this.pESSP == null
-								? this.pESSP = (EnumServiceStatusProcess*)Marshal.AllocHGlobal((int)this.needed)
-								: this.pESSP = (EnumServiceStatusProcess*)Marshal.ReAllocHGlobal(
-									(IntPtr)this.pESSP,
-									(IntPtr)this.needed);
+								? (EnumServiceStatusProcess*)Marshal.AllocHGlobal((int)this.needed)
+								: (EnumServiceStatusProcess*)Marshal.ReAllocHGlobal(
+								(IntPtr)this.pESSP,
+								(IntPtr)this.needed);
 
 							this.allocated = this.needed;
 						}
