@@ -479,11 +479,11 @@ namespace System.Windows.Services
 			StartType startType,
 			ErrorControl errorControl,
 			string binaryPath,
-			string loadOrderGroup,
-			uint? tagId,
-			IEnumerable<string> dependencies,
-			string serviceAccount,
-			string password)
+			string loadOrderGroup = null,
+			uint? tagId = null,
+			IEnumerable<string> dependencies = null,
+			string serviceAccount = null,
+			string password = null)
 		{
 			ThrowIfDisposed();
 
