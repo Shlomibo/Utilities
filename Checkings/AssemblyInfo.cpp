@@ -37,4 +37,5 @@ using namespace System::Security::Permissions;
 
 [assembly:CLSCompliantAttribute(true)];
 
+#pragma warning(suppress: 4947)
 [assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];

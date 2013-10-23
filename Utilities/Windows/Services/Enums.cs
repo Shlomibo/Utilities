@@ -934,4 +934,15 @@ namespace System.Windows.Services
 			SvcUserDefinedControl |
 			0x00020000,
 	}
+
+	/// <summary>
+	/// Represents load group membership querying options
+	/// </summary>
+	public enum LoadGroupMembership
+	{
+		/// <summary>All services will be returned.</summary>
+		AnyGroup,
+		/// <summary>Only services which are not member of and load group, would be returned.</summary>
+		NotInGroup,
+	}
 }

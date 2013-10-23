@@ -21,6 +21,160 @@ namespace System.Windows.Services
 			private ServiceControlManager scm;
 			#endregion
 
+			#region Properties
+
+			/// <summary>
+			/// Queries for services of specific types, states, or under specific groups
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupName">
+			/// The load-order group name. 
+			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
+			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
+			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[
+				ServiceType type,
+				StateQuery state,
+				string groupName]
+			{
+				get { return QueryServicesInumerator(type, state, groupName); }
+			}
+
+			/// <summary>
+			/// Queries for services of specific types, states, or have specific groups membership
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupMembership">
+			/// Specifies which services to be enumerated base on loading group membership
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[
+				ServiceType type,
+				StateQuery state,
+				LoadGroupMembership groupMembership]
+			{
+				get
+				{
+					string group = groupMembership == LoadGroupMembership.NotInGroup
+						? NOT_IN_GROUP
+						: ALL_GROUPS;
+
+					return this[type, state, group];
+				}
+			}
+
+			/// <summary>
+			/// Queries for services of specific types, or states
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[
+				ServiceType type,
+				StateQuery state]
+			{
+				get { return this[type, state, ALL_GROUPS]; }
+			}
+
+			/// <summary>
+			/// Queries for services of specific types
+			/// </summary>
+			/// <param name="type">The type of services to be enumerated.</param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[ServiceType type]
+			{
+				get { return this[type, StateQuery.All]; }
+			}
+
+			/// <summary>
+			/// Queries for services of specific states, or under specific groups
+			/// </summary>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupName">
+			/// The load-order group name. 
+			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
+			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
+			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[
+				StateQuery state,
+				string groupName]
+			{
+				get { return this[ServiceType.All, state, groupName]; }
+			}
+
+			/// <summary>
+			/// Queries for services of specific states, or have specific groups membership
+			/// </summary>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <param name="groupMembership">
+			/// Specifies which services to be enumerated base on loading group membership
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[
+				StateQuery state,
+				LoadGroupMembership groupMembership]
+			{
+				get
+				{
+					string group = groupMembership == LoadGroupMembership.NotInGroup
+						? NOT_IN_GROUP
+						: ALL_GROUPS;
+
+					return this[state, group];
+				}
+			}
+
+			/// <summary>
+			/// Queries for services of specific states
+			/// </summary>
+			/// <param name="state">The state of the services to be enumerated.</param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[StateQuery state]
+			{
+				get { return this[state, ALL_GROUPS]; }
+			}
+
+			/// <summary>
+			/// Queries for services under specific groups
+			/// </summary>
+			/// <param name="groupName">
+			/// The load-order group name. 
+			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
+			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
+			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[string groupName]
+			{
+				get { return this[StateQuery.All, groupName]; }
+			}
+
+			/// <summary>
+			/// Queries for services that have specific groups membership
+			/// </summary>
+			/// <param name="groupMembership">
+			/// Specifies which services to be enumerated base on loading group membership
+			/// </param>
+			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
+			public IEnumerable<ServiceInfo> this[LoadGroupMembership groupMembership]
+			{
+				get
+				{
+					string group = groupMembership == LoadGroupMembership.NotInGroup
+						? NOT_IN_GROUP
+						: ALL_GROUPS;
+
+					return this[group];
+				}
+			}
+			#endregion
+
 			#region Ctor
 
 			internal ServiceCollection(ServiceControlManager scm)
@@ -51,26 +205,6 @@ namespace System.Windows.Services
 			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
 			/// </param>
 			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
-			public IEnumerable<ServiceInfo> QueryServices(
-				ServiceType type,
-				StateQuery state,
-				string groupName)
-			{
-				return QueryServicesInumerator(type, state, groupName);
-			}
-
-			/// <summary>
-			/// Queries for services of specific types, states, or under specific groups
-			/// </summary>
-			/// <param name="type">The type of services to be enumerated.</param>
-			/// <param name="state">The state of the services to be enumerated.</param>
-			/// <param name="groupName">
-			/// The load-order group name. 
-			/// The only services enumerated are those that belong to the group that has the name specified by the string. 
-			/// If this parameter is an empty string, only services that do not belong to any group are enumerated. 
-			/// If this parameter is NULL, group membership is ignored and all services are enumerated.
-			/// </param>
-			/// <returns>An enumerable that enumerates the corresponding services' status</returns>
 			protected override unsafe IEnumerable<ServiceInfo> QueryServicesInumerator(
 				ServiceType type,
 				StateQuery state,
@@ -82,7 +216,7 @@ namespace System.Windows.Services
 			#endregion
 
 			#region Enumerator
-			
+
 			private new unsafe class Enumerator : ServiceCollectionBase.Enumerator
 			{
 				#region Consts
