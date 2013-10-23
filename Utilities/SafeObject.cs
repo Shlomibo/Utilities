@@ -90,14 +90,17 @@ namespace System
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            GC.SuppressFinalize(this);
-            Release();
-            this.IsDisposed = true;
+			if (!this.IsDisposed)
+			{
+				GC.SuppressFinalize(this);
+				this.IsDisposed = true;
+				Release();
 
-            if (disposing)
-            {
-                OnDisposed();
-            }
+				if (disposing)
+				{
+					OnDisposed();
+				} 
+			}
         }
 
         /// <summary>
