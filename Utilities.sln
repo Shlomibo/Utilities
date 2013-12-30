@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows Desktop
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{02D61B0E-3147-44E2-B624-86F644C86A74}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CTests", "CTests\CTests.csproj", "{F26D4A4E-59F4-461C-8F7F-0CC5F05C7091}"
@@ -10,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Checkings", "Checkings\Checkings.vcxproj", "{566EAD93-FBD6-4564-8689-48405FD720AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsTesting", "EventsTesting\EventsTesting.csproj", "{A97E6D10-F770-4679-B7AF-23ABEF10C133}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{17FB32A2-50F7-4C4B-BDD2-363A696B717B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +107,20 @@ Global
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Release|Win32.ActiveCfg = Release|Any CPU
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Release|x64.ActiveCfg = Release|Any CPU
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Release|x86.ActiveCfg = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|Win32.ActiveCfg = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|x64.ActiveCfg = Release|Any CPU
+		{17FB32A2-50F7-4C4B-BDD2-363A696B717B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

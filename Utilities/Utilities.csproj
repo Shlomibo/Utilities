@@ -155,7 +155,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CLArguments.cs" />
+    <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnmanagedBuffer.cs" />
     <Compile Include="SafeObject.cs" />
     <Compile Include="Security\SecuredArray.cs" />
     <Compile Include="Security\DataProtection.cs" />

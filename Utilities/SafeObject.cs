@@ -31,6 +31,12 @@ namespace System
 
                 return this.@object;
             }
+			protected set
+			{
+				ThrowIfDisposed();
+
+				this.@object = value;
+			}
         }
 
         /// <summary>
@@ -81,6 +87,15 @@ namespace System
         #endregion
 
         #region Methods
+
+		/// <summary>
+		/// Return string representation of the object
+		/// </summary>
+		/// <returns>String representation of the object</returns>
+		public override string ToString()
+		{
+			return this.Object.ToString();
+		}
 
         /// <summary>
         /// Disposes the object, and release resources.
@@ -138,5 +153,5 @@ namespace System
             Dispose(true);
         } 
         #endregion
-    }
+	}
 }
