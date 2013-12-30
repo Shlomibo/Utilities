@@ -398,7 +398,7 @@ namespace UnitTests
 			Assert.IsTrue(indexerList[NOT_EXIST_KEY].SequenceEqual(notExistValueArr),
 				"Failed to create values for key");
 		}
-
+		
 		[TestMethod]
 		public void IndexerTryGetValuesTest()
 		{
@@ -432,118 +432,6 @@ namespace UnitTests
 			Assert.AreEqual(indexerList[SINGLE_VALUE_KEY][0], value,
 				"Invalid values for existing key");
 		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException),
-			"Didn't throw on negative index")]
-		public void IndexerGetValidateNegative()
-		{
-			CLArguments indexerList = this.Template.Clone();
-			string item = indexerList[-1];
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException),
-			"Didn't throw on out of range index")]
-		public void IndexerGetValidateOutOfRange()
-		{
-			CLArguments indexerList = this.Template.Clone();
-			string item = indexerList[indexerList.Count];
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException),
-			"Didn't throw on negative index")]
-		public void IndexerSetValidateNegative()
-		{
-			CLArguments indexerList = this.Template.Clone();
-			indexerList[-1] = NOT_EXIST_VALUE;
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentOutOfRangeException),
-			"Didn't throw on out of range index")]
-		public void IndexerSetValidateOutOfRange()
-		{
-			CLArguments indexerList = this.Template.Clone();
-			indexerList[indexerList.Count] = NOT_EXIST_VALUE;
-		}
-		#endregion
-
-		#region Properties tests
-
-		[TestMethod]
-		public void PropertiesTests()
-		{
-			CLArguments propList = this.Template.Clone();
-			HashSet<string> keys = new HashSet<string>(from item in ARG_LIST
-													   where propList.IsKey(item)
-													   select item);
-			HashSet<string> values = new HashSet<string>(from item in ARG_LIST
-														 where !propList.IsKey(item)
-														 select item);
-			IEnumerable<string> listValues = propList.Values.SelectMany(item => item);
-
-			keys.Add(CLArguments.NO_KEY);
-
-			// Checking count
-			Assert.AreEqual(ARG_LIST.Length, propList.Count,
-				"Count mismatch");
-			Assert.IsTrue((keys.Count == propList.Keys.Count) &&
-				propList.Keys.All(key => keys.Contains(key)),
-				"Keys property isn't match to keys");
-			Assert.IsTrue(listValues.All(value => values.Contains(value)),
-				"Values mismatch");
-		}
-		#endregion
-
-		#region Ctor tests
-
-		[TestMethod]
-		public void CtorTests()
-		{
-			var list = new CLArguments();
-			TestList(list, 0, KEY, VALUE, "empty list");
-
-			list = new CLArguments(ARG_LIST);
-			TestList(list, ARG_LIST.Length, KEY, VALUE, "from enumerable");
-
-			list = new CLArguments(item => item == NOT_EXIST_KEY);
-			TestList(list, 0, NOT_EXIST_KEY, KEY, "from predicate");
-
-			CLArguments source = this.Template.Clone();
-			source.Normalize();
-
-			list = new CLArguments(source as IDictionary<string, string[]>);
-			TestList(list, source.Count, KEY, VALUE, "from dictionary", this.Template.Keys.Count);
-
-			list = new CLArguments(ARG_LIST, 
-				Enumerable.Range((int)'a', (int)'z' - (int)'a' + 1).Select(chr => ((char)chr).ToString()));
-			TestList(list, ARG_LIST.Length, VALUE, KEY, "with latin letters designators", 10);
-		}
-
-		private void TestList(
-			CLArguments list, 
-			int expectedSize, 
-			string keyExample, 
-			string valueExample,
-			string listName,
-			int? keyCount = null)
-		{
-			Assert.AreEqual(expectedSize, list.Count,
-				string.Format("Size mismatch for '{0}'", listName));
-			Assert.IsTrue(list.IsKey(keyExample),
-				string.Format("Misidentified key for '{0}'", listName));
-			Assert.IsFalse(list.IsKey(valueExample),
-				string.Format("Misidentified value for '{0}'", listName));
-
-			if (keyCount.HasValue)
-			{
-				Assert.AreEqual(keyCount, list.Keys.Count,
-					string.Format("Key count mismatch for '{0}'", listName));
-			}
-		}
-
 		#endregion
 	}
 }

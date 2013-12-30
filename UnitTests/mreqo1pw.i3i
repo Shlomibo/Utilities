@@ -519,7 +519,7 @@ namespace UnitTests
 
 			list = new CLArguments(ARG_LIST, 
 				Enumerable.Range((int)'a', (int)'z' - (int)'a' + 1).Select(chr => ((char)chr).ToString()));
-			TestList(list, ARG_LIST.Length, VALUE, KEY, "with latin letters designators", 10);
+			TestList(list, ARG_LIST.Length, VALUE, KEY, "with latin letters designators", 12);
 		}
 
 		private void TestList(
