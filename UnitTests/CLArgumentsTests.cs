@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace UnitTests
 {
 	[TestClass]
-	public class CLArgumentsTest
+	public class CLArgumentsTests
 	{
 		#region Consts
 

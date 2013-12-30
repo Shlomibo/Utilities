@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System
+namespace Utilities
 {
     /// <summary>
     /// Provides safe handling for an arbitrary object.

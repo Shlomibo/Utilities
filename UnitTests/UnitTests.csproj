@@ -50,8 +50,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="OperationPerformedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CLArgumentsTest.cs" />
+    <Compile Include="CLArgumentsTests.cs" />
+    <Compile Include="SafeObjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
