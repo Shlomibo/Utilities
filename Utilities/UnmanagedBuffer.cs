@@ -26,13 +26,24 @@ namespace System
 		/// <summary>
 		/// Creates new UnmanagedBuffer for the specified pointer
 		/// </summary>
-		/// <param name="ptr"></param>
+		/// <param name="ptr">Pointer to the buffer.</param>
 		public UnmanagedBuffer(IntPtr ptr) : base(ptr, pointer => Marshal.FreeHGlobal(pointer)) { }
+
+		/// <summary>
+		/// Creates new UnmanagedBuffer for the specified pointer
+		/// </summary>
+		/// <param name="ptr">Pointer to the buffer.</param>
+		/// <param name="size">The size in bytes of the buffer.</param>
+		public UnmanagedBuffer(IntPtr ptr, int size)
+			: this(ptr)
+		{
+			this.Size = size;
+		}
 
 		/// <summary>
 		/// Allocates buffer in the specified size, and creates new UnmanagedBuffer wrapper for it
 		/// </summary>
-		/// <param name="size">The size of the buffer to allocate</param>
+		/// <param name="size">The size in bytes of the buffer to allocate</param>
 		public UnmanagedBuffer(int size)
 			: this(Marshal.AllocHGlobal(size))
 		{
@@ -45,7 +56,8 @@ namespace System
 		/// </summary>
 		/// <param name="str">The string to allocate in unmanaged memory</param>
 		/// <param name="charset">The character set for the string</param>
-		public UnmanagedBuffer(string str, CharSet charset) : this(AllocateString(str, charset)) 
+		public UnmanagedBuffer(string str, CharSet charset)
+			: this(AllocateString(str, charset))
 		{
 			switch (charset)
 			{
@@ -77,8 +89,19 @@ namespace System
 		/// <summary>
 		/// Creates new UnmanagedBuffer for the specified pointer
 		/// </summary>
-		/// <param name="ptr"></param>
+		/// <param name="ptr">Pointer to the buffer.</param>
 		public unsafe UnmanagedBuffer(void* ptr) : this((IntPtr)ptr) { }
+
+		/// <summary>
+		/// Creates new UnmanagedBuffer for the specified pointer.
+		/// </summary>
+		/// <param name="ptr">Pointer to the buffer.</param>
+		/// <param name="size">The size in bytes of the buffer.</param>
+		public unsafe UnmanagedBuffer(void* ptr, int size)
+			: this(ptr)
+		{
+			this.Size = size;
+		}
 		#endregion
 
 		#region Methods
@@ -119,6 +142,12 @@ namespace System
 		/// <param name="bytesToCopy">The ammount of bytes to be copies.</param>
 		public unsafe void CopyTo(UnmanagedBuffer otherBuffer, int bytesToCopy)
 		{
+			if ((this.Size.HasValue && (this.Size < bytesToCopy)) ||
+				(otherBuffer.Size.HasValue && (otherBuffer.Size < bytesToCopy)))
+			{
+				throw new ArgumentOutOfRangeException("Buffers are smaller than the copied size");
+			}
+
 			byte* source = (byte*)this;
 			byte* target = (byte*)otherBuffer;
 
@@ -180,7 +209,7 @@ namespace System
 		public IEnumerable<T> AsEnumerable<T>(int count)
 		{
 			for (int offset = 0, i = 0;
-				i < count; 
+				i < count;
 				offset += Marshal.SizeOf(typeof(T)), i++)
 			{
 				yield return (T)Marshal.PtrToStructure(this.Object + offset, typeof(T));
@@ -224,7 +253,7 @@ namespace System
 				}
 			}
 		}
-		
+
 		/// <summary>
 		/// Returns enumeration of the elements in the buffer.
 		/// </summary>

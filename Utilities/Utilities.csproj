@@ -156,6 +156,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLArguments.cs" />
+    <Compile Include="Concurrency\MessageQueue.cs" />
+    <Compile Include="Extansions\EnumExtansions.cs" />
     <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnmanagedBuffer.cs" />

@@ -332,7 +332,7 @@ namespace Utilities
 
 		/// <summary>
 		/// Searches for the specified object and returns the zero-based index of the
-		/// last occurrence within the range of elements in the System.Collections.Generic.List<T>
+		/// last occurrence within the range of elements in the CLArguments list
 		/// that contains the specified number of elements and ends at the specified
 		/// index.
 		/// </summary>

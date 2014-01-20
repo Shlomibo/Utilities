@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,11 +51,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Concurrency\MessageQueueTests.cs" />
     <Compile Include="OperationPerformedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CLArgumentsTests.cs" />
     <Compile Include="SafeObjectTests.cs" />
     <Compile Include="TimedResultTests.cs" />
+    <Compile Include="UnmanagedBufferTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
@@ -62,6 +65,7 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
