@@ -9,13 +9,6 @@ using System.Threading.Tasks;
 namespace Utilities.Concurrency
 {
 	/// <summary>
-	/// Message handler for messages enqueued in MessageQueue&lt;T&gt;
-	/// </summary>
-	/// <typeparam name="T">The type of the message</typeparam>
-	/// <param name="message">The messaged that was queued</param>
-	public delegate void MessageHandler<T>(T message);
-
-	/// <summary>
 	/// Concurrent message queue, which recieve messages asynchronously, and dispatch them synchronously
 	/// </summary>
 	/// <typeparam name="T">The type of the message</typeparam>
@@ -28,7 +21,7 @@ namespace Utilities.Concurrency
 
 		#region Fields
 
-		private readonly MessageHandler<T> handler;
+		private readonly Action<T> handler;
 		private readonly ConcurrentQueue<T> messagesQueue = new ConcurrentQueue<T>();
 		private readonly Semaphore queueSemaphore = new Semaphore(0, int.MaxValue);
 		private readonly Task handlingTask;
@@ -57,14 +50,14 @@ namespace Utilities.Concurrency
 		/// Creates new queue that would dispatch messages to the given handler
 		/// </summary>
 		/// <param name="handler">The handler for message dispatch</param>
-		public MessageQueue(MessageHandler<T> handler) : this(handler, TaskScheduler.Default) { }
+		public MessageQueue(Action<T> handler) : this(handler, TaskScheduler.Default) { }
 
 		/// <summary>
 		/// Creates new queue that would dispatch messages to the given handler
 		/// </summary>
 		/// <param name="handler">The handler for message dispatch</param>
 		/// <param name="scheduler">Task scheduler for message dispatch</param>
-		public MessageQueue(MessageHandler<T> handler, TaskScheduler scheduler)
+		public MessageQueue(Action<T> handler, TaskScheduler scheduler)
 		{
 			this.handler = handler;
 			this.canellation = new CancellationTokenSource();
