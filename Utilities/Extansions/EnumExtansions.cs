@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace System.Extansions
+namespace Utilities.Extansions
 {
 	/// <summary>
 	/// Provides the functionality as System.Enum with generic methods

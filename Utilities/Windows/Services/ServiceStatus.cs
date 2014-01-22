@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Services.Interop;
+using Utilities.Extansions;
 
 namespace System.Windows.Services
 {
@@ -194,18 +195,16 @@ namespace System.Windows.Services
 		/// <returns>A hash code for the current object.</returns>
 		public override int GetHashCode()
 		{
-			// TODO: write your implementation of GetHashCode() here
-			return this.Type.GetHashCode() ^
-				this.State.GetHashCode() ^
-				this.AcceptedControls.GetHashCode() ^
-				this.ProcessId.GetHashCode() ^
-				this.ServiceProcFlags.GetHashCode() ^
-				this.Win32ExitCode.GetHashCode() ^
-				(this.ServiceSpecificExitCode.HasValue
-					? this.ServiceSpecificExitCode.Value.GetHashCode()
-					: 0) ^
-				this.CheckPoint.GetHashCode() ^
-				this.WaitHint.GetHashCode();
+			return ObjectExtansions.CreateHashCode(
+				this.Type,
+				this.State,
+				this.AcceptedControls,
+				this.ProcessId,
+				this.ServiceProcFlags,
+				this.Win32ExitCode,
+				this.ServiceSpecificExitCode,
+				this.CheckPoint,
+				this.WaitHint);
 		}
 		#endregion
 

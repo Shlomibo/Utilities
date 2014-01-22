@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Services.Interop;
+using Utilities.Extansions;
 
 namespace System.Windows.Services
 {
@@ -110,9 +111,10 @@ namespace System.Windows.Services
 		public override int GetHashCode()
 		{
 			// TODO: write your implementation of GetHashCode() here
-			return base.GetHashCode() ^
-				this.ServiceName.GetHashCode() ^
-				this.DisplayName.GetHashCode();
+			return ObjectExtansions.CreateHashCode(
+				base.GetHashCode(),
+				this.ServiceName,
+				this.DisplayName);
 		}
 		#endregion
 
