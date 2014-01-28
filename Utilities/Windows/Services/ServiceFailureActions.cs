@@ -280,12 +280,13 @@ namespace System.Windows.Services
 				? (uint)actions.Count
 				: 0;
 			SCAction[] actionsArray = actions != null
-				? (from action in actions
-				   select new SCAction
-				   {
-					   actionType = action.Action,
-					   delay = (uint)action.Delay,
-				   }).ToArray()
+				? actions.Select(action =>
+							  new SCAction
+							  {
+								  actionType = action.Action,
+								  delay = (uint)action.Delay,
+							  })
+						.ToArray()
 				: null;
 
 			fixed (char* lpRebootMessage = rebootMessage)
@@ -316,7 +317,7 @@ namespace System.Windows.Services
 	public class ServiceControlAction
 	{
 		#region Propeties
-		
+
 		/// <summary>
 		/// Gets the action to be performed.
 		/// </summary>

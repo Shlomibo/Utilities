@@ -36,9 +36,9 @@ namespace Utilities
 		{
 			get
 			{
-				string lastKey = (from value in this.AsList
-								  where IsKey(value)
-								  select value).LastOrDefault();
+				string lastKey = this.AsList
+								 .Where(value => IsKey(value))
+								 .LastOrDefault();
 
 				return lastKey != null
 					? this.AsList.LastIndexOf(lastKey)
@@ -397,9 +397,10 @@ namespace Utilities
 			int keyIndex;
 			IEnumerable<string> value;
 
-			List<int> keyIndices = (from item in this.AsList
-									where this.IsKey(item)
-									select this.AsList.IndexOf(item)).ToList();
+			List<int> keyIndices = this.AsList
+								   .Where(item => this.IsKey(item))
+								   .Select((item, index) => index)
+								   .ToList();
 
 			if (!keyIndices.Any())
 			{

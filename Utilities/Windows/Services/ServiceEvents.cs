@@ -229,9 +229,8 @@ namespace System.Windows.Services
 				lock (this.syncRoot)
 				{
 					IEnumerable<KeyValuePair<AutoResetEvent, Notification>> toSet =
-						from keyValue in this.waiters
-						where (keyValue.Value & pSN->notificationTriggered) != Notification.None
-						select keyValue;
+						this.waiters.Where(keyValue => 
+							(keyValue.Value & pSN->notificationTriggered) != Notification.None);
 
 					foreach (KeyValuePair<AutoResetEvent, Notification> waiter in toSet)
 					{

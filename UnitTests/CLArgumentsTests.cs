@@ -191,8 +191,9 @@ namespace UnitTests
 			Assert.IsTrue(clone.Keys.SequenceEqual(this.Template.Keys),
 				"Clones keys aren't equal to source");
 
-			IEnumerable<bool> keyValues = from key in clone.Keys
-										  select clone[key].SequenceEqual(this.Template[key]);
+			IEnumerable<bool> keyValues = clone.Keys.Select(key => 
+																clone[key].SequenceEqual(this.Template[key]));
+
 			Assert.IsTrue(keyValues.All(isEqual => isEqual),
 				"Some keyed list are inequal");
 		}
@@ -476,13 +477,13 @@ namespace UnitTests
 		public void PropertiesTests()
 		{
 			CLArguments propList = this.Template.Clone();
-			HashSet<string> keys = new HashSet<string>(from item in ARG_LIST
-													   where propList.IsKey(item)
-													   select item);
-			HashSet<string> values = new HashSet<string>(from item in ARG_LIST
-														 where !propList.IsKey(item)
-														 select item);
-			IEnumerable<string> listValues = propList.Values.SelectMany(item => item);
+			
+			HashSet<string> keys = new HashSet<string>(ARG_LIST.Where(item => propList.IsKey(item)));
+			HashSet<string> values = new HashSet<string>(ARG_LIST.Where(item => !propList.IsKey(item)));
+
+			IEnumerable<string> listValues = from valueList in propList.Values
+											 from value in valueList
+											 select value;
 
 			keys.Add(CLArguments.NO_KEY);
 
@@ -517,8 +518,13 @@ namespace UnitTests
 			list = new CLArguments(source as IDictionary<string, string[]>);
 			TestList(list, source.Count, KEY, VALUE, "from dictionary", this.Template.Keys.Count);
 
-			list = new CLArguments(ARG_LIST, 
-				Enumerable.Range((int)'a', (int)'z' - (int)'a' + 1).Select(chr => ((char)chr).ToString()));
+			list = new CLArguments(
+				ARG_LIST, 
+				Enumerable.Range(
+				(int)'a', 
+				(int)'z' - (int)'a' + 1).Select(chr => 
+													((char)chr).ToString()));
+
 			TestList(list, ARG_LIST.Length, VALUE, KEY, "with latin letters designators", 10);
 		}
 

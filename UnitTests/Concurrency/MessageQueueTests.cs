@@ -56,9 +56,9 @@ namespace UnitTests.Concurrency
 				});
 		}
 
-		public async Task EnqueNumber(int num)
+		public Task EnqueNumber(int num)
 		{
-			await Task.Run(() =>
+			return Task.Run(() =>
 				{
 					int sleepTime;
 
@@ -75,8 +75,8 @@ namespace UnitTests.Concurrency
 		[TestMethod]
 		public void TestQueueing()
 		{
-			Task[] enqueueing = (from num in this.messageSequence
-								 select EnqueNumber(num)).ToArray();
+			Task[] enqueueing = this.messageSequence.Select(num => EnqueNumber(num))
+													.ToArray();
 
 			Assert.IsTrue(Task.WaitAll(enqueueing, TIMEOUT), "Failed to enqueue all messages within the timeout period");
 

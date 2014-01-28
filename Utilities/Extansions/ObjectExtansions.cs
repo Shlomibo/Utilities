@@ -29,10 +29,14 @@ namespace Utilities.Extansions
 
 			if ((objects != null) && (objects.Length > 0))
 			{
-				result = (from obj in objects
-						  select (obj ?? 0).GetHashCode()).Aggregate(
-							BASE_HASH,
-							(accumulated, hash) => (accumulated << SHIFT) - accumulated + hash);
+				unchecked
+				{
+					result = objects.Select(obj => obj.NullableGetHashCode())
+									.Aggregate(
+										BASE_HASH,
+										(accumulated, hash) =>
+											(accumulated << SHIFT) - accumulated + hash); 
+				}
 			}
 
 			return result;
