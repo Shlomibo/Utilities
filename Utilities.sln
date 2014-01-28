@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CTests", "CTests\CTests.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestService", "TestService\TestService.csproj", "{1E83840F-8DA5-40BC-8E04-FCA4724D423A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Checkings", "Checkings\Checkings.vcxproj", "{566EAD93-FBD6-4564-8689-48405FD720AB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventsTesting", "EventsTesting\EventsTesting.csproj", "{A97E6D10-F770-4679-B7AF-23ABEF10C133}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{17FB32A2-50F7-4C4B-BDD2-363A696B717B}"
@@ -77,22 +75,6 @@ Global
 		{1E83840F-8DA5-40BC-8E04-FCA4724D423A}.Release|Win32.ActiveCfg = Release|Any CPU
 		{1E83840F-8DA5-40BC-8E04-FCA4724D423A}.Release|x64.ActiveCfg = Release|Any CPU
 		{1E83840F-8DA5-40BC-8E04-FCA4724D423A}.Release|x86.ActiveCfg = Release|Any CPU
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|Any CPU.ActiveCfg = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|Win32.ActiveCfg = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|Win32.Build.0 = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|x64.ActiveCfg = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|x86.ActiveCfg = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Debug|x86.Build.0 = Debug|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|Any CPU.ActiveCfg = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|Win32.ActiveCfg = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|Win32.Build.0 = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|x64.ActiveCfg = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|x86.ActiveCfg = Release|Win32
-		{566EAD93-FBD6-4564-8689-48405FD720AB}.Release|x86.Build.0 = Release|Win32
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A97E6D10-F770-4679-B7AF-23ABEF10C133}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
