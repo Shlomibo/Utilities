@@ -160,6 +160,9 @@
     <Compile Include="Extansions\EnumExtansions.cs" />
     <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Extansions\ObjectExtansions.cs" />
+    <Compile Include="NamedIndexer.cs" />
+    <Compile Include="NamedIndexerBase.cs" />
+    <Compile Include="ReadOnlyNamedIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnmanagedBuffer.cs" />
     <Compile Include="SafeObject.cs" />
