@@ -50,7 +50,7 @@ namespace Utilities
 		/// <summary>
 		/// Gets an enumerator for the indexer.
 		/// </summary>
-		/// <returns>An IEnumerator for the indexer</returns>
+		/// <returns>An IEnumerator for the indexer.</returns>
 		public IEnumerator<TType> GetEnumerator()
 		{
 			return this.enumerator();
