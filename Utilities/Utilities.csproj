@@ -197,6 +197,7 @@
     <Compile Include="Windows\Services\Trigger.cs" />
     <Compile Include="Windows\Services\TriggerData.cs" />
     <Compile Include="Windows\Services\XPCompatibility\ServiceExtensions.cs" />
+    <Compile Include="WriteOnlyNamedIndexer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Windows\Forms\" />

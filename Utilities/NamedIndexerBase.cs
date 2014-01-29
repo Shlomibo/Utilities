@@ -47,18 +47,14 @@ namespace Utilities
 
 		#region Methods
 
-		/// <summary>
-		/// Gets an enumerator for the indexer.
-		/// </summary>
-		/// <returns>An IEnumerator for the indexer.</returns>
-		public IEnumerator<TType> GetEnumerator()
+		IEnumerator<TType> IEnumerable<TType>.GetEnumerator()
 		{
 			return this.enumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
-			return GetEnumerator();
+			return (this as IEnumerable<TType>).GetEnumerator();
 		} 
 		#endregion
 	}

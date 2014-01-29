@@ -55,7 +55,7 @@ namespace Utilities
 	}
 
 	/// <summary>
-	/// Emulates a named indexer with one parameter.
+	/// Emulates a named indexer with two parameters.
 	/// </summary>
 	/// <typeparam name="TParam1">The type of the first parameter.</typeparam>
 	/// <typeparam name="TParam2">The type of the second parameter.</typeparam>
@@ -106,7 +106,7 @@ namespace Utilities
 	}
 
 	/// <summary>
-	/// Emulates a named indexer with one parameter.
+	/// Emulates a named indexer with three parametera.
 	/// </summary>
 	/// <typeparam name="TParam1">The type of the first parameter.</typeparam>
 	/// <typeparam name="TParam2">The type of the second parameter.</typeparam>
