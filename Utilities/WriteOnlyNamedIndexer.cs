@@ -6,14 +6,6 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-	internal static class WriteOnlyNamedIndexer
-	{
-		public static TType FailGet<TType>()
-		{
-			throw new InvalidOperationException("Cannot get value for write only indexer.");
-		}
-	}
-
 	/// <summary>
 	/// Emulates a write only named indexer with one parameter.
 	/// </summary>
@@ -41,7 +33,7 @@ namespace Utilities
 		/// </summary>
 		/// <param name="setter">Delegate to the setter function.</param>
 		public WriteOnlyNamedIndexer(Action<TParam, TType> setter)
-			: base(param => WriteOnlyNamedIndexer.FailGet<TType>(), setter) { }
+			: base(param => NamedIndexer.FailGet<TType>(), setter) { }
 		#endregion
 	}
 
@@ -74,7 +66,7 @@ namespace Utilities
 		/// </summary>
 		/// <param name="setter">Delegate to the setter function.</param>
 		public WriteOnlyNamedIndexer(Action<TParam1, TParam2, TType> setter)
-			: base((param1, param2) => WriteOnlyNamedIndexer.FailGet<TType>(), setter) { }
+			: base((param1, param2) => NamedIndexer.FailGet<TType>(), setter) { }
 		#endregion
 	}
 
@@ -110,7 +102,7 @@ namespace Utilities
 		/// </summary>
 		/// <param name="setter">Delegate to the setter function.</param>
 		public WriteOnlyNamedIndexer(Action<TParam1, TParam2, TParam3, TType> setter)
-			: base((param1, param2, param3) => WriteOnlyNamedIndexer.FailGet<TType>(), setter) { }
+			: base((param1, param2, param3) => NamedIndexer.FailGet<TType>(), setter) { }
 		#endregion
 	}
 }
