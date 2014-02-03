@@ -164,44 +164,13 @@
     <Compile Include="NamedIndexerBase.cs" />
     <Compile Include="ReadOnlyNamedIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnmanagedBuffer.cs" />
     <Compile Include="SafeObject.cs" />
     <Compile Include="Security\SecuredArray.cs" />
     <Compile Include="Security\DataProtection.cs" />
     <Compile Include="TimedResult.cs" />
-    <Compile Include="Windows\Interop\MultiString.cs" />
-    <Compile Include="Windows\Interop\Security.cs" />
-    <Compile Include="Windows\Interop\Windows.cs" />
-    <Compile Include="Windows\Services\INotificationWaiter.cs" />
-    <Compile Include="Windows\Services\ServiceEvents.cs" />
-    <Compile Include="Windows\Services\DependentServicesCollection.cs" />
-    <Compile Include="Windows\Services\ServiceCollection.cs" />
-    <Compile Include="Windows\Services\ServiceCollectionBase.cs" />
-    <Compile Include="Windows\Services\ServiceControlManager.cs" />
-    <Compile Include="Windows\Services\XPCompatibility\ServiceControlLock.cs" />
-    <Compile Include="Windows\Services\ServiceException.cs" />
-    <Compile Include="Windows\Services\ServiceFailureActions.cs" />
-    <Compile Include="Windows\Services\ControlCode.cs" />
-    <Compile Include="Windows\Services\Enums.cs" />
-    <Compile Include="Windows\Services\Interop\Win32API.cs" />
-    <Compile Include="Windows\Services\Interop\InteropStructures.cs" />
-    <Compile Include="Windows\Services\Service.cs" />
-    <Compile Include="Windows\Services\ServiceInfo.cs" />
-    <Compile Include="Windows\Services\XPCompatibility\ServiceControlManagerExtensions.cs" />
-    <Compile Include="Windows\Services\XPCompatibility\ServiceLockStatus.cs" />
-    <Compile Include="Windows\Services\ServicePrivileges.cs" />
-    <Compile Include="Windows\Services\ServiceStatus.cs" />
-    <Compile Include="Windows\Services\Service_ErrorMessages.cs" />
-    <Compile Include="Windows\Services\Service_Methods.cs" />
-    <Compile Include="Windows\Services\Service_Properties.cs" />
-    <Compile Include="Windows\Services\Trigger.cs" />
-    <Compile Include="Windows\Services\TriggerData.cs" />
-    <Compile Include="Windows\Services\XPCompatibility\ServiceExtensions.cs" />
     <Compile Include="WriteOnlyNamedIndexer.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Windows\Forms\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

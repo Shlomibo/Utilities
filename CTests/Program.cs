@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Security;
-using System.Windows.Services;
-using System.Windows.Services.XPCompatibility;
 using Utilities;
 
 namespace CTests
