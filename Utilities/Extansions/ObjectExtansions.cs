@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Extansions
+namespace Utilities.Extansions.Object
 {
 	/// <summary>
 	/// Provides utilities and extansions for all objects
@@ -35,7 +35,7 @@ namespace Utilities.Extansions
 									.Aggregate(
 										BASE_HASH,
 										(accumulated, hash) =>
-											(accumulated << SHIFT) - accumulated + hash); 
+											(accumulated << SHIFT) - accumulated + hash);
 				}
 			}
 
@@ -52,8 +52,8 @@ namespace Utilities.Extansions
 		/// <param name="default">The default value to return, if input is null.</param>
 		/// <returns>If the input isn't null, the result of func for the input; otherwise, the default value.</returns>
 		public static TOut IgnoreNullFor<TIn, TOut>(
-			this TIn input, 
-			Func<TIn, TOut> func, 
+			this TIn input,
+			Func<TIn, TOut> func,
 			TOut @default = default(TOut))
 			where TIn : class
 		{
@@ -161,8 +161,8 @@ namespace Utilities.Extansions
 		/// <returns>true if execution succeeded; otherwise false.</returns>
 		/// <remarks>If you can avoid the exception, do not use this method, and do not throw it just to catch it.</remarks>
 		public static bool TryExecute<TIn, TOut>(
-			this TIn input, 
-			Func<TIn, TOut> func, 
+			this TIn input,
+			Func<TIn, TOut> func,
 			out TOut result)
 		{
 			result = default(TOut);
@@ -215,8 +215,8 @@ namespace Utilities.Extansions
 		/// <returns>The result of func, if no exception was thrown; otherwise, the default value.</returns>
 		/// <remarks>If you can avoid the exception, do not use this method, and do not throw it just to catch it.</remarks>
 		public static TOut IgnoreExceptionFor<TIn, TOut>(
-			this TIn input, 
-			Func<TIn, TOut> func, 
+			this TIn input,
+			Func<TIn, TOut> func,
 			TOut @default = default(TOut))
 		{
 			TOut result;
@@ -242,25 +242,33 @@ namespace Utilities.Extansions
 		}
 
 		/// <summary>
-		/// Indicates whether the specified string is null or an Empty string.
+		/// Throws exception, if the when predicate returns true for the item, 
+		/// and throws the exception returned from thte what function.
 		/// </summary>
-		/// <param name="str">The string to test.</param>
-		/// <returns>true if the value parameter is null or an empty string (""); otherwise, false.</returns>
-		public static bool IsNullOrEmpty(this string str)
+		/// <typeparam name="T">The type of the item.</typeparam>
+		/// <param name="item">The item to check.</param>
+		/// <param name="when">Predicate to check the item.</param>
+		/// <param name="what">Function to get the exception to throw.</param>
+		public static void ThrowWhen<T>(this T item, Func<T, bool> when, Func<Exception> what)
 		{
-			return string.IsNullOrEmpty(str);
+			if (when(item))
+			{
+				throw what();
+			}
 		}
 
 		/// <summary>
-		/// Indicates whether a specified string is null, empty, or consists only of white-space characters.
+		/// Throws exception, if the when predicate returns true for the item, 
+		/// and throws the given excpetion.
 		/// </summary>
-		/// <param name="str">The string to test.</param>
-		/// <returns>
-		/// true if the value parameter is null or String.Empty, or if value consists exclusively of white-space characters. 
-		/// </returns>
-		public static bool IsNullOrWhiteSpace(this string str)
+		/// <typeparam name="T">The type of the item.</typeparam>
+		/// <param name="item">The item to check.</param>
+		/// <param name="when">Predicate to check the item.</param>
+		/// <param name="what">The exception to throw.</param>
+		public static void ThrowWhen<T>(this T item, Func<T, bool> when, Exception what)
 		{
-			return string.IsNullOrWhiteSpace(str);
+			item.ThrowWhen(when, () => what);
 		}
+
 	}
 }

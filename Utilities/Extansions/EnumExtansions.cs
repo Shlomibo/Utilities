@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Extansions.Object;
 
-namespace Utilities.Extansions
+namespace Utilities.Extansions.Enum
 {
 	/// <summary>
 	/// Provides the functionality as System.Enum with generic methods
@@ -21,7 +22,7 @@ namespace Utilities.Extansions
 		/// <returns>A string representation of value.</returns>
 		public static string Format<TEnum>(TEnum value, string format) where TEnum : struct
 		{
-			return Enum.Format(typeof(TEnum), value, format);
+			return System.Enum.Format(typeof(TEnum), value, format);
 		}
 
 		/// <summary>
@@ -38,7 +39,7 @@ namespace Utilities.Extansions
 			where TEnum : struct
 			where TUnderlying : struct
 		{
-			return Enum.GetName(typeof(TEnum), value);
+			return System.Enum.GetName(typeof(TEnum), value);
 		}
 
 		/// <summary>
@@ -48,7 +49,7 @@ namespace Utilities.Extansions
 		/// <returns>A string array of the names of the constants in enumType.</returns>
 		public static string[] GetNames<TEnum>() where TEnum : struct
 		{
-			return Enum.GetNames(typeof(TEnum));
+			return System.Enum.GetNames(typeof(TEnum));
 		}
 
 		/// <summary>
@@ -58,7 +59,7 @@ namespace Utilities.Extansions
 		/// <returns>The underlying type of TEnum.</returns>
 		public static Type GetUnderlyingType<TEnum>() where TEnum : struct
 		{
-			return Enum.GetUnderlyingType(typeof(TEnum));
+			return System.Enum.GetUnderlyingType(typeof(TEnum));
 		}
 
 		/// <summary>
@@ -68,7 +69,7 @@ namespace Utilities.Extansions
 		/// <returns>An array that contains the values of the constants in enumType.</returns>
 		public static TEnum[] GetValues<TEnum>() where TEnum : struct
 		{
-			return (TEnum[])Enum.GetValues(typeof(TEnum));
+			return (TEnum[])System.Enum.GetValues(typeof(TEnum));
 		}
 
 		/// <summary>
@@ -79,7 +80,7 @@ namespace Utilities.Extansions
 		/// <returns>true if a constant in TEnum has a value equal to value; otherwise, false.</returns>
 		public static bool IsDefined<TEnum>(object value) where TEnum : struct
 		{
-			return Enum.IsDefined(typeof(TEnum), value);
+			return System.Enum.IsDefined(typeof(TEnum), value);
 		}
 
 		/// <summary>
@@ -111,7 +112,7 @@ namespace Utilities.Extansions
 		/// <returns>An object of type TEnum whose value is represented by value.</returns>
 		public static TEnum Parse<TEnum>(string value) where TEnum : struct
 		{
-			return (TEnum)Enum.Parse(typeof(TEnum), value);
+			return (TEnum)System.Enum.Parse(typeof(TEnum), value);
 		}
 
 		/// <summary>
@@ -124,7 +125,7 @@ namespace Utilities.Extansions
 		/// <returns>An object of type TEnum whose value is represented by value.</returns>
 		public static TEnum Parse<TEnum>(string value, bool ignoreCase) where TEnum : struct
 		{
-			return (TEnum)Enum.Parse(typeof(TEnum), value, ignoreCase);
+			return (TEnum)System.Enum.Parse(typeof(TEnum), value, ignoreCase);
 		}
 
 		/// <summary>
@@ -138,7 +139,7 @@ namespace Utilities.Extansions
 			where TEnum : struct
 			where TUnderlying : struct
 		{
-			return (TEnum)Enum.ToObject(typeof(TEnum), value);
+			return (TEnum)System.Enum.ToObject(typeof(TEnum), value);
 		}
 
 		/// <summary>
@@ -156,7 +157,7 @@ namespace Utilities.Extansions
 		/// <returns>true if the value parameter was converted successfully; otherwise, false.</returns>
 		public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct
 		{
-			return Enum.TryParse(value, out result);
+			return System.Enum.TryParse(value, out result);
 		}
 
 		/// <summary>
@@ -178,7 +179,7 @@ namespace Utilities.Extansions
 		/// <returns>true if the value parameter was converted successfully; otherwise, false.</returns>
 		public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result) where TEnum : struct
 		{
-			return Enum.TryParse(value, ignoreCase, out result);
+			return System.Enum.TryParse(value, ignoreCase, out result);
 		}
 	}
 }

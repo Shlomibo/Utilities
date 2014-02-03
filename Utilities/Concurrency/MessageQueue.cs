@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Utilities.Extansions.Object;
 
 namespace Utilities.Concurrency
 {
@@ -59,6 +60,13 @@ namespace Utilities.Concurrency
 		/// <param name="scheduler">Task scheduler for message dispatch</param>
 		public MessageQueue(Action<T> handler, TaskScheduler scheduler)
 		{
+			handler.ThrowWhen(
+				when: action => action == null,
+				what: new ArgumentNullException("handler"));
+			scheduler.ThrowWhen(
+				when: obj => obj == null,
+				what: new ArgumentNullException("scheduler"));
+
 			this.handler = handler;
 			this.canellation = new CancellationTokenSource();
 			this.handlingTask = QueueHandler(canellation.Token, scheduler);
@@ -97,6 +105,7 @@ namespace Utilities.Concurrency
 
 		private Task QueueHandler(CancellationToken cancel, TaskScheduler scheduler)
 		{
+			scheduler = scheduler ?? TaskScheduler.Current;
 			return Task.Factory.StartNew(() =>
 				{
 					bool didReleased;

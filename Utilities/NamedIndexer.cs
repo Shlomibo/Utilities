@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Extansions.Object;
+using Utilities.Extansions.Enumerable;
 
 namespace Utilities
 {
@@ -14,6 +16,18 @@ namespace Utilities
 		internal static TType FailGet<TType>()
 		{
 			throw new InvalidOperationException("Cannot get value for write only indexer.");
+		}
+
+		internal static void Validate(IDictionary<string, object> arguments)
+		{
+			arguments.ForEach(keyValue => keyValue.ThrowWhen(
+				when: keyVal => keyVal.Value == null,
+				what: new ArgumentNullException(keyValue.Key)));
+		}
+
+		internal static void Validate(string argName, object value)
+		{
+			Validate(new Dictionary<string, object> { { argName, value } });
 		}
 
 		#region ReadWrite creation
@@ -70,7 +84,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 		{
 			return new NamedIndexer<TParam1, TParam2, TParam3, TType>(getter, setter, enumerator);
-		} 
+		}
 		#endregion
 
 		#region Read only creation
@@ -213,6 +227,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
+			NamedIndexer.Validate("setter", setter);
 			this.setter = setter;
 		}
 		#endregion
@@ -264,6 +279,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
+			NamedIndexer.Validate("setter", setter);
 			this.setter = setter;
 		}
 		#endregion
@@ -317,6 +333,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
+			NamedIndexer.Validate("setter", setter);
 			this.setter = setter;
 		}
 		#endregion

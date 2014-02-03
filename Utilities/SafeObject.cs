@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Utilities.Extansions.Object;
 
 namespace Utilities
 {
@@ -62,6 +63,10 @@ namespace Utilities
         /// <param name="releaser">Delegate to a function that releases resources of the object.</param>
         public SafeObject(T @object, Action<T> releaser)
         {
+			@object.ThrowWhen(
+				when: obj => obj == null,
+				what: new ArgumentNullException("object"));
+
             this.@object = @object;
             this.releaser = releaser;
 

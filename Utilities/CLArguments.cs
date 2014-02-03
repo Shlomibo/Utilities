@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities.Extansions;
+using Utilities.Extansions.Object;
+using Utilities.Extansions.Enumerable;
 
 namespace Utilities
 {
@@ -54,10 +56,9 @@ namespace Utilities
 			get { return keyDesignators; }
 			set
 			{
-				if (value == null)
-				{
-					throw new ArgumentNullException();
-				}
+				value.ThrowWhen(
+					when: array => array == null,
+					what: new ArgumentNullException("KeyDesignators"));
 
 				keyDesignators = value;
 			}
@@ -122,7 +123,7 @@ namespace Utilities
 		{
 			get { return this.AsDict.Values; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the values that stored under the given key.
 		/// </summary>
@@ -211,7 +212,7 @@ namespace Utilities
 		/// <param name="keyDesignators">
 		/// Sequence of strings which when arg is started with one of them, it considered as key.
 		/// </param>
-		public CLArguments(IDictionary<string,string[]> keys, IEnumerable<string> keyDesignators)
+		public CLArguments(IDictionary<string, string[]> keys, IEnumerable<string> keyDesignators)
 			: this(keys, key => IsKeyPredicate(key, keyDesignators))
 		{ }
 
@@ -221,8 +222,15 @@ namespace Utilities
 		/// </summary>
 		/// <param name="keys">The dictionary of arguments to initialize the object with.</param>
 		/// <param name="isKeyPred">A predicate the returns true if the arg is a key.</param>
-		public CLArguments(IDictionary<string,string[]> keys, Predicate<string> isKeyPred)
+		public CLArguments(IDictionary<string, string[]> keys, Predicate<string> isKeyPred)
 		{
+			keys.ThrowWhen(
+				when: dict => dict == null,
+				what: new ArgumentNullException("keys"));
+			isKeyPred.ThrowWhen(
+				when: pred => pred == null,
+				what: new ArgumentNullException("isKeyPred"));
+
 			this.isKeyPred = isKeyPred;
 
 			this.asDict = null;
@@ -356,6 +364,10 @@ namespace Utilities
 		/// <param name="arg">The arg to insert.</param>
 		public void Insert(int index, string arg)
 		{
+			arg.ThrowWhen(
+				when: str => str == null,
+				what: new ArgumentNullException("arg"));
+
 			this.AsList.Insert(index, arg);
 			this.AsDict = null;
 		}
@@ -482,6 +494,10 @@ namespace Utilities
 		/// <param name="arg">The arg to add.</param>
 		public void Add(string arg)
 		{
+			arg.ThrowWhen(
+				when: str => str == null,
+				what: new ArgumentNullException("arg"));
+
 			this.AsList.Add(arg);
 
 			if (this.asDict != null)
@@ -586,6 +602,13 @@ namespace Utilities
 		/// <param name="value">The values for that key.</param>
 		public void CreateOrReplace(string key, string[] value)
 		{
+			key.ThrowWhen(
+				when: keyStr => keyStr == null,
+				what: new ArgumentNullException("key"));
+			value.ThrowWhen(
+				when: val => val.Any(valStr => valStr == null),
+				what: new ArgumentException("Value cannot contain null strings"));
+
 			if (ContainsKey(key))
 			{
 				RemoveKey(key);
@@ -635,6 +658,13 @@ namespace Utilities
 		/// <param name="value">The value args array.</param>
 		public void Add(string key, string[] value)
 		{
+			key.ThrowWhen(
+				when: keyStr => keyStr == null,
+				what: new ArgumentNullException("key"));
+			value.ThrowWhen(
+				when: val => val.Any(valStr => valStr == null),
+				what: new ArgumentException("Value cannot contain null strings"));
+
 			if (!IsKey(key))
 			{
 				throw new InvalidOperationException("The key argument must be a key");

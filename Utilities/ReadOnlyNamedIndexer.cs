@@ -47,6 +47,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
+			NamedIndexer.Validate("getter", getter);
 			this.getter = getter;
 		}
 		#endregion
@@ -94,6 +95,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
+			NamedIndexer.Validate("getter", getter);
 			this.getter = getter;
 		}
 		#endregion
@@ -143,6 +145,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
+			NamedIndexer.Validate("getter", getter);
 			this.getter = getter;
 		}
 		#endregion

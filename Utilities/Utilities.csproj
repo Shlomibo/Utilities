@@ -157,16 +157,16 @@
   <ItemGroup>
     <Compile Include="CLArguments.cs" />
     <Compile Include="Concurrency\MessageQueue.cs" />
+    <Compile Include="Extansions\EnumerableExtansions.cs" />
     <Compile Include="Extansions\EnumExtansions.cs" />
     <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Extansions\ObjectExtansions.cs" />
+    <Compile Include="Extansions\StringExtansions.cs" />
     <Compile Include="NamedIndexer.cs" />
     <Compile Include="NamedIndexerBase.cs" />
     <Compile Include="ReadOnlyNamedIndexer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SafeObject.cs" />
-    <Compile Include="Security\SecuredArray.cs" />
-    <Compile Include="Security\DataProtection.cs" />
     <Compile Include="TimedResult.cs" />
     <Compile Include="WriteOnlyNamedIndexer.cs" />
   </ItemGroup>
