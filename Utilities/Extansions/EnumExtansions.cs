@@ -72,6 +72,11 @@ namespace Utilities.Extansions.Enum
 			return (TEnum[])System.Enum.GetValues(typeof(TEnum));
 		}
 
+		public static bool IsDefined<TEnum>(TEnum value) where TEnum : struct
+		{
+			return IsDefined<TEnum>((object)value);
+		}
+
 		/// <summary>
 		/// Returns an indication whether a constant with a specified value exists in a specified enumeration.
 		/// </summary>

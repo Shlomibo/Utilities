@@ -161,6 +161,7 @@
     <Compile Include="Extansions\EnumExtansions.cs" />
     <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Extansions\ObjectExtansions.cs" />
+    <Compile Include="Extansions\StringBuilderExtansions.cs" />
     <Compile Include="Extansions\StringExtansions.cs" />
     <Compile Include="NamedIndexer.cs" />
     <Compile Include="NamedIndexerBase.cs" />

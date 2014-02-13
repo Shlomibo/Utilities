@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Extansions.String
+namespace Utilities.Extansions.Text
 {
 	/// <summary>
 	/// Extansion methods for string
@@ -32,5 +32,58 @@ namespace Utilities.Extansions.String
 		{
 			return string.IsNullOrWhiteSpace(str);
 		}
+
+		public static IReadOnlyList<char> AsList(this string str)
+		{
+			return new StringWrapper(str);
+		}
+
+		private class StringWrapper : IReadOnlyList<char>
+		{
+			#region Fields
+
+			private string str;
+			#endregion
+
+			#region Properties
+
+			public char this[int index]
+			{
+				get { return this.str[index]; }
+			}
+
+			public int Count
+			{
+				get { return this.str.Length; }
+			} 
+			#endregion
+
+			#region Ctor
+
+			public StringWrapper(string str)
+			{
+				if (str == null)
+				{
+					throw new ArgumentNullException();
+				}
+
+				this.str = str;
+			}
+			#endregion
+
+			#region Methods
+
+			public IEnumerator<char> GetEnumerator()
+			{
+				throw new NotImplementedException();
+			}
+
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				throw new NotImplementedException();
+			} 
+			#endregion
+		}
+
 	}
 }
