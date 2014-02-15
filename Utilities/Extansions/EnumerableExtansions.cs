@@ -41,19 +41,40 @@ namespace Utilities.Extansions.Enumerable
 			}
 		}
 
+		/// <summary>
+		/// Returns the list as IReadOnlyList&lt;T&gt;, wrapping it if necessary.
+		/// </summary>
+		/// <typeparam name="T">The typeparam of the list</typeparam>
+		/// <param name="list">The list to return as IReadOnlyList&lt;T&gt;</param>
+		/// <returns>An object which implements IReadOnlyList&lt;T&gt; for the list.</returns>
 		public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list)
 		{
 			return (list as IReadOnlyList<T>) ?? new ListWrapper<T>(list);
 		}
 
+		/// <summary>
+		/// Returns the collection as IReadOnlyCollection&lt;T&gt;, wrapping it if necessary.
+		/// </summary>
+		/// <typeparam name="T">The typeparam of the collection</typeparam>
+		/// <param name="collection">The collection to return as IReadOnlyList&lt;T&gt;</param>
+		/// <returns>An object which implements IReadOnlyCollection&lt;T&gt; for the collection.</returns>
 		public static IReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> collection)
 		{
 			return (collection as IReadOnlyCollection<T>) ?? new CollectionWrapper<T>(collection);
 		}
 
-		public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+		/// <summary>
+		/// Returns the dictionary as IReadOnlyDictionary&lt;T&gt;, wrapping it if necessary.
+		/// </summary>
+		/// <typeparam name="TKey">The type of the dictionary's keys.</typeparam>
+		/// <typeparam name="TValue">The type of the dictionary's values.</typeparam>
+		/// <param name="dictionary">The dictionary to return as IReadOnlyList&lt;T&gt;</param>
+		/// <returns>An object which implements IReadOnlyDictionary&lt;T&gt; for the dictionary.</returns>
+		public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(
+			this IDictionary<TKey, TValue> dictionary) 
 		{
-			return (dictionary as IReadOnlyDictionary<TKey, TValue>) ?? new DictionaryWrapper<TKey, TValue>(dictionary);
+			return (dictionary as IReadOnlyDictionary<TKey, TValue>) ??
+				new DictionaryWrapper<TKey, TValue>(dictionary);
 		}
 
 		private class CollectionWrapper<T> : IReadOnlyCollection<T>

@@ -33,6 +33,11 @@ namespace Utilities.Extansions.Text
 			return string.IsNullOrWhiteSpace(str);
 		}
 
+		/// <summary>
+		/// Returns an IReadOnlyList&lt;char&gt; wrapper for the string.
+		/// </summary>
+		/// <param name="str">The string to wrap.</param>
+		/// <returns>A wrapper which implements IReadOnlyList&lt;char&gt; for the string.</returns>
 		public static IReadOnlyList<char> AsList(this string str)
 		{
 			return new StringWrapper(str);

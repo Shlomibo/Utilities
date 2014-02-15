@@ -72,6 +72,12 @@ namespace Utilities.Extansions.Enum
 			return (TEnum[])System.Enum.GetValues(typeof(TEnum));
 		}
 
+		/// <summary>
+		/// Returns an indication whether a constant with a specified value exists in a specified enumeration.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enum.</typeparam>
+		/// <param name="value">The value of the enum.</param>
+		/// <returns>true if a constant in TEnum has a value equal to value; otherwise, false.</returns>
 		public static bool IsDefined<TEnum>(TEnum value) where TEnum : struct
 		{
 			return IsDefined<TEnum>((object)value);
@@ -185,6 +191,74 @@ namespace Utilities.Extansions.Enum
 		public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result) where TEnum : struct
 		{
 			return System.Enum.TryParse(value, ignoreCase, out result);
+		}
+
+		/// <summary>
+		/// Combine the values of two enums.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enumeration.</typeparam>
+		/// <param name="left">The left side of the combination.</param>
+		/// <param name="right">The right side of the combination.</param>
+		/// <returns>A combination of both enumerations.</returns>
+		public static TEnum Combine<TEnum>(TEnum left, TEnum right)
+			where TEnum : struct
+		{
+			return (TEnum)((dynamic)left | right);
+		}
+
+		/// <summary>
+		/// Combine the values of the enums in the enumeration.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enumeration.</typeparam>
+		/// <param name="values">The values to combine.</param>
+		/// <returns>A combination of the values.</returns>
+		public static TEnum Combine<TEnum>(IEnumerable<TEnum> values)
+			where TEnum : struct
+		{
+			return values.Aggregate(
+				default(TEnum), 
+				(combination, value) => Combine(combination, value));
+		}
+
+		/// <summary>
+		/// Combine the given enum values.
+		/// </summary>
+		/// <typeparam name="TEnum">The type of the enumeration.</typeparam>
+		/// <param name="values">The values to combine.</param>
+		/// <returns>A combination of the values.</returns>
+		public static TEnum Combine<TEnum>(params TEnum[] values)
+			where TEnum : struct
+		{
+			return Combine((IEnumerable<TEnum>)values);
+		}
+
+		/// <summary>
+		/// Checks if the value has the flag.
+		/// </summary>
+		/// <typeparam name="TEnum">The enumeration type.</typeparam>
+		/// <param name="value">The value to check.</param>
+		/// <param name="flag">The flag to check.</param>
+		/// <returns>true if the value has the flag.</returns>
+		public static bool HasFlag<TEnum>(TEnum value, TEnum flag)
+			where TEnum : struct
+		{
+			return ((dynamic)value & flag) == flag;
+		}
+
+		/// <summary>
+		/// Checks if the enumeration is combination of only defined flags.
+		/// </summary>
+		/// <typeparam name="TEnum">The enumeration type.</typeparam>
+		/// <param name="combination">The enumeration to check.</param>
+		/// <returns>true if the enumeration is combined from defined values; otherwise false.</returns>
+		public static bool IsCombinationDefined<TEnum>(TEnum combination)
+			where TEnum : struct
+		{
+			var fullCombination = (dynamic)Combine(GetValues<TEnum>());
+
+			combination &= ~fullCombination;
+
+			return combination.Equals(default(TEnum));
 		}
 	}
 }
