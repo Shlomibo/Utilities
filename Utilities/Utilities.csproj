@@ -157,11 +157,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CLArguments.cs" />
+    <Compile Include="Collections\EmptyImmutableList.cs" />
+    <Compile Include="Collections\EmptyImmutableStack.cs" />
+    <Compile Include="Collections\IImmutableCollection.cs" />
+    <Compile Include="Collections\IImmutableList.cs" />
+    <Compile Include="Collections\IImmutableStack.cs" />
+    <Compile Include="Collections\ImmutableList.cs" />
+    <Compile Include="Collections\ImmutableStack.cs" />
     <Compile Include="Concurrency\MessageQueue.cs" />
     <Compile Include="Extansions\EnumerableExtansions.cs" />
     <Compile Include="Extansions\EnumExtansions.cs" />
     <Compile Include="Extansions\ExtansionsClass.cs" />
     <Compile Include="Extansions\ObjectExtansions.cs" />
+    <Compile Include="Extansions\Pair.cs" />
     <Compile Include="Extansions\StringBuilderExtansions.cs" />
     <Compile Include="Extansions\StringExtansions.cs" />
     <Compile Include="NamedIndexer.cs" />

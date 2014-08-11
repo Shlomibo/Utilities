@@ -12,6 +12,7 @@ namespace Utilities.Extansions.Enumerable
 	/// </summary>
 	public static class EnumerableExtansions
 	{
+
 		/// <summary>
 		/// Returns true if the enumerable is null, or empty.
 		/// </summary>
@@ -21,24 +22,6 @@ namespace Utilities.Extansions.Enumerable
 		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
 		{
 			return (enumerable == null) || !enumerable.Any();
-		}
-
-		/// <summary>
-		/// Executes the action for each element in the enumerable.
-		/// </summary>
-		/// <typeparam name="T">The type of items in the enumerable.</typeparam>
-		/// <param name="enumerable">The enumerable which contains the item.</param>
-		/// <param name="action">The action to execute for each item.</param>
-		public static void ForEach<T>(this IEnumerable<T> enumerable, Action<T> action)
-		{
-			enumerable.ThrowWhen(
-				when: sequence => sequence == null,
-				what: new ArgumentNullException("enumerable"));
-
-			foreach (T item in enumerable)
-			{
-				action(item);
-			}
 		}
 
 		/// <summary>
@@ -71,10 +54,100 @@ namespace Utilities.Extansions.Enumerable
 		/// <param name="dictionary">The dictionary to return as IReadOnlyList&lt;T&gt;</param>
 		/// <returns>An object which implements IReadOnlyDictionary&lt;T&gt; for the dictionary.</returns>
 		public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(
-			this IDictionary<TKey, TValue> dictionary) 
+			this IDictionary<TKey, TValue> dictionary)
 		{
 			return (dictionary as IReadOnlyDictionary<TKey, TValue>) ??
 				new DictionaryWrapper<TKey, TValue>(dictionary);
+		}
+
+		/// <summary>
+		/// Run for each element in collection, the given action.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in collection.</typeparam>
+		/// <param name="collection">The collection of elements to run their corresponding actions.</param>
+		/// <param name="operation">The action to run on each element in collection.</param>
+		public static void ForEach<T>(this IEnumerable<T> collection, Action<T> operation)
+		{
+			if (collection == null)
+			{
+				throw new ArgumentNullException("collection");
+			}
+
+			if (operation == null)
+			{
+				throw new ArgumentNullException("operation");
+			}
+
+			collection.ForEach(collection.Select(item => (Action<T>)(arg => operation(arg))));
+		}
+
+		/// <summary>
+		/// Run for each element in collection, the corresponding action in operations.  
+		/// <remarks>
+		/// If operations has fewer elements than collection, only items which have corresponding action would run.  
+		/// null actions are treated as `do nothing` actions.
+		/// </remarks>
+		/// </summary>
+		/// <typeparam name="T">The type of elements in collection.</typeparam>
+		/// <param name="collection">The collection of elements to run their corresponding actions.</param>
+		/// <param name="operations">The collection of actions to run.</param>
+		public static void ForEach<T>(this IEnumerable<T> collection, IEnumerable<Action<T>> operations)
+		{
+			if (collection == null)
+			{
+				throw new ArgumentNullException("collection");
+			}
+
+			if (operations == null)
+			{
+				throw new ArgumentNullException("operations");
+			}
+
+			operations = operations.Select(action => action ?? (item => { }));
+
+			foreach (var operation in operations.Zip(collection, (Action, Item) => new { Action, Item }))
+			{
+				operation.Action(operation.Item);
+			}
+		}
+
+		/// <summary>
+		/// Returns a collection of pair which hold reference to the current and previous items.
+		/// </summary>
+		/// <typeparam name="T">The type of elements in source.</typeparam>
+		/// <param name="source">The source sequence.</param>
+		/// <returns>A collection of pair which hold reference to the current and previous items.</returns>
+		public static IEnumerable<Pair<T>> GetSequencials<T>(this IEnumerable<T> source)
+		{
+			if (source == null)
+			{
+				throw new ArgumentNullException("source");
+			}
+
+			return GetSequencialsInternal(source);
+		}
+
+		private static IEnumerable<Pair<T>> GetSequencialsInternal<T>(IEnumerable<T> source)
+		{
+			T previous = default(T);
+
+			foreach (T item in source)
+			{
+				T current = item;
+				yield return new Pair<T>(current, previous);
+				previous = current;
+			}
+		}
+
+		/// <summary>
+		/// Run for each element in collection, the corresponding action in operations.  
+		/// </summary>
+		/// <typeparam name="T">The type of elements in collection.</typeparam>
+		/// <param name="collection">The collection of elements to run their corresponding actions.</param>
+		/// <param name="operations">The collection of actions to run.</param>
+		public static void ForEach<T>(this IEnumerable<T> collection, params Action<T>[] operations)
+		{
+			collection.ForEach((IEnumerable<Action<T>>)operations);
 		}
 
 		private class CollectionWrapper<T> : IReadOnlyCollection<T>
@@ -89,7 +162,7 @@ namespace Utilities.Extansions.Enumerable
 			public int Count
 			{
 				get { return this.collection.Count; }
-			} 
+			}
 			#endregion
 
 			#region Ctor
@@ -115,7 +188,7 @@ namespace Utilities.Extansions.Enumerable
 			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 			{
 				return GetEnumerator();
-			} 
+			}
 			#endregion
 		}
 
@@ -150,7 +223,7 @@ namespace Utilities.Extansions.Enumerable
 			#endregion
 		}
 
-		private class DictionaryWrapper<TKey, TValue> : 
+		private class DictionaryWrapper<TKey, TValue> :
 			CollectionWrapper<KeyValuePair<TKey, TValue>>,
 			IReadOnlyDictionary<TKey, TValue>
 		{

@@ -51,6 +51,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Collections\EmptyListTests.cs" />
+    <Compile Include="Collections\ImmutableListTests.cs" />
     <Compile Include="Concurrency\MessageQueueTests.cs" />
     <Compile Include="OperationPerformedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

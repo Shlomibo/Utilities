@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,11 @@ namespace Utilities.Extansions.Object
 	/// </summary>
 	public static class ObjectExtansions
 	{
+		#region Fields
+
+		private static readonly Dictionary<Type, Delegate> typesRetrievers = new Dictionary<Type, Delegate>();
+		#endregion
+
 		/// <summary>
 		/// Creates hash code from the given objects
 		/// </summary>
@@ -22,12 +28,25 @@ namespace Utilities.Extansions.Object
 		/// <returns>Hash code which is calculated from the given values</returns>
 		public static int CreateHashCode(params object[] objects)
 		{
+			return CreateHashCode((IEnumerable<object>)objects);
+		}
+
+		/// <summary>
+		/// Creates hash code from the given objects
+		/// </summary>
+		/// <param name="objects">
+		/// The objects to create the hash for. 
+		/// These should be the immutable fields of the object to generate the hash for.
+		/// </param>
+		/// <returns>Hash code which is calculated from the given values</returns>
+		public static int CreateHashCode(IEnumerable<object> objects)
+		{
 			const int BASE_HASH = 27;
-			const int SHIFT = 5;
+			const int SHIFT = 7;
 
 			int result = 0;
 
-			if ((objects != null) && (objects.Length > 0))
+			if ((objects != null) && (objects.Any()))
 			{
 				unchecked
 				{
@@ -35,7 +54,7 @@ namespace Utilities.Extansions.Object
 									.Aggregate(
 										BASE_HASH,
 										(accumulated, hash) =>
-											(accumulated << SHIFT) - accumulated + hash);
+											(accumulated << SHIFT) + accumulated + hash);
 				}
 			}
 
@@ -269,6 +288,5 @@ namespace Utilities.Extansions.Object
 		{
 			item.ThrowWhen(when, () => what);
 		}
-
 	}
 }

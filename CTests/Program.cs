@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security;
 using Utilities;
+using CTests.Properties;
 
 namespace CTests
 {
@@ -32,7 +33,7 @@ namespace CTests
 				"third dup",
 				"forth dup",
 			};
-
+			
 			var managedArgs = new CLArguments(args);
 
 			foreach (string key in managedArgs.Keys)
