@@ -24,7 +24,7 @@ namespace Utilities.Extansions.Text
 		{
 			if (builder == null)
 			{
-				throw new ArgumentNullException();
+				throw new ArgumentNullException(nameof(builder));
 			}
 
 			var newBuilder = new StringBuilder(builder.Capacity);
@@ -47,7 +47,7 @@ namespace Utilities.Extansions.Text
 		{
 			if (builder == null)
 			{
-				throw new ArgumentNullException();
+				throw new ArgumentNullException(nameof(builder));
 			}
 
 			return AsEnumerableInternal(builder);
@@ -70,7 +70,7 @@ namespace Utilities.Extansions.Text
 		{
 			if (builder == null)
 			{
-				throw new ArgumentNullException();
+				throw new ArgumentNullException(nameof(builder));
 			}
 
 			return new StringBuilderWrapper(builder);
@@ -86,20 +86,9 @@ namespace Utilities.Extansions.Text
 		{
 			builder.ThrowWhen(
 				when: obj => obj == null,
-				what: new ArgumentNullException());
+				what: new ArgumentNullException(nameof(builder)));
 
-			bool result = false;
-
-			foreach (char @char in builder.AsEnumerable())
-			{
-				if (@char == value)
-				{
-					result = true;
-					break;
-				}
-			}
-
-			return result;
+			return builder.AsEnumerable().Contains(value);
 		}
 
 		/// <summary>
@@ -117,10 +106,10 @@ namespace Utilities.Extansions.Text
 
 			builder.ThrowWhen(
 				when: obj => obj == null,
-				what: new ArgumentNullException("builder"));
+				what: new ArgumentNullException(nameof(builder)));
 			value.ThrowWhen(
 				when: obj => obj == null,
-				what: new ArgumentNullException("value"));
+				what: new ArgumentNullException(nameof(value)));
 
 			if (value.Count == 0)
 			{
@@ -160,10 +149,8 @@ namespace Utilities.Extansions.Text
 		/// true if the string, is contained in the StringBuidler;
 		/// otherwise false.
 		/// </returns>
-		public static bool Contains(this StringBuilder builder, string value)
-		{
-			return builder.Contains(value.AsList());
-		}
+		public static bool Contains(this StringBuilder builder, string value) =>
+			builder.Contains(value.AsList());
 
 		/// <summary>
 		/// Checks if the other StringBuilder is contained in the StringBuilder.
@@ -174,16 +161,15 @@ namespace Utilities.Extansions.Text
 		/// true if the other StringBuilder, is contained in the StringBuidler;
 		/// otherwise false.
 		/// </returns>
-		public static bool Contains(this StringBuilder builder, StringBuilder value)
-		{
-			return builder.Contains(value.AsList().AsReadOnly());
-		}
+		public static bool Contains(this StringBuilder builder, StringBuilder value) =>
+			builder.Contains(value.AsList().AsReadOnly());
 
 		private class StringBuilderWrapper : IList<char>, IReadOnlyList<char>
 		{
+			private const int NOT_FOUND = -1;
 			#region Fields
 
-			private StringBuilder builder;
+			private readonly StringBuilder builder;
 			#endregion
 
 			#region Properties
@@ -194,15 +180,9 @@ namespace Utilities.Extansions.Text
 				set { this.builder[index] = value; }
 			}
 
-			public int Count
-			{
-				get { return this.builder.Length; }
-			}
+			public int Count => this.builder.Length; 
 
-			public bool IsReadOnly
-			{
-				get { return false; }
-			}
+			public bool IsReadOnly => false; 
 			#endregion
 
 			#region Ctor
@@ -211,7 +191,7 @@ namespace Utilities.Extansions.Text
 			{
 				if (builder == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(builder));
 				}
 
 				this.builder = builder;
@@ -222,55 +202,49 @@ namespace Utilities.Extansions.Text
 
 			public int IndexOf(char item)
 			{
-				int result = -1;
+				int result = NOT_FOUND;
 
-				for (int i = 0; i < this.builder.Length; i++)
+				for (int i = 0; (result == NOT_FOUND) && (i < this.builder.Length); i++)
 				{
 					if (this.builder[i] == item)
 					{
 						result = i;
-						break;
 					}
 				}
 
 				return result;
 			}
 
-			public void Insert(int index, char item)
-			{
+			public void Insert(int index, char item) =>
 				this.builder.Insert(index, item);
-			}
 
-			public void RemoveAt(int index)
-			{
+			public void RemoveAt(int index) =>
 				this.builder.Remove(index, 1);
-			}
 
-			public void Add(char item)
-			{
+			public void Add(char item) =>
 				this.builder.Append(item);
-			}
 
-			public void Clear()
-			{
+			public void Clear() =>
 				this.builder.Clear();
-			}
 
-			public bool Contains(char item)
-			{
-				return this.builder.Contains(item);
-			}
+			public bool Contains(char item) =>
+				this.builder.Contains(item);
 
 			public void CopyTo(char[] array, int arrayIndex)
 			{
 				if (array == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(array));
+				}
+
+				if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+				{
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 				}
 
 				if ((arrayIndex + this.builder.Length) >= array.Length)
 				{
-					throw new IndexOutOfRangeException();
+					throw new ArgumentException();
 				}
 
 				for (int i = 0; i < this.builder.Length; i++)
@@ -284,7 +258,7 @@ namespace Utilities.Extansions.Text
 				int index = IndexOf(item);
 				bool result = false;
 
-				if (index != -1)
+				if (index != NOT_FOUND)
 				{
 					this.builder.Remove(index, 1);
 					result = true;
@@ -293,15 +267,11 @@ namespace Utilities.Extansions.Text
 				return result;
 			}
 
-			public IEnumerator<char> GetEnumerator()
-			{
-				return this.builder.AsEnumerable().GetEnumerator();
-			}
+			public IEnumerator<char> GetEnumerator() =>
+				this.builder.AsEnumerable().GetEnumerator();
 
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
-			}
+			IEnumerator IEnumerable.GetEnumerator() =>
+				GetEnumerator();
 			#endregion
 		}
 	}

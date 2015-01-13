@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utilities.Extansions.Object;
+using Utilities.Extansions.Object.ObjectExtansions;
 
 namespace Utilities.Extansions
 {
@@ -26,28 +26,24 @@ namespace Utilities.Extansions
 		/// <summary>
 		/// Gets the previous/first item.
 		/// </summary>
-		public T Previous { get; private set; }
-		
+		public T Previous { get; }
+
 		/// <summary>
 		/// Gets the current/second item.
 		/// </summary>
-		public T Current { get; private set; }
+		public T Current { get; }
 
 		/// <summary>
 		/// Gets the previous/first item.
 		/// </summary>
-		public T First
-		{
-			get { return this.Previous; }
-		}
+		public T First =>
+			this.Previous;
 
 		/// <summary>
 		/// Gets the current/second item.
 		/// </summary>
-		public T Second
-		{
-			get { return this.Current; }
-		}
+		public T Second =>
+			this.Current;
 		#endregion
 
 		#region Ctor
@@ -86,37 +82,25 @@ namespace Utilities.Extansions
 		/// Gets a hash code.
 		/// </summary>
 		/// <returns>A hash code calculated from the pair.</returns>
-		public override int GetHashCode()
-		{
-			return ObjectExtansions.CreateHashCode(this.Previous, this.Current);
-		}
+		public override int GetHashCode() =>
+			CreateHashCode(this.Previous, this.Current);
 
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>
 		/// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
-		public bool Equals(Pair<T> other)
-		{
-			bool isFirstEquals = this.Previous != null
-				? this.Previous.Equals(other.Previous)
-				: other.Previous == null;
-
-			bool isEquals = isFirstEquals && this.Current != null
-				? this.Current.Equals(other.Current)
-				: other.Current == null;
-
-			return isEquals;
-		} 
+		public bool Equals(Pair<T> other) =>
+			object.Equals(this.Previous, other.Previous) &&
+			object.Equals(this.Current, other.Current);
 
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString()
-		{
-			return "{" + this.Previous + ", " + this.Current + "}";
-		}
+		public override string ToString() =>
+			"{\{this.Previous}, \{this.Current}}";
+		//$"{{{this.Previous}, {this.Current}}}";
 		#endregion
 	}
 }

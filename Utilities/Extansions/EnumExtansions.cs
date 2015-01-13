@@ -20,10 +20,8 @@ namespace Utilities.Extansions.Enum
 		/// <param name="value">The value to convert.</param>
 		/// <param name="format">The output format to use.</param>
 		/// <returns>A string representation of value.</returns>
-		public static string Format<TEnum>(TEnum value, string format) where TEnum : struct
-		{
-			return System.Enum.Format(typeof(TEnum), value, format);
-		}
+		public static string Format<TEnum>(TEnum value, string format) where TEnum : struct =>
+			System.Enum.Format(typeof(TEnum), value, format);
 
 		/// <summary>
 		/// Retrieves the name of the constant in the specified enumeration that has the specified value.
@@ -37,40 +35,32 @@ namespace Utilities.Extansions.Enum
 		/// </returns>
 		public static string GetName<TEnum, TUnderlying>(TUnderlying value) 
 			where TEnum : struct
-			where TUnderlying : struct
-		{
-			return System.Enum.GetName(typeof(TEnum), value);
-		}
+			where TUnderlying : struct =>
+			System.Enum.GetName(typeof(TEnum), value);
 
 		/// <summary>
 		/// Retrieves an array of the names of the constants in a specified enumeration.
 		/// </summary>
 		/// <typeparam name="TEnum">An enumeration type.</typeparam>
 		/// <returns>A string array of the names of the constants in enumType.</returns>
-		public static string[] GetNames<TEnum>() where TEnum : struct
-		{
-			return System.Enum.GetNames(typeof(TEnum));
-		}
+		public static string[] GetNames<TEnum>() where TEnum : struct =>
+			System.Enum.GetNames(typeof(TEnum));
 
 		/// <summary>
 		/// Returns the underlying type of the specified enumeration.
 		/// </summary>
 		/// <typeparam name="TEnum">The enumeration type whose underlying type will be retrieved.</typeparam>
 		/// <returns>The underlying type of TEnum.</returns>
-		public static Type GetUnderlyingType<TEnum>() where TEnum : struct
-		{
-			return System.Enum.GetUnderlyingType(typeof(TEnum));
-		}
+		public static Type GetUnderlyingType<TEnum>() where TEnum : struct =>
+			System.Enum.GetUnderlyingType(typeof(TEnum));
 
 		/// <summary>
 		/// Retrieves an array of the values of the constants in a specified enumeration.
 		/// </summary>
 		/// <typeparam name="TEnum">An enumeration type.</typeparam>
 		/// <returns>An array that contains the values of the constants in enumType.</returns>
-		public static TEnum[] GetValues<TEnum>() where TEnum : struct
-		{
-			return (TEnum[])System.Enum.GetValues(typeof(TEnum));
-		}
+		public static TEnum[] GetValues<TEnum>() where TEnum : struct =>
+			(TEnum[])System.Enum.GetValues(typeof(TEnum));
 
 		/// <summary>
 		/// Returns an indication whether a constant with a specified value exists in a specified enumeration.
@@ -78,10 +68,8 @@ namespace Utilities.Extansions.Enum
 		/// <typeparam name="TEnum">The type of the enum.</typeparam>
 		/// <param name="value">The value of the enum.</param>
 		/// <returns>true if a constant in TEnum has a value equal to value; otherwise, false.</returns>
-		public static bool IsDefined<TEnum>(TEnum value) where TEnum : struct
-		{
-			return IsDefined<TEnum>((object)value);
-		}
+		public static bool IsDefined<TEnum>(TEnum value) where TEnum : struct =>
+			IsDefined<TEnum>((object)value);
 
 		/// <summary>
 		/// Returns an indication whether a constant with a specified value exists in a specified enumeration.
@@ -89,10 +77,8 @@ namespace Utilities.Extansions.Enum
 		/// <typeparam name="TEnum">An enumeration type.</typeparam>
 		/// <param name="value">The value or name of a constant in TEnum.</param>
 		/// <returns>true if a constant in TEnum has a value equal to value; otherwise, false.</returns>
-		public static bool IsDefined<TEnum>(object value) where TEnum : struct
-		{
-			return System.Enum.IsDefined(typeof(TEnum), value);
-		}
+		public static bool IsDefined<TEnum>(object value) where TEnum : struct =>
+			System.Enum.IsDefined(typeof(TEnum), value);
 
 		/// <summary>
 		/// Returns an indication whether a constant with a specified name exists in a specified enumeration.
@@ -121,10 +107,8 @@ namespace Utilities.Extansions.Enum
 		/// <typeparam name="TEnum">An enumeration type.</typeparam>
 		/// <param name="value">A string containing the name or value to convert.</param>
 		/// <returns>An object of type TEnum whose value is represented by value.</returns>
-		public static TEnum Parse<TEnum>(string value) where TEnum : struct
-		{
-			return (TEnum)System.Enum.Parse(typeof(TEnum), value);
-		}
+		public static TEnum Parse<TEnum>(string value) where TEnum : struct =>
+			(TEnum)System.Enum.Parse(typeof(TEnum), value);
 
 		/// <summary>
 		/// Converts the string representation of the name or numeric value of one or more enumerated constants to 
@@ -134,10 +118,8 @@ namespace Utilities.Extansions.Enum
 		/// <param name="value">A string containing the name or value to convert.</param>
 		/// <param name="ignoreCase">true to ignore case; false to regard case.</param>
 		/// <returns>An object of type TEnum whose value is represented by value.</returns>
-		public static TEnum Parse<TEnum>(string value, bool ignoreCase) where TEnum : struct
-		{
-			return (TEnum)System.Enum.Parse(typeof(TEnum), value, ignoreCase);
-		}
+		public static TEnum Parse<TEnum>(string value, bool ignoreCase) where TEnum : struct =>
+			(TEnum)System.Enum.Parse(typeof(TEnum), value, ignoreCase);
 
 		/// <summary>
 		/// Converts the specified object with an integer value to an enumeration member.
@@ -148,10 +130,8 @@ namespace Utilities.Extansions.Enum
 		/// <returns>An enumeration object whose value is value.</returns>
 		public static TEnum ToObject<TEnum, TUnderlying>(TUnderlying value) 
 			where TEnum : struct
-			where TUnderlying : struct
-		{
-			return (TEnum)System.Enum.ToObject(typeof(TEnum), value);
-		}
+			where TUnderlying : struct =>
+			(TEnum)System.Enum.ToObject(typeof(TEnum), value);
 
 		/// <summary>
 		/// Converts the string representation of the name or numeric value of one or more enumerated constants to 
@@ -166,10 +146,8 @@ namespace Utilities.Extansions.Enum
 		/// Note that this value need not be a member of the TEnum enumeration. This parameter is passed uninitialized.
 		/// </param>
 		/// <returns>true if the value parameter was converted successfully; otherwise, false.</returns>
-		public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct
-		{
-			return System.Enum.TryParse(value, out result);
-		}
+		public static bool TryParse<TEnum>(string value, out TEnum result) where TEnum : struct =>
+			System.Enum.TryParse(value, out result);
 
 		/// <summary>
 		/// Converts the string representation of the name or numeric value of one or more enumerated constants to 
@@ -188,10 +166,8 @@ namespace Utilities.Extansions.Enum
 		/// This parameter is passed uninitialized.
 		/// </param>
 		/// <returns>true if the value parameter was converted successfully; otherwise, false.</returns>
-		public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result) where TEnum : struct
-		{
-			return System.Enum.TryParse(value, ignoreCase, out result);
-		}
+		public static bool TryParse<TEnum>(string value, bool ignoreCase, out TEnum result) where TEnum : struct =>
+			System.Enum.TryParse(value, ignoreCase, out result);
 
 		/// <summary>
 		/// Combine the values of two enums.
@@ -200,11 +176,9 @@ namespace Utilities.Extansions.Enum
 		/// <param name="left">The left side of the combination.</param>
 		/// <param name="right">The right side of the combination.</param>
 		/// <returns>A combination of both enumerations.</returns>
-		public static TEnum Combine<TEnum>(TEnum left, TEnum right)
-			where TEnum : struct
-		{
-			return (TEnum)((dynamic)left | right);
-		}
+		public static TEnum Combine<TEnum>(TEnum left, TEnum right) 
+			where TEnum : struct =>
+			(TEnum)((dynamic)left | right);
 
 		/// <summary>
 		/// Combine the values of the enums in the enumeration.
@@ -213,12 +187,10 @@ namespace Utilities.Extansions.Enum
 		/// <param name="values">The values to combine.</param>
 		/// <returns>A combination of the values.</returns>
 		public static TEnum Combine<TEnum>(IEnumerable<TEnum> values)
-			where TEnum : struct
-		{
-			return values.Aggregate(
+			where TEnum : struct =>
+			values.Aggregate(
 				default(TEnum), 
 				(combination, value) => Combine(combination, value));
-		}
 
 		/// <summary>
 		/// Combine the given enum values.
@@ -227,10 +199,8 @@ namespace Utilities.Extansions.Enum
 		/// <param name="values">The values to combine.</param>
 		/// <returns>A combination of the values.</returns>
 		public static TEnum Combine<TEnum>(params TEnum[] values)
-			where TEnum : struct
-		{
-			return Combine((IEnumerable<TEnum>)values);
-		}
+			where TEnum : struct =>
+			Combine((IEnumerable<TEnum>)values);
 
 		/// <summary>
 		/// Checks if the value has the flag.
@@ -240,10 +210,8 @@ namespace Utilities.Extansions.Enum
 		/// <param name="flag">The flag to check.</param>
 		/// <returns>true if the value has the flag.</returns>
 		public static bool HasFlag<TEnum>(TEnum value, TEnum flag)
-			where TEnum : struct
-		{
-			return ((dynamic)value & flag) == flag;
-		}
+			where TEnum : struct =>
+			((dynamic)value & flag) == flag;
 
 		/// <summary>
 		/// Checks if the enumeration is combination of only defined flags.
@@ -252,7 +220,7 @@ namespace Utilities.Extansions.Enum
 		/// <param name="combination">The enumeration to check.</param>
 		/// <returns>true if the enumeration is combined from defined values; otherwise false.</returns>
 		public static bool IsCombinationDefined<TEnum>(TEnum combination)
-			where TEnum : struct
+			where TEnum : struct 
 		{
 			var fullCombination = (dynamic)Combine(GetValues<TEnum>());
 

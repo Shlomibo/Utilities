@@ -8,21 +8,24 @@ using System.Threading.Tasks;
 using Utilities.Extansions;
 using Utilities.Extansions.Object;
 using Utilities.Extansions.Enumerable;
+using System.Diagnostics;
 
 namespace Utilities
 {
 	/// <summary>
 	/// Helper class to siplify command line arguments parsing.
 	/// </summary>
-	public class CLArguments : IList<string>, IDictionary<string, string[]>, ICloneable
+	public sealed class CLArguments : IList<string>, IDictionary<string, string[]>, ICloneable
 	{
 		#region Consts
 
 		/// <summary>The key for unkeyed values</summary>
 		public const string NO_KEY = " ";
+		private const int NOT_FOUND = -1;
+
 		/// <summary>A collection of the default characters that designate args which start with it as keys</summary>
 		public static readonly ReadOnlyCollection<string> DefaultDesignators =
-			Array.AsReadOnly(new string[] { "-", "/" });
+			Array.AsReadOnly(new[] { "-", "/" });
 		#endregion
 
 		#region Fields
@@ -44,7 +47,7 @@ namespace Utilities
 
 				return lastKey != null
 					? this.AsList.LastIndexOf(lastKey)
-					: -1;
+					: NOT_FOUND;
 			}
 		}
 
@@ -58,7 +61,7 @@ namespace Utilities
 			{
 				value.ThrowWhen(
 					when: array => array == null,
-					what: new ArgumentNullException("KeyDesignators"));
+					what: new ArgumentNullException(nameof(KeyDesignators)));
 
 				keyDesignators = value;
 			}
@@ -98,31 +101,19 @@ namespace Utilities
 		/// <summary>
 		/// Gets the count of item stored in the object.
 		/// </summary>
-		public int Count
-		{
-			get { return this.AsList.Count; }
-		}
+		public int Count => this.AsList.Count; 
 
-		bool ICollection<string>.IsReadOnly
-		{
-			get { return false; }
-		}
+		bool ICollection<string>.IsReadOnly => false; 
 
 		/// <summary>
 		/// Gets a collection of keys args
 		/// </summary>
-		public ICollection<string> Keys
-		{
-			get { return this.AsDict.Keys; }
-		}
+		public ICollection<string> Keys => this.AsDict.Keys; 
 
 		/// <summary>
 		/// Gets a collection of values args
 		/// </summary>
-		public ICollection<string[]> Values
-		{
-			get { return this.AsDict.Values; }
-		}
+		public ICollection<string[]> Values => this.AsDict.Values; 
 
 		/// <summary>
 		/// Gets or sets the values that stored under the given key.
@@ -138,10 +129,8 @@ namespace Utilities
 			}
 		}
 
-		bool ICollection<KeyValuePair<string, string[]>>.IsReadOnly
-		{
-			get { return (this as ICollection<string>).IsReadOnly; }
-		}
+		bool ICollection<KeyValuePair<string, string[]>>.IsReadOnly => 
+			(this as ICollection<string>).IsReadOnly; 
 		#endregion
 
 		#region Ctor
@@ -191,6 +180,16 @@ namespace Utilities
 		/// <param name="isKeyPred">A predicate the returns true if the arg is a key.</param>
 		public CLArguments(IEnumerable<string> list, Predicate<string> isKeyPred)
 		{
+			if (list == null)
+			{
+				throw new ArgumentNullException(nameof(list));
+			}
+
+			if (isKeyPred == null)
+			{
+				throw new ArgumentNullException(nameof(isKeyPred));
+			}
+
 			this.AsList = new List<string>(list);
 			this.isKeyPred = isKeyPred;
 		}
@@ -226,10 +225,10 @@ namespace Utilities
 		{
 			keys.ThrowWhen(
 				when: dict => dict == null,
-				what: new ArgumentNullException("keys"));
+				what: new ArgumentNullException(nameof(keys)));
 			isKeyPred.ThrowWhen(
 				when: pred => pred == null,
-				what: new ArgumentNullException("isKeyPred"));
+				what: new ArgumentNullException(nameof(isKeyPred)));
 
 			this.isKeyPred = isKeyPred;
 
@@ -248,20 +247,16 @@ namespace Utilities
 		/// <returns>
 		/// true if arg starts with one of the strings in designators; otherwise false.
 		/// </returns>
-		public static bool IsKeyPredicate(string arg, IEnumerable<string> designators)
-		{
-			return designators.Any(des => arg.StartsWith(des, StringComparison.InvariantCultureIgnoreCase));
-		}
+		public static bool IsKeyPredicate(string arg, IEnumerable<string> designators) =>
+			designators.Any(des => arg.StartsWith(des, StringComparison.InvariantCultureIgnoreCase));
 
 		/// <summary>
 		/// Checks if the given arg is key.
 		/// </summary>
 		/// <param name="arg">The arg to check.</param>
 		/// <returns>true if arg is key; otherwise false.</returns>
-		public bool IsKey(string arg)
-		{
-			return this.isKeyPred(arg);
-		}
+		public bool IsKey(string arg) =>
+			this.isKeyPred(arg);
 
 		/// <summary>
 		/// Returns the index of the given argument.
@@ -271,10 +266,8 @@ namespace Utilities
 		/// The index of the arg in the argument list. 
 		/// If the arg does not exist in the list, -1 is returned.
 		/// </returns>
-		public int IndexOf(string arg)
-		{
-			return this.AsList.IndexOf(arg);
-		}
+		public int IndexOf(string arg) =>
+			this.AsList.IndexOf(arg);
 
 		/// <summary>
 		/// Searches for the specified object and returns the zero-based index of the
@@ -286,10 +279,8 @@ namespace Utilities
 		/// <returns>
 		/// The zero-based index of the last occurrence of item within the entire the list, if found; otherwise, –1.
 		/// </returns>
-		public int LastIndexOf(string arg)
-		{
-			return this.AsList.LastIndexOf(arg);
-		}
+		public int LastIndexOf(string arg) =>
+			this.AsList.LastIndexOf(arg);
 
 		/// <summary>
 		/// Returns the index of the given argument.
@@ -300,10 +291,8 @@ namespace Utilities
 		/// The index of the arg in the argument list. 
 		/// If the arg does not exist in the list after the given index, -1 is returned.
 		/// </returns>
-		public int IndexOf(string arg, int startIndex)
-		{
-			return this.AsList.IndexOf(arg, startIndex);
-		}
+		public int IndexOf(string arg, int startIndex) =>
+			this.AsList.IndexOf(arg, startIndex);
 
 		/// <summary>
 		/// Searches for the specified object and returns the zero-based index of the
@@ -318,10 +307,8 @@ namespace Utilities
 		/// The zero-based index of the last occurrence of item within the range of elements
 		/// in the list that extends from the first element to index, if found; otherwise, –1.
 		/// </returns>
-		public int LastIndexOf(string arg, int startIndex)
-		{
-			return this.AsList.LastIndexOf(arg, startIndex);
-		}
+		public int LastIndexOf(string arg, int startIndex) =>
+			this.AsList.LastIndexOf(arg, startIndex);
 
 		/// <summary>
 		/// Returns the index of the given argument.
@@ -333,10 +320,8 @@ namespace Utilities
 		/// The index of the arg in the argument list. 
 		/// If the arg does not exist in the list after the given index, -1 is returned.
 		/// </returns>
-		public int IndexOf(string arg, int startIndex, int count)
-		{
-			return this.AsList.IndexOf(arg, startIndex, count);
-		}
+		public int IndexOf(string arg, int startIndex, int count) =>
+			this.AsList.IndexOf(arg, startIndex, count);
 
 		/// <summary>
 		/// Searches for the specified object and returns the zero-based index of the
@@ -352,10 +337,8 @@ namespace Utilities
 		/// in the list that contains count number of elements
 		/// and ends at index, if found; otherwise, –1.
 		/// </returns>
-		public int LastIndexOf(string arg, int startIndex, int count)
-		{
-			return this.AsList.LastIndexOf(arg, startIndex, count);
-		}
+		public int LastIndexOf(string arg, int startIndex, int count) =>
+			this.AsList.LastIndexOf(arg, startIndex, count);
 
 		/// <summary>
 		/// Inserts the given arg in the given index.
@@ -366,7 +349,7 @@ namespace Utilities
 		{
 			arg.ThrowWhen(
 				when: str => str == null,
-				what: new ArgumentNullException("arg"));
+				what: new ArgumentNullException(nameof(arg)));
 
 			this.AsList.Insert(index, arg);
 			this.AsDict = null;
@@ -375,13 +358,13 @@ namespace Utilities
 		/// <summary>
 		/// Merges values from duplicate keys, and retain one values list per key.
 		/// </summary>
-		public void Normalize()
-		{
+		public void Normalize() =>
 			this.AsList = NormalizedListFromDict(this.AsDict, this.AsList.Count);
-		}
 
 		private List<string> NormalizedListFromDict(IDictionary<string, string[]> keys, int capacity)
 		{
+			Debug.Assert(keys != null, nameof(keys) + " is null.");
+
 			var list = new List<string>(capacity);
 
 			if (keys.ContainsKey(NO_KEY))
@@ -389,13 +372,14 @@ namespace Utilities
 				list.AddRange(keys[NO_KEY]);
 			}
 
-			foreach (string key in keys.Keys)
+			var trueKeys = from key in keys.Keys
+						   where key != NO_KEY
+						   select key;
+
+			foreach (string key in trueKeys)
 			{
-				if (key != NO_KEY)
-				{
-					list.Add(key);
-					list.AddRange(keys[key]);
-				}
+				list.Add(key);
+				list.AddRange(keys[key]);
 			}
 
 			return list;
@@ -409,10 +393,9 @@ namespace Utilities
 			int keyIndex;
 			IEnumerable<string> value;
 
-			List<int> keyIndices = this.AsList
-								   .Where(item => this.IsKey(item))
-								   .Select((item, index) => index)
-								   .ToList();
+			List<int> keyIndices = this.AsList.Where(item => this.IsKey(item))
+											  .Select((item, index) => index)
+											  .ToList();
 
 			if (!keyIndices.Any())
 			{
@@ -496,7 +479,7 @@ namespace Utilities
 		{
 			arg.ThrowWhen(
 				when: str => str == null,
-				what: new ArgumentNullException("arg"));
+				what: new ArgumentNullException(nameof(arg)));
 
 			this.AsList.Add(arg);
 
@@ -536,10 +519,8 @@ namespace Utilities
 		/// </summary>
 		/// <param name="arg">The arg to check.</param>
 		/// <returns>true if arg exists in the list; otherwise false.</returns>
-		public bool Contains(string arg)
-		{
-			return this.AsList.Contains(arg);
-		}
+		public bool Contains(string arg) =>
+			this.AsList.Contains(arg);
 
 		/// <summary>
 		/// Copies the args in the list to the specified array.
@@ -550,12 +531,18 @@ namespace Utilities
 		{
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
+
+			if ((arrayIndex < 0) || (arrayIndex >= array.Length))
+			{
+				throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+			}
+
 
 			if (array.Length < this.Count + arrayIndex)
 			{
-				throw new IndexOutOfRangeException();
+				throw new ArgumentException();
 			}
 
 			for (int i = 0; i < this.Count; i++)
@@ -585,15 +572,11 @@ namespace Utilities
 		/// Returns enumerator to enumerate the args in the list.
 		/// </summary>
 		/// <returns>Enumerator for the args in the list.</returns>
-		public IEnumerator<string> GetEnumerator()
-		{
-			return this.AsList.GetEnumerator();
-		}
+		public IEnumerator<string> GetEnumerator() =>
+			this.AsList.GetEnumerator();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() =>
+			GetEnumerator();
 
 		/// <summary>
 		/// Creates or replace the given key, with the given values
@@ -604,10 +587,10 @@ namespace Utilities
 		{
 			key.ThrowWhen(
 				when: keyStr => keyStr == null,
-				what: new ArgumentNullException("key"));
+				what: new ArgumentNullException(nameof(key)));
 			value.ThrowWhen(
 				when: val => val.Any(valStr => valStr == null),
-				what: new ArgumentException("Value cannot contain null strings"));
+				what: new ArgumentException("Value cannot contain null strings", nameof(value)));
 
 			if (ContainsKey(key))
 			{
@@ -660,10 +643,10 @@ namespace Utilities
 		{
 			key.ThrowWhen(
 				when: keyStr => keyStr == null,
-				what: new ArgumentNullException("key"));
+				what: new ArgumentNullException(nameof(key)));
 			value.ThrowWhen(
 				when: val => val.Any(valStr => valStr == null),
-				what: new ArgumentException("Value cannot contain null strings"));
+				what: new ArgumentException("Value cannot contain null strings", nameof(value)));
 
 			if (!IsKey(key))
 			{
@@ -678,7 +661,7 @@ namespace Utilities
 			int keyIndex = this.AsList.IndexOf(key);
 			value = value ?? new string[0];
 
-			if (keyIndex == -1)
+			if (keyIndex == NOT_FOUND)
 			{
 				this.AsList.Add(key);
 				this.AsList.AddRange(value);
@@ -712,10 +695,8 @@ namespace Utilities
 		/// </summary>
 		/// <param name="key">The key arg.</param>
 		/// <param name="value">The value to be added to the args array.</param>
-		public void Add(string key, string value)
-		{
+		public void Add(string key, string value) =>
 			Add(key, new string[] { value });
-		}
 
 		/// <summary>
 		/// Check if the args list contains the specified key.
@@ -740,25 +721,22 @@ namespace Utilities
 		/// <param name="key">The key for the values.</param>
 		/// <param name="values">Out: the values that were stored under the specified key.</param>
 		/// <returns>true if the key exists, and the values have returned; otherwise false.</returns>
-		public bool TryGetValue(string key, out string[] values)
-		{
-			return this.AsDict.TryGetValue(key, out values);
-		}
+		public bool TryGetValue(string key, out string[] values) =>
+			this.AsDict.TryGetValue(key, out values);
 
 		/// <summary>
 		/// Returns the values under the specified key, if the key exists, and if only one value is under it.
 		/// </summary>
 		/// <param name="key">The key for the value.</param>
 		/// <param name="value">Out: the value that was stored under the specified key.</param>
-		/// <returns>true if the key exists, is single-valued, and the values have returned; otherwise false.</returns>
+		/// <returns>true if the key exists, is single-valued, and the value has returned; otherwise false.</returns>
 		public bool TryGetValue(string key, out string value)
 		{
 			string[] values;
 			value = null;
 
 			bool didSucceeded = this.AsDict.TryGetValue(key, out values) &&
-				values.Any() &&
-				values.Count() == 1;
+				values.Length == 1;
 
 			if (didSucceeded)
 			{
@@ -768,35 +746,39 @@ namespace Utilities
 			return didSucceeded;
 		}
 
-		void ICollection<KeyValuePair<string, string[]>>.Add(KeyValuePair<string, string[]> item)
-		{
+		void ICollection<KeyValuePair<string, string[]>>.Add(KeyValuePair<string, string[]> item) =>
 			Add(item.Key, item.Value);
-		}
 
-		bool ICollection<KeyValuePair<string, string[]>>.Contains(KeyValuePair<string, string[]> item)
-		{
-			return this.ContainsKey(item.Key) &&
+		bool ICollection<KeyValuePair<string, string[]>>.Contains(KeyValuePair<string, string[]> item) =>
+			this.ContainsKey(item.Key) &&
 				(object.ReferenceEquals(item.Value, this.AsDict[item.Key]) ||
 				this.AsDict[item.Key].Zip(
 					item.Value,
 					(first, second) => new { first, second })
 				.All(zip => zip.first == zip.second));
-		}
 
 		void ICollection<KeyValuePair<string, string[]>>.CopyTo(
 			KeyValuePair<string, string[]>[] array,
 			int arrayIndex)
 		{
-			if (array.Length < this.AsDict.Count + arrayIndex)
+			if (array == null)
 			{
-				throw new IndexOutOfRangeException();
+				throw new ArgumentNullException(nameof(array));
 			}
 
-			int i = 0;
-
-			foreach (string key in this.AsDict.Keys)
+			if ((arrayIndex < 0) || (arrayIndex >= array.Length))
 			{
-				array[arrayIndex + i++] = new KeyValuePair<string, string[]>(key, this.AsDict[key]);
+				throw new ArgumentOutOfRangeException(nameof(arrayIndex));
+			}
+
+			if (array.Length < this.AsDict.Count + arrayIndex)
+			{
+				throw new ArgumentException();
+			}
+
+			foreach (var keyElement in this.AsDict.Keys.Select((Key, Index) => new { Key, Index }))
+			{
+				array[arrayIndex + keyElement.Index] = new KeyValuePair<string, string[]>(keyElement.Key, this.AsDict[keyElement.Key]);
 			}
 		}
 
@@ -812,15 +794,11 @@ namespace Utilities
 			return didRemoved;
 		}
 
-		IEnumerator<KeyValuePair<string, string[]>> IEnumerable<KeyValuePair<string, string[]>>.GetEnumerator()
-		{
-			return this.AsDict.GetEnumerator();
-		}
+		IEnumerator<KeyValuePair<string, string[]>> IEnumerable<KeyValuePair<string, string[]>>.GetEnumerator() =>
+			this.AsDict.GetEnumerator();
 
-		object ICloneable.Clone()
-		{
-			return Clone();
-		}
+		object ICloneable.Clone() =>
+			Clone();
 
 		/// <summary>
 		/// Create a copy of the CLArguments

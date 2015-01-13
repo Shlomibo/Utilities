@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using Utilities.Extansions.Enum;
+using Utilities.Extansions.Enum.EnumExtansions;
 
 namespace Utilities.TypeEditors
 {
@@ -26,10 +26,7 @@ namespace Utilities.TypeEditors
 		/// <summary>
 		/// Gets a value indicating whether drop-down editors should be resizable by the user.
 		/// </summary>
-		public override bool IsDropDownResizable
-		{
-			get { return true; }
-		}
+		public override bool IsDropDownResizable => true; 
 		#endregion
 
 		#region Methods
@@ -57,7 +54,7 @@ namespace Utilities.TypeEditors
 				!type.CustomAttributes.Any(customAttr =>
 					customAttr.AttributeType == typeof(FlagsAttribute)))
 			{
-				throw new InvalidEnumArgumentException();
+				throw new InvalidEnumArgumentException(nameof(value));
 			}
 
 			var winFormsSvc = (IWindowsFormsEditorService)provider.GetService(typeof(IWindowsFormsEditorService));
@@ -65,7 +62,7 @@ namespace Utilities.TypeEditors
 
 			if (winFormsSvc != null)
 			{
-				TEnum fullSelection = EnumExtansions.Combine(EnumExtansions.GetValues<TEnum>());
+				TEnum fullSelection = Combine(GetValues<TEnum>());
 
 				using (var control = new UserControl() { BackColor = SystemColors.Control })
 				{
@@ -75,11 +72,11 @@ namespace Utilities.TypeEditors
 						CheckOnClick = true,
 					};
 
-					var listValues = EnumExtansions.GetValues<TEnum>().Select(val =>
+					var listValues = GetValues<TEnum>().Select(val =>
 						new
 						{
 							Object = val,
-							IsChecked = EnumExtansions.HasFlag(enumValue, val),
+							IsChecked = HasFlag(enumValue, val),
 						});
 
 					listbox.Items.Add("Select all",
@@ -119,7 +116,7 @@ namespace Utilities.TypeEditors
 																		 .Select(item => item.Item)
 																		 .OfType<TEnum>();
 
-										value = EnumExtansions.Combine(updatedValues);
+										value = Combine(updatedValues);
 										listbox.SetItemChecked(0, fullSelection.Equals(value));
 									}
 								}
@@ -127,7 +124,7 @@ namespace Utilities.TypeEditors
 							}
 						};
 
-					var okButton = new Button()
+					var okButton = new Button
 					{
 						Text = "Ok",
 						Dock = DockStyle.Bottom,
@@ -157,10 +154,8 @@ namespace Utilities.TypeEditors
 		/// A UITypeEditorEditStyle value that indicates the style of editor used by the EditValue method. 
 		/// If the UITypeEditor does not support this method, then GetEditStyle will return None.
 		/// </returns>
-		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-		{
-			return UITypeEditorEditStyle.DropDown;
-		} 
+		public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) =>
+			UITypeEditorEditStyle.DropDown;
 		#endregion
 	}
 }

@@ -38,7 +38,7 @@ namespace Utilities
 		public IDisposable Flip()
 		{
 			this.value = !this.value;
-			return new Flipper(this);
+			return new ReversableState(() => this.value = !this.value);
 		}
 
 		/// <summary>
@@ -68,31 +68,24 @@ namespace Utilities
 		/// Serves as the default hash function.
 		/// </summary>
 		/// <returns>A hash code for the current object.</returns>
-		public override int GetHashCode()
-		{
-			// TODO: write your implementation of GetHashCode() here
-			return ObjectExtansions.CreateHashCode(this.value);
-		}
+		public override int GetHashCode() =>
+			ObjectExtansions.CreateHashCode(this.value);
 
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.
 		/// </summary>
 		/// <param name="other">An object to compare with this object.</param>
 		/// <returns>true if the current object is equal to the other parameter; otherwise, false.</returns>
-		public bool Equals(OperationFlag other)
-		{
-			return (other != null) &&
-				(this.value == other.value);
-		}
+		public bool Equals(OperationFlag other) =>
+			(other != null) &&
+			(this.value == other.value);
 
 		/// <summary>
 		/// Returns a string that represents the current object.
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
-		public override string ToString()
-		{
-			return (this.value ^ this.value).ToString();
-		}
+		public override string ToString() =>
+			this.value.ToString();
 		#endregion
 
 		#region Operators
@@ -101,102 +94,61 @@ namespace Utilities
 		/// </summary>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		public static implicit operator bool(OperationFlag flag)
-		{
-			return flag.value;
-		}
+		public static implicit operator bool(OperationFlag flag) =>
+			flag.value;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		public static implicit operator OperationFlag(bool flag)
-		{
-			return new OperationFlag(flag);
-		}
+		public static implicit operator OperationFlag(bool flag) =>
+			new OperationFlag(flag);
 
 		/// <summary>
 		/// </summary>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		public static bool operator true(OperationFlag flag)
-		{
-			return flag;
-		}
+		public static bool operator true(OperationFlag flag) =>
+			flag;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		public static bool operator false(OperationFlag flag)
-		{
-			return !flag;
-		}
+		public static bool operator false(OperationFlag flag) =>
+			!flag;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(OperationFlag left, OperationFlag right)
-		{
-			if (object.ReferenceEquals(left, null))
-			{
-				return object.ReferenceEquals(right, null);
-			}
-			else
-			{
-				return left.Equals(right);
-			}
-		}
+		public static bool operator ==(OperationFlag left, OperationFlag right) =>
+			object.Equals(left, right);
 
 		/// <summary>
 		/// </summary>
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator ==(OperationFlag left, bool right)
-		{
-			return left.value == right;
-		}
+		public static bool operator ==(OperationFlag left, bool right) =>
+			left.value == right;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(OperationFlag left, OperationFlag right)
-		{
-			return !(left == right);
-		}
+		public static bool operator !=(OperationFlag left, OperationFlag right) =>
+			!(left == right);
 
 		/// <summary>
 		/// </summary>
 		/// <param name="left"></param>
 		/// <param name="right"></param>
 		/// <returns></returns>
-		public static bool operator !=(OperationFlag left, bool right)
-		{
-			return !(left == right);
-		}
-		#endregion
-
-		#region Flipper class
-
-		private sealed class Flipper : IDisposable
-		{
-			OperationFlag flag;
-
-			public Flipper(OperationFlag flag)
-			{
-				this.flag = flag;
-			}
-
-			public void Dispose()
-			{
-				flag.value = !flag.value;
-			}
-		}
+		public static bool operator !=(OperationFlag left, bool right) =>
+			!(left == right);
 		#endregion
 	}
 }

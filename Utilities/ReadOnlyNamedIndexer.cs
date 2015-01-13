@@ -26,10 +26,7 @@ namespace Utilities
 		/// </summary>
 		/// <param name="param">The parameter for the value.</param>
 		/// <returns>The value for the given parameter.</returns>
-		public TType this[TParam param]
-		{
-			get { return this.getter(param); }
-		}
+		public TType this[TParam param] => this.getter(param); 
 		#endregion
 
 		#region Ctor
@@ -47,7 +44,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
-			NamedIndexer.Validate("getter", getter);
+			NamedIndexer.Validate(nameof(getter), getter);
 			this.getter = getter;
 		}
 		#endregion
@@ -74,10 +71,7 @@ namespace Utilities
 		/// <param name="param1">The first parameter for the value.</param>
 		/// <param name="param2">The second parameter for the value.</param>
 		/// <returns>The value for the given parameters.</returns>
-		public TType this[TParam1 param1, TParam2 param2]
-		{
-			get { return this.getter(param1, param2); }
-		}
+		public TType this[TParam1 param1, TParam2 param2] => this.getter(param1, param2); 
 		#endregion
 
 		#region Ctor
@@ -95,7 +89,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
-			NamedIndexer.Validate("getter", getter);
+			NamedIndexer.Validate(nameof(getter), getter);
 			this.getter = getter;
 		}
 		#endregion
@@ -124,10 +118,7 @@ namespace Utilities
 		/// <param name="param2">The second parameter for the value.</param>
 		/// <param name="param3">The third parameter for the value.</param>
 		/// <returns>The value for the given parameters.</returns>
-		public TType this[TParam1 param1, TParam2 param2, TParam3 param3]
-		{
-			get { return this.getter(param1, param2, param3); }
-		}
+		public TType this[TParam1 param1, TParam2 param2, TParam3 param3] => this.getter(param1, param2, param3); 
 		#endregion
 
 		#region Ctor
@@ -145,7 +136,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(enumerator)
 		{
-			NamedIndexer.Validate("getter", getter);
+			NamedIndexer.Validate(nameof(getter), getter);
 			this.getter = getter;
 		}
 		#endregion

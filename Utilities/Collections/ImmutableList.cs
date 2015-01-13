@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace Utilities.Collections
 	/// An immutable list.
 	/// </summary>
 	/// <typeparam name="T">Type of elements in the list.</typeparam>
-	public partial class ImmutableList<T> : IImmutableList<T>
+	public sealed partial class ImmutableList<T> : IImmutableList<T>
 	{
 		#region Consts
 
@@ -22,9 +23,7 @@ namespace Utilities.Collections
 
 		private static readonly IImmutableList<T> empty = new ImmutableList<T>.EmptyList();
 
-		private readonly T item;
 		private readonly IImmutableList<T> tail;
-		private readonly int count;
 		#endregion
 
 		#region Properties
@@ -34,42 +33,27 @@ namespace Utilities.Collections
 		/// </summary>
 		/// <param name="index">The index for that item.</param>
 		/// <returns>The item which is in the given index</returns>
-		public T this[int index]
-		{
-			get { return ListAt(index).Element; }
-		}
+		public T this[int index] => ListAt(index).Element; 
 
 		/// <summary>
 		/// Gets an empty list.
 		/// </summary>
-		public static IImmutableList<T> Empty
-		{
-			get { return empty; }
-		}
+		public static IImmutableList<T> Empty => empty;
 
 		/// <summary>
 		/// Gets the count of items in the list.
 		/// </summary>
-		public int Count
-		{
-			get { return this.count; }
-		}
+		public int Count { get; }
 
 		/// <summary>
 		/// Gets the last element in the collection.
 		/// </summary>
-		public T Element
-		{
-			get { return this.item; }
-		}
+		public T Element { get; }
 
 		/// <summary>
 		/// Gets true if the collection is emptry; otherwise, false.
 		/// </summary>
-		public bool IsEmpty
-		{
-			get { return false; }
-		}
+		public bool IsEmpty => false;
 		#endregion
 
 		#region Ctors
@@ -82,9 +66,11 @@ namespace Utilities.Collections
 
 		private ImmutableList(T item, IImmutableList<T> tail)
 		{
-			this.item = item;
-			this.tail = tail;
-			this.count = tail.Count + 1;
+			Debug.Assert(tail != null, nameof(tail) + " is null.");
+
+			this.Element = item;
+			this.tail= tail;
+			this.Count = tail.Count + 1;
 		}
 		#endregion
 
@@ -101,8 +87,7 @@ namespace Utilities.Collections
 
 			foreach (var element in this.Select((Item, Index) => new { Item, Index }))
 			{
-				if ((item == null && element.Item == null) ||
-					(item != null && item.Equals(element.Item)))
+				if (object.Equals(item, element.Item))
 				{
 					index = element.Index;
 					break;
@@ -122,17 +107,20 @@ namespace Utilities.Collections
 		{
 			if (index < 0 || index > this.Count)
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
-			IImmutableList<T> listAt = ListAt(index - 1);
-			var newList = new ImmutableList<T>(item, listAt);
+			IImmutableList<T> listAtIndex = ListAt(index - 1);
+			var newList = new ImmutableList<T>(item, listAtIndex);
 
-			return CopyDifferntial(newList, this, listAt); ;
+			return CopyDifferntial(newList, this, listAtIndex); 
 		}
 
 		private ImmutableList<T> CopyDifferntial(IImmutableList<T> target, ImmutableList<T> source, IImmutableList<T> startFrom)
 		{
+			Debug.Assert(target != null, nameof(target) + " is null.");
+			Debug.Assert(startFrom != null, nameof(startFrom) + " is null.");
+
 			var addedValues = new Stack<IImmutableList<T>>();
 
 			while ((source != null) && !object.ReferenceEquals(source, startFrom))
@@ -151,6 +139,8 @@ namespace Utilities.Collections
 
 		internal IImmutableList<T> ListAt(int index)
 		{
+			Debug.Assert((index >= 0) && (index < this.Count));
+
 			ImmutableList<T> current = this;
 
 			while ((current != null) && (index != current.Count - 1))
@@ -170,7 +160,7 @@ namespace Utilities.Collections
 		{
 			if (index < 0 || index >= this.Count)
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			IImmutableList<T> result;
@@ -195,20 +185,16 @@ namespace Utilities.Collections
 		/// </summary>
 		/// <param name="item">The item to add to the list.</param>
 		/// <returns>New list which contains all the item in the current list, and the added item.</returns>
-		public IImmutableList<T> Add(T item)
-		{
-			return new ImmutableList<T>(item, this);
-		}
+		public IImmutableList<T> Add(T item) =>
+			new ImmutableList<T>(item, this);
 
 		/// <summary>
 		/// Returns value which indicates if the given item is contained in the collection.
 		/// </summary>
 		/// <param name="item">The item to seach in the collection.</param>
 		/// <returns>true if the item contained in the collection; otherwise, false.</returns>
-		public bool Contains(T item)
-		{
-			return IndexOf(item) != NOT_FOUND;
-		}
+		public bool Contains(T item) =>
+			IndexOf(item) != NOT_FOUND;
 
 		/// <summary>
 		/// Copies the content of the collection to the given array, to the given array index.
@@ -219,12 +205,12 @@ namespace Utilities.Collections
 		{
 			if (array == null)
 			{
-				throw new ArgumentNullException("array");
+				throw new ArgumentNullException(nameof(array));
 			}
 
 			if (arrayIndex < 0)
 			{
-				throw new ArgumentOutOfRangeException("arrayIndex");
+				throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 			}
 
 			if (array.Length - arrayIndex < 0)
@@ -248,7 +234,7 @@ namespace Utilities.Collections
 		{
 			if (index < 0 || index >= this.Count)
 			{
-				throw new ArgumentOutOfRangeException("index");
+				throw new ArgumentOutOfRangeException(nameof(index));
 			}
 
 			ImmutableList<T> notToCopy = ListAt(index + 1) as ImmutableList<T>;
@@ -293,10 +279,8 @@ namespace Utilities.Collections
 		/// Removes the last item from the list.
 		/// </summary>
 		/// <returns>New list which doesn't contain that item.</returns>
-		public IImmutableList<T> Remove()
-		{
-			return this.tail;
-		}
+		public IImmutableList<T> Remove() =>
+			this.tail;
 
 		/// <summary>
 		/// Returns an enumerator to enumerate the items in the list.
@@ -312,30 +296,20 @@ namespace Utilities.Collections
 			yield return this.Element;
 		}
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() =>
+			GetEnumerator();
 
-		IImmutableCollection<T> IImmutableCollection<T>.Add(T item)
-		{
-			return Add(item);
-		}
+		IImmutableCollection<T> IImmutableCollection<T>.Add(T item) =>
+			Add(item);
 
-		IImmutableCollection<T> IImmutableCollection<T>.Remove()
-		{
-			return Remove();
-		}
+		IImmutableCollection<T> IImmutableCollection<T>.Remove() =>
+			Remove();
 
-		IImmutableCollection<T> IImmutableCollection<T>.Remove(T item)
-		{
-			return Remove(item);
-		}
+		IImmutableCollection<T> IImmutableCollection<T>.Remove(T item) =>
+			Remove(item);
 
-		IImmutableCollection<T> IImmutableCollection<T>.Remove(T item, out bool didRemoved)
-		{
-			return Remove(item, out didRemoved);
-		}
+		IImmutableCollection<T> IImmutableCollection<T>.Remove(T item, out bool didRemoved) =>
+			Remove(item, out didRemoved);
 		#endregion
 	}
 }

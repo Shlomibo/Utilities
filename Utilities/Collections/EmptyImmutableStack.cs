@@ -9,19 +9,13 @@ namespace Utilities.Collections
 {
 	public partial class ImmutableStack<T>
 	{
-		private class EmptyStack : IImmutableStack<T>
+		private sealed class EmptyStack : IImmutableStack<T>
 		{
 			#region Properties
 
-			public bool IsEmpty
-			{
-				get { return true; }
-			}
+			public bool IsEmpty => true;
 
-			public int Count
-			{
-				get { return 0; }
-			}
+			public int Count => 0;
 			#endregion
 
 			#region Methods
@@ -41,21 +35,19 @@ namespace Utilities.Collections
 				return new ImmutableStack<T>(item);
 			}
 
-			public bool Contains(T item)
-			{
-				return false;
-			}
+			public bool Contains(T item) =>
+				false;
 
 			public void CopyTo(T[] array, int arrayIndex)
 			{
 				if (array == null)
 				{
-					throw new ArgumentNullException("array");
+					throw new ArgumentNullException(nameof(array));
 				}
 
 				if (arrayIndex < 0)
 				{
-					throw new ArgumentOutOfRangeException("arrayIndex");
+					throw new ArgumentOutOfRangeException(nameof(arrayIndex));
 				}
 
 				if (array.Length - arrayIndex < 0)
@@ -69,10 +61,8 @@ namespace Utilities.Collections
 				yield break;
 			}
 
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
-			}
+			IEnumerator IEnumerable.GetEnumerator() =>
+				GetEnumerator();
 			#endregion
 		}
 	}

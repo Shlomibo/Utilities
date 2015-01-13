@@ -18,17 +18,14 @@ namespace Utilities
 			throw new InvalidOperationException("Cannot get value for write only indexer.");
 		}
 
-		internal static void Validate(IDictionary<string, object> arguments)
-		{
-			arguments.ForEach(keyValue => keyValue.ThrowWhen(
-				when: keyVal => keyVal.Value == null,
-				what: new ArgumentNullException(keyValue.Key)));
-		}
+		internal static void Validate(IDictionary<string, object> arguments) =>
+			arguments.ForEach(
+				keyValue => keyValue.ThrowWhen(
+					when: keyVal => keyVal.Value == null,
+					what: new ArgumentNullException(keyValue.Key)));
 
-		internal static void Validate(string argName, object value)
-		{
+		internal static void Validate(string argName, object value) =>
 			Validate(new Dictionary<string, object> { { argName, value } });
-		}
 
 		#region ReadWrite creation
 
@@ -148,10 +145,8 @@ namespace Utilities
 		/// <param name="setter">Setter delegate to set items.</param>
 		/// <returns>WriteOnlyNamedIndexer for the given types.</returns>
 		public static WriteOnlyNamedIndexer<TParam, TType> CreateWriteOnly<TParam, TType>(
-			Action<TParam, TType> setter)
-		{
-			return new WriteOnlyNamedIndexer<TParam, TType>(setter);
-		}
+			Action<TParam, TType> setter) =>
+			new WriteOnlyNamedIndexer<TParam, TType>(setter);
 
 		/// <summary>
 		/// Creates new write-only named indexer with two parameters.
@@ -162,10 +157,8 @@ namespace Utilities
 		/// <param name="setter">Setter delegate to set items.</param>
 		/// <returns>WriteOnlyNamedIndexer for the given types.</returns>
 		public static WriteOnlyNamedIndexer<TParam1, TParam2, TType> CreateWriteOnly<TParam1, TParam2, TType>(
-			Action<TParam1, TParam2, TType> setter)
-		{
-			return new WriteOnlyNamedIndexer<TParam1, TParam2, TType>(setter);
-		}
+			Action<TParam1, TParam2, TType> setter) =>
+			new WriteOnlyNamedIndexer<TParam1, TParam2, TType>(setter);
 
 		/// <summary>
 		/// Creates new write-only named indexer with three parameters.
@@ -177,10 +170,8 @@ namespace Utilities
 		/// <param name="setter">Setter delegate to set items.</param>
 		/// <returns>WriteOnlyNamedIndexer for the given types.</returns>
 		public static WriteOnlyNamedIndexer<TParam1, TParam2, TParam3, TType> CreateWriteOnly<TParam1, TParam2, TParam3, TType>(
-			Action<TParam1, TParam2, TParam3, TType> setter)
-		{
-			return new WriteOnlyNamedIndexer<TParam1, TParam2, TParam3, TType>(setter);
-		}
+			Action<TParam1, TParam2, TParam3, TType> setter) =>
+			new WriteOnlyNamedIndexer<TParam1, TParam2, TParam3, TType>(setter);
 		#endregion
 	}
 
@@ -227,7 +218,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
-			NamedIndexer.Validate("setter", setter);
+			NamedIndexer.Validate(nameof(setter), setter);
 			this.setter = setter;
 		}
 		#endregion
@@ -279,7 +270,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
-			NamedIndexer.Validate("setter", setter);
+			NamedIndexer.Validate(nameof(setter), setter);
 			this.setter = setter;
 		}
 		#endregion
@@ -333,7 +324,7 @@ namespace Utilities
 			Func<IEnumerator<TType>> enumerator = null)
 			: base(getter, enumerator)
 		{
-			NamedIndexer.Validate("setter", setter);
+			NamedIndexer.Validate(nameof(setter), setter);
 			this.setter = setter;
 		}
 		#endregion

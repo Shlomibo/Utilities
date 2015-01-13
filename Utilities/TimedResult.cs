@@ -10,7 +10,7 @@
 		/// <summary>
 		/// Gets true if the timeout was elapsed; otherwise false.
 		/// </summary>
-		public bool DidTimedOut { get; private set; }
+		public bool DidTimedOut { get; }
 		#endregion
 
 		#region Ctor
@@ -37,7 +37,7 @@
 		/// <summary>
 		/// Gets the result of the task.
 		/// </summary>
-		public T Result { get; private set; }
+		public T Result { get; }
 		#endregion
 
 		#region Ctor

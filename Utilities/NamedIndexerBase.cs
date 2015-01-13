@@ -23,7 +23,7 @@ namespace Utilities
 		/// <summary>
 		/// Gets value which is true if the values in the indexer can be enumerated; otherwise false
 		/// </summary>
-		public bool IsEnumerable { get; private set; }
+		public bool IsEnumerable { get; }
 		#endregion
 
 		#region Ctor
@@ -47,15 +47,11 @@ namespace Utilities
 
 		#region Methods
 
-		IEnumerator<TType> IEnumerable<TType>.GetEnumerator()
-		{
-			return this.enumerator();
-		}
+		IEnumerator<TType> IEnumerable<TType>.GetEnumerator() =>
+			this.enumerator();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return (this as IEnumerable<TType>).GetEnumerator();
-		} 
+		IEnumerator IEnumerable.GetEnumerator() =>
+			(this as IEnumerable<TType>).GetEnumerator();
 		#endregion
 	}
 }

@@ -16,10 +16,8 @@ namespace Utilities.Extansions.Text
 		/// </summary>
 		/// <param name="str">The string to test.</param>
 		/// <returns>true if the value parameter is null or an empty string (""); otherwise, false.</returns>
-		public static bool IsNullOrEmpty(this string str)
-		{
-			return string.IsNullOrEmpty(str);
-		}
+		public static bool IsNullOrEmpty(this string str) =>
+			string.IsNullOrEmpty(str);
 
 		/// <summary>
 		/// Indicates whether a specified string is null, empty, or consists only of white-space characters.
@@ -28,39 +26,29 @@ namespace Utilities.Extansions.Text
 		/// <returns>
 		/// true if the value parameter is null or String.Empty, or if value consists exclusively of white-space characters. 
 		/// </returns>
-		public static bool IsNullOrWhiteSpace(this string str)
-		{
-			return string.IsNullOrWhiteSpace(str);
-		}
+		public static bool IsNullOrWhiteSpace(this string str) =>
+			string.IsNullOrWhiteSpace(str);
 
 		/// <summary>
 		/// Returns an IReadOnlyList&lt;char&gt; wrapper for the string.
 		/// </summary>
 		/// <param name="str">The string to wrap.</param>
 		/// <returns>A wrapper which implements IReadOnlyList&lt;char&gt; for the string.</returns>
-		public static IReadOnlyList<char> AsList(this string str)
-		{
-			return new StringWrapper(str);
-		}
+		public static IReadOnlyList<char> AsList(this string str) =>
+			new StringWrapper(str);
 
 		private class StringWrapper : IReadOnlyList<char>
 		{
 			#region Fields
 
-			private string str;
+			private readonly string str;
 			#endregion
 
 			#region Properties
 
-			public char this[int index]
-			{
-				get { return this.str[index]; }
-			}
+			public char this[int index] => this.str[index]; 
 
-			public int Count
-			{
-				get { return this.str.Length; }
-			} 
+			public int Count => this.str.Length; 
 			#endregion
 
 			#region Ctor
@@ -69,7 +57,7 @@ namespace Utilities.Extansions.Text
 			{
 				if (str == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(str));
 				}
 
 				this.str = str;
@@ -78,15 +66,11 @@ namespace Utilities.Extansions.Text
 
 			#region Methods
 
-			public IEnumerator<char> GetEnumerator()
-			{
-				throw new NotImplementedException();
-			}
+			public IEnumerator<char> GetEnumerator() =>
+				this.str.GetEnumerator();
 
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				throw new NotImplementedException();
-			} 
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+				GetEnumerator();
 			#endregion
 		}
 

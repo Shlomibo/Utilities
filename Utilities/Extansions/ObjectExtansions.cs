@@ -26,10 +26,8 @@ namespace Utilities.Extansions.Object
 		/// These should be the immutable fields of the object to generate the hash for.
 		/// </param>
 		/// <returns>Hash code which is calculated from the given values</returns>
-		public static int CreateHashCode(params object[] objects)
-		{
-			return CreateHashCode((IEnumerable<object>)objects);
-		}
+		public static int CreateHashCode(params object[] objects) =>
+			CreateHashCode((IEnumerable<object>)objects);
 
 		/// <summary>
 		/// Creates hash code from the given objects
@@ -41,7 +39,7 @@ namespace Utilities.Extansions.Object
 		/// <returns>Hash code which is calculated from the given values</returns>
 		public static int CreateHashCode(IEnumerable<object> objects)
 		{
-			const int BASE_HASH = 27;
+			const int BASE_HASH = 29;
 			const int SHIFT = 7;
 
 			int result = 0;
@@ -50,11 +48,11 @@ namespace Utilities.Extansions.Object
 			{
 				unchecked
 				{
-					result = objects.Select(obj => obj.NullableGetHashCode())
+					result = objects.Select(obj => obj?.GetHashCode() ?? 0)
 									.Aggregate(
 										BASE_HASH,
-										(accumulated, hash) =>
-											(accumulated << SHIFT) + accumulated + hash);
+										(hash, objHash) =>
+											(hash << SHIFT) - hash + objHash);
 				}
 			}
 
@@ -70,12 +68,18 @@ namespace Utilities.Extansions.Object
 		/// <param name="func">The function to execute, with input as the input parameter.</param>
 		/// <param name="default">The default value to return, if input is null.</param>
 		/// <returns>If the input isn't null, the result of func for the input; otherwise, the default value.</returns>
+		[Obsolete]
 		public static TOut IgnoreNullFor<TIn, TOut>(
 			this TIn input,
 			Func<TIn, TOut> func,
 			TOut @default = default(TOut))
 			where TIn : class
 		{
+			if (func == null)
+			{
+				throw new ArgumentNullException(nameof(func));
+			}
+
 			if (input == null)
 			{
 				return @default;
@@ -92,6 +96,7 @@ namespace Utilities.Extansions.Object
 		/// <typeparam name="T">The input type</typeparam>
 		/// <param name="input">The input for the action to execute.</param>
 		/// <param name="action">The action to execute.</param>
+		[Obsolete]
 		public static void IgnoreNullFor<T>(this T input, Action<T> action)
 			where T : class
 		{
@@ -112,11 +117,10 @@ namespace Utilities.Extansions.Object
 		/// <returns>
 		/// If the object isn't null, the string representation for that object; otherwise nullString would be returned
 		/// </returns>
+		[Obsolete]
 		public static string NullableToString<T>(this T @object, string nullString = "")
-			where T : class
-		{
-			return @object.IgnoreNullFor(obj => obj.ToString(), nullString);
-		}
+			where T : class =>
+			@object.IgnoreNullFor(obj => obj.ToString(), nullString);
 
 		/// <summary>
 		/// Gets the type for the object, or null
@@ -124,11 +128,10 @@ namespace Utilities.Extansions.Object
 		/// <typeparam name="T">The type of the object</typeparam>
 		/// <param name="object">The object to get it's type.</param>
 		/// <returns>The type of the object is it isn't null; otherwise, null.</returns>
+		[Obsolete]
 		public static Type NullableGetType<T>(this T @object)
-			where T : class
-		{
-			return @object.IgnoreNullFor(obj => obj.GetType());
-		}
+			where T : class =>
+			@object.IgnoreNullFor(obj => obj.GetType());
 
 		/// <summary>
 		/// Gets the hush code for the object, or defaultHash, if the object is null.
@@ -137,11 +140,10 @@ namespace Utilities.Extansions.Object
 		/// <param name="object">The object to get its hush code.</param>
 		/// <param name="defalutHash">The hash to return if the object is null</param>
 		/// <returns>The hush code for the object if it isn't null; otherwise defaultHash</returns>
-		public static int NullableGetHashCode<T>(this T @object, int defalutHash = 0)
-			where T : class
-		{
-			return @object.IgnoreNullFor(obj => obj.GetHashCode(), defalutHash);
-		}
+		[Obsolete]
+		public static int NullableGetHashCode<T>(this T @object, int defalutHash = 0) 
+			where T : class =>
+			@object.IgnoreNullFor(obj => obj.GetHashCode(), defalutHash);
 
 		/// <summary>
 		/// Checks if the given object equals to the other object, even if it's null.
@@ -150,11 +152,10 @@ namespace Utilities.Extansions.Object
 		/// <param name="object">The object to compare.</param>
 		/// <param name="other">The other object to compare</param>
 		/// <returns>True if the object is equals to the other, or if they are both null; otherwise false.</returns>
+		[Obsolete]
 		public static bool NullableEquals<T>(this T @object, T other)
-			where T : class, IEquatable<T>
-		{
-			return @object.IgnoreNullFor(obj => obj.Equals(other), other == null);
-		}
+			where T : class, IEquatable<T> =>
+			@object.IgnoreNullFor(obj => obj.Equals(other), other == null);
 
 		/// <summary>
 		/// Checks if the given object equals to the other object, even if it's null.
@@ -163,11 +164,10 @@ namespace Utilities.Extansions.Object
 		/// <param name="object">The object to compare.</param>
 		/// <param name="other">The other object to compare</param>
 		/// <returns>True if the object is equals to the other, or if they are both null; otherwise false.</returns>
+		[Obsolete]
 		public static bool NullableEquals<T>(this T @object, object other)
-			where T : class
-		{
-			return @object.IgnoreNullFor(obj => obj.Equals(other), other == null);
-		}
+			where T : class =>
+			@object.IgnoreNullFor(obj => obj.Equals(other), other == null);
 
 		/// <summary>
 		/// Tries to execute the function on the given input
@@ -184,12 +184,18 @@ namespace Utilities.Extansions.Object
 			Func<TIn, TOut> func,
 			out TOut result)
 		{
+			if (func == null)
+			{
+				throw new ArgumentNullException(nameof(func));
+			}
+
 			result = default(TOut);
+			bool didSucceed = false;
 
 			try
 			{
 				result = func(input);
-				return true;
+				didSucceed = true;
 			}
 #if DEBUG
 			catch (Exception ex)
@@ -200,7 +206,7 @@ namespace Utilities.Extansions.Object
 #else
 			catch { }
 #endif
-			return false;
+			return didSucceed;
 		}
 
 		/// <summary>
@@ -213,6 +219,11 @@ namespace Utilities.Extansions.Object
 		/// <remarks>If you can avoid the exception, do not use this method, and do not throw it just to catch it.</remarks>
 		public static bool TryExecute<T>(this T input, Action<T> action)
 		{
+			if (action == null)
+			{
+				throw new ArgumentNullException(nameof(action));
+			}
+
 			Func<T, object> stubFunc = arg =>
 				{
 					action(arg);
@@ -238,6 +249,11 @@ namespace Utilities.Extansions.Object
 			Func<TIn, TOut> func,
 			TOut @default = default(TOut))
 		{
+			if (func == null)
+			{
+				throw new ArgumentNullException(nameof(func));
+			}
+
 			TOut result;
 
 			if (!input.TryExecute(func, out result))
@@ -255,10 +271,8 @@ namespace Utilities.Extansions.Object
 		/// <param name="input">The input argument.</param>
 		/// <param name="action">The action to execute.</param>
 		/// <remarks>If you can avoid the exception, do not use this method, and do not throw it just to catch it.</remarks>
-		public static void IgnoreExceptionFor<T>(this T input, Action<T> action)
-		{
+		public static void IgnoreExceptionFor<T>(this T input, Action<T> action) =>
 			input.TryExecute(action);
-		}
 
 		/// <summary>
 		/// Throws exception, if the when predicate returns true for the item, 
@@ -270,6 +284,16 @@ namespace Utilities.Extansions.Object
 		/// <param name="what">Function to get the exception to throw.</param>
 		public static void ThrowWhen<T>(this T item, Func<T, bool> when, Func<Exception> what)
 		{
+			if (when == null)
+			{
+				throw new ArgumentNullException(nameof(when));
+			}
+
+			if (what == null)
+			{
+				throw new ArgumentNullException(nameof(what));
+			}
+
 			if (when(item))
 			{
 				throw what();

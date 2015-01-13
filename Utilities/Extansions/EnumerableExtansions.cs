@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,10 +24,8 @@ namespace Utilities.Extansions.Enumerable
 		public static IEnumerable<T> Distinct<T>(
 			this IEnumerable<T> source,
 			EqualityComparerDelegate<T> equalityComparer,
-			HashDelegate<T> hasher = null)
-		{
-			return source.Distinct(new DelegateEqualityComparer<T>(equalityComparer, hasher));
-		}
+			HashDelegate<T> hasher = null) =>
+			source.Distinct(new DelegateEqualityComparer<T>(equalityComparer, hasher));
 
 		/// <summary>
 		/// Produces the set difference of two sequences by using the specified delegates to compare values.
@@ -406,10 +405,8 @@ namespace Utilities.Extansions.Enumerable
 		/// <typeparam name="T">The type if items in the enumerable.</typeparam>
 		/// <param name="enumerable">The enumerable to check.</param>
 		/// <returns>true if the enumerable is null, or if it contains no items; otherwise false.</returns>
-		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable)
-		{
-			return (enumerable == null) || !enumerable.Any();
-		}
+		public static bool IsNullOrEmpty<T>(this IEnumerable<T> enumerable) =>
+			enumerable?.Any() ?? false;
 
 		/// <summary>
 		/// Returns the list as IReadOnlyList&lt;T&gt;, wrapping it if necessary.
@@ -417,10 +414,8 @@ namespace Utilities.Extansions.Enumerable
 		/// <typeparam name="T">The typeparam of the list</typeparam>
 		/// <param name="list">The list to return as IReadOnlyList&lt;T&gt;</param>
 		/// <returns>An object which implements IReadOnlyList&lt;T&gt; for the list.</returns>
-		public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list)
-		{
-			return (list as IReadOnlyList<T>) ?? new ListWrapper<T>(list);
-		}
+		public static IReadOnlyList<T> AsReadOnly<T>(this IList<T> list) =>
+			(list as IReadOnlyList<T>) ?? new ListWrapper<T>(list);
 
 		/// <summary>
 		/// Returns the collection as IReadOnlyCollection&lt;T&gt;, wrapping it if necessary.
@@ -428,10 +423,8 @@ namespace Utilities.Extansions.Enumerable
 		/// <typeparam name="T">The typeparam of the collection</typeparam>
 		/// <param name="collection">The collection to return as IReadOnlyList&lt;T&gt;</param>
 		/// <returns>An object which implements IReadOnlyCollection&lt;T&gt; for the collection.</returns>
-		public static IReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> collection)
-		{
-			return (collection as IReadOnlyCollection<T>) ?? new CollectionWrapper<T>(collection);
-		}
+		public static IReadOnlyCollection<T> AsReadOnly<T>(this ICollection<T> collection) =>
+			(collection as IReadOnlyCollection<T>) ?? new CollectionWrapper<T>(collection);
 
 		/// <summary>
 		/// Returns the dictionary as IReadOnlyDictionary&lt;T&gt;, wrapping it if necessary.
@@ -457,12 +450,12 @@ namespace Utilities.Extansions.Enumerable
 		{
 			if (collection == null)
 			{
-				throw new ArgumentNullException("collection");
+				throw new ArgumentNullException(nameof(collection));
 			}
 
 			if (operation == null)
 			{
-				throw new ArgumentNullException("operation");
+				throw new ArgumentNullException(nameof(operation));
 			}
 
 			collection.ForEach(collection.Select(item => (Action<T>)(arg => operation(arg))));
@@ -482,12 +475,12 @@ namespace Utilities.Extansions.Enumerable
 		{
 			if (collection == null)
 			{
-				throw new ArgumentNullException("collection");
+				throw new ArgumentNullException(nameof(collection));
 			}
 
 			if (operations == null)
 			{
-				throw new ArgumentNullException("operations");
+				throw new ArgumentNullException(nameof(operations));
 			}
 
 			operations = operations.Select(action => action ?? (item => { }));
@@ -508,7 +501,7 @@ namespace Utilities.Extansions.Enumerable
 		{
 			if (source == null)
 			{
-				throw new ArgumentNullException("source");
+				throw new ArgumentNullException(nameof(source));
 			}
 
 			return GetSequencialsInternal(source);
@@ -516,6 +509,7 @@ namespace Utilities.Extansions.Enumerable
 
 		private static IEnumerable<Pair<T>> GetSequencialsInternal<T>(IEnumerable<T> source)
 		{
+			Debug.Assert(source != null, nameof(source) + " is null.");
 			T previous = default(T);
 
 			foreach (T item in source)
@@ -532,24 +526,20 @@ namespace Utilities.Extansions.Enumerable
 		/// <typeparam name="T">The type of elements in collection.</typeparam>
 		/// <param name="collection">The collection of elements to run their corresponding actions.</param>
 		/// <param name="operations">The collection of actions to run.</param>
-		public static void ForEach<T>(this IEnumerable<T> collection, params Action<T>[] operations)
-		{
+		public static void ForEach<T>(this IEnumerable<T> collection, params Action<T>[] operations) =>
 			collection.ForEach((IEnumerable<Action<T>>)operations);
-		}
 
 		private class CollectionWrapper<T> : IReadOnlyCollection<T>
 		{
 			#region Fields
 
-			private ICollection<T> collection;
+			private readonly ICollection<T> collection;
 			#endregion
 
 			#region Properties
 
-			public int Count
-			{
-				get { return this.collection.Count; }
-			}
+			public int Count =>
+				this.collection.Count; 
 			#endregion
 
 			#region Ctor
@@ -558,7 +548,7 @@ namespace Utilities.Extansions.Enumerable
 			{
 				if (collection == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(collection));
 				}
 
 				this.collection = collection;
@@ -567,15 +557,11 @@ namespace Utilities.Extansions.Enumerable
 
 			#region Methods
 
-			public IEnumerator<T> GetEnumerator()
-			{
-				return this.collection.GetEnumerator();
-			}
+			public IEnumerator<T> GetEnumerator() =>
+				this.collection.GetEnumerator();
 
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				return GetEnumerator();
-			}
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() =>
+				GetEnumerator();
 			#endregion
 		}
 
@@ -584,15 +570,13 @@ namespace Utilities.Extansions.Enumerable
 		{
 			#region Fields
 
-			private IList<T> list;
+			private readonly IList<T> list;
 			#endregion
 
 			#region Properties
 
-			public T this[int index]
-			{
-				get { return this.list[index]; }
-			}
+			public T this[int index] =>
+				this.list[index]; 
 			#endregion
 
 			#region Ctor
@@ -602,7 +586,7 @@ namespace Utilities.Extansions.Enumerable
 			{
 				if (list == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(list));
 				}
 
 				this.list = list;
@@ -616,25 +600,19 @@ namespace Utilities.Extansions.Enumerable
 		{
 			#region Fields
 
-			private IDictionary<TKey, TValue> dictionary;
+			private readonly IDictionary<TKey, TValue> dictionary;
 			#endregion
 
 			#region Properties
 
-			public IEnumerable<TKey> Keys
-			{
-				get { return this.dictionary.Keys; }
-			}
+			public IEnumerable<TKey> Keys =>
+				this.dictionary.Keys; 
 
-			public IEnumerable<TValue> Values
-			{
-				get { return this.dictionary.Values; }
-			}
+			public IEnumerable<TValue> Values =>
+				this.dictionary.Values; 
 
-			public TValue this[TKey key]
-			{
-				get { return this.dictionary[key]; }
-			}
+			public TValue this[TKey key] =>
+				this.dictionary[key]; 
 			#endregion
 
 			#region Ctor
@@ -644,7 +622,7 @@ namespace Utilities.Extansions.Enumerable
 			{
 				if (dictionary == null)
 				{
-					throw new ArgumentNullException();
+					throw new ArgumentNullException(nameof(dictionary));
 				}
 
 				this.dictionary = dictionary;
@@ -653,15 +631,11 @@ namespace Utilities.Extansions.Enumerable
 
 			#region Methods
 
-			public bool ContainsKey(TKey key)
-			{
-				return this.dictionary.ContainsKey(key);
-			}
+			public bool ContainsKey(TKey key) =>
+				this.dictionary.ContainsKey(key);
 
-			public bool TryGetValue(TKey key, out TValue value)
-			{
-				return this.dictionary.TryGetValue(key, out value);
-			}
+			public bool TryGetValue(TKey key, out TValue value) =>
+				this.dictionary.TryGetValue(key, out value);
 			#endregion
 		}
 	}
@@ -715,7 +689,7 @@ namespace Utilities.Extansions.Enumerable
 		{
 			if (equalityComparer == null)
 			{
-				throw new ArgumentNullException("equalityComparer");
+				throw new ArgumentNullException(nameof(equalityComparer));
 			}
 
 			if (hasher == null)
@@ -736,20 +710,16 @@ namespace Utilities.Extansions.Enumerable
 		/// <param name="x">The first object of type T to compare.</param>
 		/// <param name="y">The second object of type T to compare.</param>
 		/// <returns>true if the specified objects are equal; otherwise, false.</returns>
-		public bool Equals(T x, T y)
-		{
-			return this.equalityComparer(x, y);
-		}
+		public bool Equals(T x, T y) =>
+			this.equalityComparer(x, y);
 
 		/// <summary>
 		/// Returns a hash code for the specified object.
 		/// </summary>
 		/// <param name="obj">The Object for which a hash code is to be returned.</param>
 		/// <returns>A hash code for the specified object.</returns>
-		public int GetHashCode(T obj)
-		{
-			return this.hasher(obj);
-		}
+		public int GetHashCode(T obj) =>
+			this.hasher(obj);
 		#endregion
 	}
 
@@ -774,7 +744,7 @@ namespace Utilities.Extansions.Enumerable
 		{
 			if (comparer == null)
 			{
-				throw new ArgumentNullException("comparer");
+				throw new ArgumentNullException(nameof(comparer));
 			}
 
 			this.comparer = comparer;
@@ -789,10 +759,8 @@ namespace Utilities.Extansions.Enumerable
 		/// <param name="x">The first object to compare.</param>
 		/// <param name="y">The second object to compare.</param>
 		/// <returns>A signed integer that indicates the relative values of x and y.</returns>
-		public int Compare(T x, T y)
-		{
-			return this.comparer(x, y);
-		} 
+		public int Compare(T x, T y) =>
+			this.comparer(x, y);
 		#endregion
 
 		#region Operator
@@ -801,19 +769,15 @@ namespace Utilities.Extansions.Enumerable
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public static implicit operator ComparerDelegate<T>(DelegateComparer<T> obj)
-		{
-			return obj.comparer;
-		}
+		public static implicit operator ComparerDelegate<T>(DelegateComparer<T> obj) =>
+			obj.comparer;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="obj"></param>
 		/// <returns></returns>
-		public static implicit operator DelegateComparer<T>(ComparerDelegate<T> obj)
-		{
-			return new DelegateComparer<T>(obj);
-		}
+		public static implicit operator DelegateComparer<T>(ComparerDelegate<T> obj) =>
+			new DelegateComparer<T>(obj);
 		#endregion
 	}
 }

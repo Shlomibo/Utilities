@@ -62,10 +62,10 @@ namespace Utilities.Concurrency
 		{
 			handler.ThrowWhen(
 				when: action => action == null,
-				what: new ArgumentNullException("handler"));
+				what: new ArgumentNullException(nameof(handler)));
 			scheduler.ThrowWhen(
 				when: obj => obj == null,
-				what: new ArgumentNullException("scheduler"));
+				what: new ArgumentNullException(nameof(scheduler)));
 
 			this.handler = handler;
 			this.canellation = new CancellationTokenSource();

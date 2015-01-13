@@ -26,6 +26,11 @@ namespace Utilities.Extansions
 			TKey key,
 			TValue value)
 		{
+			if (dictionary == null)
+			{
+				throw new ArgumentNullException(nameof(dictionary));
+			}
+
 			bool isNew = !dictionary.ContainsKey(key);
 
 			if (isNew)
