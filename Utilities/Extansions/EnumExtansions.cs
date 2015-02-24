@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Object;
 
-namespace Utilities.Extansions.Enum
+namespace Utilities.Extansions
 {
 	/// <summary>
 	/// Provides the functionality as System.Enum with generic methods

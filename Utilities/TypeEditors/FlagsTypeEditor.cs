@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Design;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using Utilities.Extansions.Enum.EnumExtansions;
+using static Utilities.Extansions.EnumExtansions;
 
 namespace Utilities.TypeEditors
 {

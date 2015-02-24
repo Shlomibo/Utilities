@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Utilities.Extansions.Object
+namespace Utilities.Extansions
 {
 	/// <summary>
 	/// Provides utilities and extansions for all objects

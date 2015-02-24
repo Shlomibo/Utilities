@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Object;
+using static Utilities.Extansions.ObjectExtansions;
 
 namespace Utilities
 {
@@ -69,7 +65,7 @@ namespace Utilities
 		/// </summary>
 		/// <returns>A hash code for the current object.</returns>
 		public override int GetHashCode() =>
-			ObjectExtansions.CreateHashCode(this.value);
+			CreateHashCode(this.value);
 
 		/// <summary>
 		/// Indicates whether the current object is equal to another object of the same type.

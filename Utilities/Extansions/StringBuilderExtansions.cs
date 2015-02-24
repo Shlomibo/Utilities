@@ -3,12 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Enumerable;
-using Utilities.Extansions.Enum;
-using Utilities.Extansions.Object;
 
-namespace Utilities.Extansions.Text
+namespace Utilities.Extansions
 {
 	/// <summary>
 	/// Extends StringBuilder.

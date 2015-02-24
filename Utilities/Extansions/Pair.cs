@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Object.ObjectExtansions;
+using static Utilities.Extansions.ObjectExtansions;
 
 namespace Utilities.Extansions
 {
@@ -99,8 +95,7 @@ namespace Utilities.Extansions
 		/// </summary>
 		/// <returns>A string that represents the current object.</returns>
 		public override string ToString() =>
-			"{\{this.Previous}, \{this.Current}}";
-		//$"{{{this.Previous}, {this.Current}}}";
+			$"{{{this.Previous}, {this.Current}}}";
 		#endregion
 	}
 }

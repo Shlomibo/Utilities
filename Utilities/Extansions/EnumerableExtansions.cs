@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Object;
 
-namespace Utilities.Extansions.Enumerable
+namespace Utilities.Extansions
 {
 	/// <summary>
 	/// Extansions methods for enumerables

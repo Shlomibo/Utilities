@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utilities.Extansions.Object;
-using Utilities.Extansions.Enumerable;
+using static Utilities.Extansions.ObjectExtansions;
+using static Utilities.Extansions.EnumerableExtansions;
 
 namespace Utilities
 {
